@@ -4,3 +4,4 @@ dist/
 *.tsbuildinfo
 .claude/
 supabase/.temp/
+data/insights/

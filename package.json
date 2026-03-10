@@ -13,5 +13,6 @@
   },
   "devDependencies": {
     "supabase": "^2.76.16"
-  }
+  },
+  "version": "0.0.1"
 }

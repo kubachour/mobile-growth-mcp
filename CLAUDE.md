@@ -8,20 +8,24 @@ Focused on **mobile campaigns**, especially subscription apps.
 
 ## Architecture
 
-Three knowledge layers, all accessed via MCP server or REST API:
+Three knowledge layers:
 
 | Layer | What | Storage | Retrieval |
 |-------|------|---------|-----------|
-| What Works | Industry best practices | Supabase `insights` + pgvector | Hybrid RAG (semantic + keyword + RRF) |
+| What Works | Industry best practices | Supabase `insights` + pgvector | Hybrid RAG (semantic + keyword + RRF) via Edge Function |
 | What Happened | Past audits, baselines | Supabase `account_audits` | SQL, scoped by api_key |
 | What Is | Live campaign data | Not stored | User's ad platform API key |
+
+**MCP server architecture**: The npm package (`mobile-growth-mcp`) runs locally via stdio. KB tools (search, list, get) are proxied through the Supabase Edge Function `/functions/v1/mcp` using JSON-RPC + `x-api-key` header. Meta tools run locally (token never leaves user's machine). Tool definitions are fetched dynamically from the Edge Function on startup — adding a tool server-side makes it available to all users without republishing npm.
+
+**Auth**: Per-person API key (`me_` prefix, SHA-256 hashed). Generate with `./scripts/generate-api-key.sh "Name"`. Users only need `API_KEY` env var (+ optional `META_ACCESS_TOKEN`). No `SUPABASE_URL`/`SUPABASE_ANON_KEY` needed for end users.
 
 ## Tech Stack
 
 - **Database**: Supabase (PostgreSQL + pgvector + pg_trgm + pgmq + pg_cron)
 - **Embeddings**: OpenAI `text-embedding-3-small` (1536d), runs server-side in Supabase Edge Function
-- **Interfaces**: MCP server (primary) + Supabase Edge Function (REST)
-- **Auth**: Simple API key per team (SHA-256 hashed, no OAuth)
+- **Interfaces**: MCP stdio server (npm, proxies KB to Edge Function) + Edge Function (JSON-RPC MCP endpoint)
+- **Auth**: Per-person API key (SHA-256 hashed, revocable)
 - **Monorepo**: npm workspaces with TypeScript
 
 ## Embedding Pipeline
@@ -35,20 +39,23 @@ Embeddings are generated **entirely server-side** in Supabase:
 ## Project Structure
 
 ```
-packages/shared/src/       — Types, Supabase client
-packages/mcp-server/src/   — MCP server with search/list/get tools
-packages/ingestion/src/    — CLI to validate & upsert insight JSONs (no embedding)
-skills/                    — Prompt recipes (extract-insights, audit-meta-account)
-data/insights/             — Curated insight JSON files (git-tracked)
-supabase/migrations/       — SQL migrations (001-007)
-supabase/functions/embed/  — Edge Function: processes embedding jobs from pgmq
-supabase/functions/search/ — Edge Function: embeds query + hybrid search
+packages/shared/src/                         — Types, Supabase client (used by ingestion)
+packages/mcp-server/src/                     — MCP stdio server (proxies KB tools + prompts to Edge Function, runs Meta tools locally)
+packages/ingestion/src/                      — CLI to validate & upsert insight JSONs (no embedding)
+skills/                                      — Canonical skill .md files (source of truth for MCP prompts)
+data/insights/                               — Curated insight JSON files (git-tracked)
+supabase/migrations/                         — SQL migrations (001-007)
+supabase/functions/embed/                    — Edge Function: processes embedding jobs from pgmq
+supabase/functions/search/                   — Edge Function: embeds query + hybrid search
+supabase/functions/_shared/prompts.ts        — Prompt manifest (metadata for each MCP prompt)
+supabase/functions/_shared/prompt-content.ts — Generated from skills/*.md (DO NOT EDIT directly)
 ```
 
 ## Commands
 
 ```bash
 npm run build              # Build all packages
+npm run build:prompts      # Generate prompt-content.ts from skills/*.md
 npm run ingest             # Validate & upsert insights to Supabase (embeddings auto-generated)
 ```
 
@@ -69,3 +76,13 @@ supabase secrets set OPENAI_API_KEY=sk-your-openai-key
 - Upsert is idempotent on `slug` — safe to re-run ingestion after edits
 - Ad platform API keys are never stored in Supabase — user provides them at connection time
 - No UI framework — the MCP server and REST API are the product
+
+## Skills Workflow
+
+Skill prompts (MCP prompts) are served from the Edge Function. The canonical source is `skills/*.md`. To add or update a skill:
+
+1. Edit the `.md` file in `skills/`
+2. Run `npm run build:prompts` to regenerate `supabase/functions/_shared/prompt-content.ts`
+3. Deploy the Edge Function: `supabase functions deploy mcp --no-verify-jwt`
+
+This propagates to all users without an npm republish. For a new prompt, also add its metadata to `supabase/functions/_shared/prompts.ts`.

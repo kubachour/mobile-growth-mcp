@@ -5,8 +5,7 @@ A curated knowledge base of mobile advertising and growth insights + direct Meta
 ## Connect to Your LLM
 
 You need:
-- `SUPABASE_URL` — `https://iattgvzqiqrpzoqnrwfr.supabase.co`
-- `SUPABASE_ANON_KEY` — provided separately
+- `API_KEY` — provided by the server admin (generated with `./scripts/generate-api-key.sh`)
 - `META_ACCESS_TOKEN` — (optional) your Meta Marketing API access token for live campaign data
 
 ### Claude Desktop
@@ -20,8 +19,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
       "command": "npx",
       "args": ["-y", "mobile-growth-mcp"],
       "env": {
-        "SUPABASE_URL": "https://iattgvzqiqrpzoqnrwfr.supabase.co",
-        "SUPABASE_ANON_KEY": "paste-your-key-here",
+        "API_KEY": "me_your-api-key",
         "META_ACCESS_TOKEN": "paste-your-meta-token-here"
       }
     }
@@ -40,8 +38,7 @@ Add to your project's `.mcp.json`:
       "command": "npx",
       "args": ["-y", "mobile-growth-mcp"],
       "env": {
-        "SUPABASE_URL": "https://iattgvzqiqrpzoqnrwfr.supabase.co",
-        "SUPABASE_ANON_KEY": "paste-your-key-here",
+        "API_KEY": "me_your-api-key",
         "META_ACCESS_TOKEN": "paste-your-meta-token-here"
       }
     }
@@ -60,8 +57,7 @@ Add to `.cursor/mcp.json`:
       "command": "npx",
       "args": ["-y", "mobile-growth-mcp"],
       "env": {
-        "SUPABASE_URL": "https://iattgvzqiqrpzoqnrwfr.supabase.co",
-        "SUPABASE_ANON_KEY": "paste-your-key-here",
+        "API_KEY": "me_your-api-key",
         "META_ACCESS_TOKEN": "paste-your-meta-token-here"
       }
     }
@@ -80,8 +76,7 @@ Codex reads `AGENTS.md` automatically. For MCP, add to your Codex config:
       "command": "npx",
       "args": ["-y", "mobile-growth-mcp"],
       "env": {
-        "SUPABASE_URL": "https://iattgvzqiqrpzoqnrwfr.supabase.co",
-        "SUPABASE_ANON_KEY": "paste-your-key-here",
+        "API_KEY": "me_your-api-key",
         "META_ACCESS_TOKEN": "paste-your-meta-token-here"
       }
     }
@@ -121,7 +116,7 @@ Fetch full content of a specific insight by ID or slug.
 
 ## Meta Marketing API Tools
 
-Requires `META_ACCESS_TOKEN`. Without it, these tools return a clear error — knowledge base tools still work.
+Requires `META_ACCESS_TOKEN`. Without it, these tools return a clear error — knowledge base tools work with just `API_KEY`.
 
 All Meta tools default to **last 7 days**, **active campaigns only**, and **minimal field sets** to avoid rate limits.
 
@@ -237,9 +232,9 @@ npm run build
 
 ```bash
 cp .env.example .env
-# Fill in SUPABASE_URL, SUPABASE_ANON_KEY
-# For ingestion: also set SUPABASE_SERVICE_ROLE_KEY
+# Fill in API_KEY (get from admin)
 # For Meta tools: set META_ACCESS_TOKEN
+# For ingestion/admin: also set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 ```
 
 ### Adding Insights

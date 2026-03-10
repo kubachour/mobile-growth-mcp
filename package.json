@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "ingest": "npm run ingest --workspace=packages/ingestion"
+    "ingest": "npm run ingest --workspace=packages/ingestion",
+    "build:prompts": "npx tsx scripts/build-prompt-content.ts"
   },
   "devDependencies": {
     "supabase": "^2.76.16"

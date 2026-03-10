@@ -84,14 +84,15 @@ export async function metaApiGet<T>(
   const token = getMetaAccessToken();
 
   const url = new URL(`${META_BASE_URL}${options.path}`);
-  url.searchParams.set("access_token", token);
   if (options.params) {
     for (const [key, value] of Object.entries(options.params)) {
       url.searchParams.set(key, value);
     }
   }
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   const body = await response.json();
 
   if (!response.ok || isMetaApiError(body)) {

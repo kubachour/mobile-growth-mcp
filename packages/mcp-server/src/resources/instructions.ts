@@ -25,7 +25,7 @@ Fetch the full content of a specific insight by ID or slug.
 
 ## Meta Marketing API Tools
 
-**Requires META_ACCESS_TOKEN** — without it, these tools return a clear error. Knowledge base tools still work.
+**Requires META_ACCESS_TOKEN env var** — without it, these tools return a clear error. Knowledge base tools work with just API_KEY.
 
 **Rate limit safety**: All tools default to last_7d, active-only, minimal fields. No auto-pagination. Throttle header monitored — warns at >75% utilization.
 

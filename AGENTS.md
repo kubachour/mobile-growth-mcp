@@ -24,7 +24,6 @@ Pre-built analysis workflows. Each takes `ad_account_id` as input:
 | ad-fatigue-report | Detect creative fatigue | 1 |
 | weekly-performance | Week-over-week health comparison | 2 |
 | creative-performance | Categorize ads by health status | 1 |
-| placement-efficiency | Identify placement waste | 1/campaign |
 | audience-composition | Age × gender CPA analysis | 1-2 |
 | architecture-review | Campaign structure evaluation | 3 |
 | audit-meta-account | Comprehensive account audit | 6+ |
@@ -151,17 +150,23 @@ See `skills/ingest-content.md` for the complete pipeline.
 ## Project Structure
 
 ```
-packages/mcp-server/src/meta/     — Meta API client + types
-packages/mcp-server/src/tools/    — All MCP tools (knowledge base + Meta)
-packages/mcp-server/src/prompts/  — Report prompt registrations
-packages/shared/src/              — Types, Supabase client
-skills/                           — Skill methodologies (markdown)
-data/insights/                    — Curated insight JSON files
+packages/mcp-server/src/meta/                — Meta API client + types
+packages/mcp-server/src/tools/               — All MCP tools (knowledge base + Meta)
+packages/mcp-server/src/remote-proxy.ts      — Proxies KB tools + prompts from Edge Function
+packages/shared/src/                         — Types, Supabase client
+skills/                                      — Canonical skill .md files (source of truth for prompts)
+supabase/functions/_shared/prompts.ts        — Prompt manifest (metadata)
+supabase/functions/_shared/prompt-content.ts — Generated from skills/*.md
+data/insights/                               — Curated insight JSON files
 ```
+
+Prompts are served from the Edge Function, not bundled in the npm package. Updating a skill requires only `npm run build:prompts` + Edge Function deploy — no npm republish needed.
 
 ## Development Commands
 
 ```bash
-npm run build    # Build all packages
-npm run ingest   # Validate & upsert insights to Supabase
+npm run build           # Build all packages
+npm run build:prompts   # Generate prompt-content.ts from skills/*.md
+npm run ingest          # Validate & upsert insights to Supabase
+# Deploy prompts: npm run build:prompts && supabase functions deploy mcp --no-verify-jwt
 ```

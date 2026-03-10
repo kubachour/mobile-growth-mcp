@@ -5,11 +5,15 @@ import { Server } from "npm:@modelcontextprotocol/sdk/server/index.js";
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
 } from "npm:@modelcontextprotocol/sdk/types.js";
 import { WebStandardStreamableHTTPServerTransport } from "npm:@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.0";
 import { validateApiKey } from "../_shared/auth.ts";
 import { tools } from "../_shared/tools.ts";
+import { prompts } from "../_shared/prompts.ts";
+import { promptContent } from "../_shared/prompt-content.ts";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -29,7 +33,11 @@ Deno.serve(async (req: Request) => {
   const apiKey = req.headers.get("x-api-key");
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ error: "Missing x-api-key header" }),
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: -32000, message: "Missing x-api-key header" },
+      }),
       {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -43,10 +51,17 @@ Deno.serve(async (req: Request) => {
 
   const auth = await validateApiKey(apiKey, supabase);
   if (!auth.valid) {
-    return new Response(JSON.stringify({ error: "Invalid API key" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: -32000, message: "Invalid API key" },
+      }),
+      {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
 
   // Filter tools by admin status
@@ -54,8 +69,8 @@ Deno.serve(async (req: Request) => {
 
   // Create a fresh stateless low-level Server per request
   const server = new Server(
-    { name: "meta-editor", version: "1.0.0" },
-    { capabilities: { tools: {} } }
+    { name: "meta-editor", version: "2.0.0" },
+    { capabilities: { tools: {}, prompts: {} } }
   );
 
   // tools/list — return tool definitions with proper inputSchema
@@ -81,13 +96,68 @@ Deno.serve(async (req: Request) => {
 
     try {
       const content = await tool.handler(args ?? {}, supabase);
+      console.log(
+        `[mcp] tool=${name} team=${auth.team_name} at=${new Date().toISOString()}`
+      );
       return { content };
     } catch (err) {
+      console.log(
+        `[mcp] tool=${name} team=${auth.team_name} error="${(err as Error).message}" at=${new Date().toISOString()}`
+      );
       return {
         content: [{ type: "text", text: (err as Error).message }],
         isError: true,
       };
     }
+  });
+
+  // prompts/list — return prompt metadata
+  server.setRequestHandler(ListPromptsRequestSchema, async () => ({
+    prompts: prompts.map((p) => ({
+      name: p.name,
+      description: p.description,
+      arguments: p.arguments,
+    })),
+  }));
+
+  // prompts/get — return full prompt content with argument context prepended
+  server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    const prompt = prompts.find((p) => p.name === name);
+
+    if (!prompt) {
+      throw new Error(`Unknown prompt: ${name}`);
+    }
+
+    const content = promptContent[name];
+    if (!content) {
+      throw new Error(`No content found for prompt: ${name}`);
+    }
+
+    // Build context prefix from arguments
+    const parts: string[] = [];
+    if (args?.ad_account_id) {
+      parts.push(`Ad account: ${args.ad_account_id}`);
+    }
+    if (args?.campaign_id_a) {
+      parts.push(`Campaign A: ${args.campaign_id_a}`);
+    }
+    if (args?.campaign_id_b) {
+      parts.push(`Campaign B: ${args.campaign_id_b}`);
+    }
+
+    const text = parts.length > 0
+      ? `${parts.join("\n")}\n\n${content}`
+      : content;
+
+    return {
+      messages: [
+        {
+          role: "user" as const,
+          content: { type: "text", text },
+        },
+      ],
+    };
   });
 
   const transport = new WebStandardStreamableHTTPServerTransport({

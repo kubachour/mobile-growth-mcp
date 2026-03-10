@@ -1,5 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getSupabaseClient, TOPICS, APPLIES_TO, VALID_PLATFORMS } from "@mobile-growth/shared";
+import { TOPICS, APPLIES_TO, VALID_PLATFORMS } from "@mobile-growth/shared";
+import { callRemoteTool } from "../remote-proxy.js";
 
 export function registerVocabularyResource(server: McpServer): void {
   server.resource(
@@ -15,25 +16,18 @@ export function registerVocabularyResource(server: McpServer): void {
       let appliesToCounts: Record<string, number> = {};
 
       try {
-        const supabase = getSupabaseClient();
+        const apiKey = process.env.API_KEY;
+        if (apiKey) {
+          const result = await callRemoteTool(apiKey, "get_vocabulary_counts", {});
 
-        const { data: topicRows } = await supabase.rpc("list_insights", {
-          filter_topic: null,
-          filter_applies_to_value: null,
-        });
-
-        if (topicRows) {
-          for (const row of topicRows as Record<string, unknown>[]) {
-            for (const t of row.topics as string[]) {
-              topicCounts[t] = (topicCounts[t] ?? 0) + 1;
-            }
-            for (const a of row.applies_to as string[]) {
-              appliesToCounts[a] = (appliesToCounts[a] ?? 0) + 1;
-            }
+          if (!result.isError && result.content.length > 0) {
+            const counts = JSON.parse(result.content[0].text);
+            topicCounts = counts.topics ?? {};
+            appliesToCounts = counts.applies_to ?? {};
           }
         }
       } catch {
-        // Fall back to static vocabulary if DB is unreachable
+        // Fall back to static vocabulary (0 counts) if remote call fails
       }
 
       const payload = {

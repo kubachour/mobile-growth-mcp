@@ -167,6 +167,42 @@ export const tools: ToolDef[] = [
   },
 
   {
+    name: "get_vocabulary_counts",
+    description:
+      "Returns counts of how many insights use each topic and applies_to tag. Lightweight alternative to list_insights for vocabulary/tag exploration.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+    handler: async (_args, supabase) => {
+      const { data, error } = await supabase
+        .from("insights")
+        .select("topics, applies_to");
+
+      if (error) throw new Error(`Vocabulary counts failed: ${error.message}`);
+
+      const topics: Record<string, number> = {};
+      const applies_to: Record<string, number> = {};
+
+      for (const row of data as { topics: string[]; applies_to: string[] }[]) {
+        for (const t of row.topics ?? []) {
+          topics[t] = (topics[t] ?? 0) + 1;
+        }
+        for (const a of row.applies_to ?? []) {
+          applies_to[a] = (applies_to[a] ?? 0) + 1;
+        }
+      }
+
+      return [
+        {
+          type: "text",
+          text: JSON.stringify({ topics, applies_to }),
+        },
+      ];
+    },
+  },
+
+  {
     name: "get_insight",
     description:
       "Returns the full content of a specific insight by ID (numeric) or slug (string), including raw excerpt from the original source.",

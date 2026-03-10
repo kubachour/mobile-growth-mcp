@@ -64,6 +64,16 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  // Fire-and-forget usage logger
+  const logUsage = (method: string, name: string, isError = false) => {
+    supabase
+      .from("api_key_usage")
+      .insert({ key_id: auth.key_id, method, name, is_error: isError })
+      .then(({ error }) => {
+        if (error) console.error(`[usage] log failed: ${error.message}`);
+      });
+  };
+
   // Filter tools by admin status
   const visibleTools = tools.filter((t) => !t.adminOnly || auth.is_admin);
 
@@ -96,14 +106,10 @@ Deno.serve(async (req: Request) => {
 
     try {
       const content = await tool.handler(args ?? {}, supabase);
-      console.log(
-        `[mcp] tool=${name} team=${auth.team_name} at=${new Date().toISOString()}`
-      );
+      logUsage("tool", name);
       return { content };
     } catch (err) {
-      console.log(
-        `[mcp] tool=${name} team=${auth.team_name} error="${(err as Error).message}" at=${new Date().toISOString()}`
-      );
+      logUsage("tool", name, true);
       return {
         content: [{ type: "text", text: (err as Error).message }],
         isError: true,
@@ -149,6 +155,8 @@ Deno.serve(async (req: Request) => {
     const text = parts.length > 0
       ? `${parts.join("\n")}\n\n${content}`
       : content;
+
+    logUsage("prompt", name);
 
     return {
       messages: [

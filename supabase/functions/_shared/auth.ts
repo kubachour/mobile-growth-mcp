@@ -2,6 +2,7 @@ import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.0";
 
 export interface AuthResult {
   valid: boolean;
+  key_id?: number;
   team_name?: string;
   is_admin?: boolean;
 }
@@ -21,12 +22,12 @@ export async function validateApiKey(
 
   const { data: row, error } = await supabase
     .from("api_keys")
-    .select("team_name, is_admin")
+    .select("id, team_name, is_admin")
     .eq("key_hash", keyHash)
     .eq("is_active", true)
     .single();
 
   if (error || !row) return { valid: false };
 
-  return { valid: true, team_name: row.team_name, is_admin: row.is_admin ?? false };
+  return { valid: true, key_id: row.id, team_name: row.team_name, is_admin: row.is_admin ?? false };
 }

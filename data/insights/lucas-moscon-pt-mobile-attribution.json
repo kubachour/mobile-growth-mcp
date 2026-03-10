@@ -1,0 +1,187 @@
+[
+  {
+    "id": "lm-pt-001",
+    "title": "Extend Payback Window to 180 Days to Outspend Competitors",
+    "insight": "Most advertisers optimize for short payback windows (day 7-30 ROAS). Companies willing to extend their payback target from day 60 to day 180 can outspend competitors because the longer window allows higher bids and more aggressive scaling. The trade-off is cash flow risk, but it's a growth lever precisely because most competitors won't take it. As spend increases, ROAS naturally decreases, making short payback windows even harder to hit at scale.",
+    "raw_excerpt": "What happens if I push this to 180 days? They will be outspending their competitors and they will be by doing this they will be able to spend more money and grow more. Still you need to have cash the cash flow is important to do this strategy.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["scaling", "bidding", "strategy"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Calculate your current payback window and model what spend increase is possible if you extend it by 2-3x",
+      "Build early-day proxy metrics (day 7-10) to validate cohort quality before the full payback window completes",
+      "Ensure cash flow supports the longer payback period before committing"
+    ]
+  },
+  {
+    "id": "lm-pt-002",
+    "title": "Waterfall Confidence Layers: Validate Cohorts by Day 10 Instead of Day 180",
+    "insight": "Instead of waiting for the full payback window, build a waterfall of daily ROI benchmarks (day 1 through day 10). If the cohort misses its benchmark on days 1-3, confidence drops. If it still misses on days 4-6, confidence drops further. By day 7-10, you have high confidence whether the cohort will hit its day-180 target. Each day adds a layer of validation. This lets you kill bad cohorts in 10 days instead of 180.",
+    "raw_excerpt": "It was like a waterfall effect. So let's say if until day three there was not they were not hitting this benchmark then the level of confidence was going down. If on day four five six this was still the case they reduce it again. if on days 7 8 9 10 was still going down they know that it's not going to happen.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["measurement", "campaign_optimization", "ltv_modeling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Define daily ROI benchmarks for days 1-10 based on historical cohort data",
+      "Build an automated alert system that flags cohorts falling below benchmarks at each checkpoint",
+      "Reduce spend on cohorts that miss benchmarks across multiple consecutive days",
+      "Backtest the waterfall model against historical cohorts to calibrate confidence thresholds"
+    ]
+  },
+  {
+    "id": "lm-pt-003",
+    "title": "IP Address Accounts for 90%+ of Probabilistic Attribution Matches",
+    "insight": "AppStack tested fingerprinting accuracy with and without IP addresses. The IP was responsible for over 90% of all probabilistic matches. All the other signals (OS version, device model, battery life, etc.) are marginal. This means probabilistic attribution is essentially IP matching — and if Apple ever blocks IP access via Private Relay, the entire probabilistic attribution layer collapses.",
+    "raw_excerpt": "We did a test internally... the IP was the reason behind plus 90% of the matches. So everything everybody says that we have these algorithms we're doing this complex matching it's just IP address.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["attribution", "measurement"],
+    "applies_to": ["ios", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Don't pay premium for MMP 'advanced probabilistic matching' — it's mostly IP-based",
+      "Invest in first-party data collection (onboarding surveys, WDYHAU) as a hedge against IP blocking",
+      "Monitor Apple Private Relay adoption — widespread adoption would break probabilistic attribution"
+    ]
+  },
+  {
+    "id": "lm-pt-004",
+    "title": "ROAS Is the Least Reliable iOS Metric — Use Blended ROI Instead",
+    "insight": "On iOS, ROAS (return on ad spend at the campaign or ad level) has the lowest confidence of any metric because it requires matching revenue to specific users/campaigns, which is fundamentally broken without IDFA (only 15-20% consent). Instead, use blended ROI: total revenue from store console or subscription platform divided by total ad spend, segmented by install date cohort. This gives realistic profitability signals without depending on deterministic user-level attribution.",
+    "raw_excerpt": "When it comes to ROAS keep in mind that on iOS it's risky to rely on that metric. It's the metric with less level of confidence that I have. That's why I try to move away from ROAS as much as you can.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["measurement", "attribution"],
+    "applies_to": ["ios", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Build a blended ROI dashboard using store console revenue divided by total ad spend, segmented by install date",
+      "Stop making campaign-level decisions based on iOS ROAS — use CPI or cost per in-app event as proxies instead",
+      "Use revenue data from your subscription platform or App Store Connect, not from ad network SDKs"
+    ]
+  },
+  {
+    "id": "lm-pt-005",
+    "title": "Keep SKAN Conversion Value Mapping Radically Simple: 63 = Purchase, 62 = Trial",
+    "insight": "The most reliable SKAN conversion value strategy is extreme simplicity. Set value 63 to your primary conversion event (subscription/purchase), 62 to your secondary event (start trial), and optionally add a paywall view as an intermediate signal. Keep the coarse value as a session/app-open event so it always fires. Don't use the full 63-bit range for complex mappings — it adds noise without improving optimization. The ad network only optimizes on one event anyway.",
+    "raw_excerpt": "The best way and the most reliable strategy when it comes to conversion value mapping is to simplify it as much as you possibly can. Don't go to the 63 bit. Just keep 63 the main conversion event and the one you're optimizing for. And second, set the 62 to start trial. That's it. Done.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["measurement", "signal_engineering", "conversion_events"],
+    "applies_to": ["ios", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Set SKAN conversion value 63 to your primary monetization event (purchase/subscription)",
+      "Set conversion value 62 to your secondary event (start trial)",
+      "Set the coarse value to a session/app-open event to ensure it always triggers",
+      "Remove any complex conversion value mapping you currently have — simplicity beats granularity"
+    ]
+  },
+  {
+    "id": "lm-pt-006",
+    "title": "SKAN Trial Conversion Measurement Depends on User Retention",
+    "insight": "SKAN only updates conversion values when the user opens the app. If a user converts from trial to paid but never reopens the app, SKAN never reports it. With typical day-10 retention rates around 10-15%, you're only measuring a fraction of actual trial conversions. To get the real number, take the SKAN-reported trial conversions and extrapolate using your known retention rate for that conversion window day. This must be done in-house — it doesn't come from any reporting API.",
+    "raw_excerpt": "You need the user to open the app to trigger an update of the conversion value. So there's this correlation between user retention and the amount of post backs that you will get. Since maybe your retention rate on day 10 is 15%, maybe a lot of users converted but you won't be measuring them.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["measurement", "attribution", "signal_engineering"],
+    "applies_to": ["ios", "subscription_apps"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Calculate your retention rate for each day in the SKAN conversion windows",
+      "Multiply SKAN-reported trial conversions by (1 / retention rate) to estimate actual conversions",
+      "Build this extrapolation into your internal reporting — no API provides this automatically",
+      "If retention is low around trial conversion day, consider nudging users to open the app (push notifications) to improve SKAN signal quality"
+    ]
+  },
+  {
+    "id": "lm-pt-007",
+    "title": "You Only Need an MMP for Specific Use Cases — Most Apps Don't",
+    "insight": "MMPs are only required in specific situations: (1) running AppLovin or other DSPs that mandate MMP integration, (2) web-to-app on Google which requires certified link infrastructure, (3) TikTok ads with Flutter or React Native apps (no native TikTok SDK support), (4) maintaining consistent SKAN conversion value mapping across multiple ad networks simultaneously, (5) corporate needs like data clean rooms. For apps running primarily on Meta, Google, and Apple Ads, you can use native SDKs and APIs without an MMP.",
+    "raw_excerpt": "If you want to run AppLovin, you need to pay them to run AppLovin. If you want to run web to app on Google then you need another reason... if you are spending money on TikTok ads and you have your application on Flutter or React Native then you will need an MMP.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["measurement", "attribution"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Audit whether your MMP usage falls into one of the specific required use cases before renewing",
+      "If running only Meta + Apple Ads, evaluate dropping the MMP and using native SDKs/APIs directly",
+      "If on Flutter/React Native and want TikTok, check if bridge solutions (like AppStack's) can replace the MMP dependency",
+      "Calculate your actual MMP cost vs the specific value it provides for your channel mix"
+    ]
+  },
+  {
+    "id": "lm-pt-008",
+    "title": "Stack Multiple Measurement Sources Per Metric — Choose by Trust Level",
+    "insight": "For each metric, choose the source you trust most rather than relying on one tool for everything. Revenue: use store console or subscription platform (Apple is the one paying you). Installs: compare App Store Connect, Meta, SKAN, and your product analytics SDK. Attributed trials: use ad network APIs or SKAN. Total trials: use subscription platform or App Store Connect. Stack sources against each other to triangulate a confidence range rather than trusting any single number.",
+    "raw_excerpt": "Try to see the full macro marketing picture. Try to see installations coming from Connect, from Meta, from SK network, from your product analytics SDK. Try to have multiple sources and then you can stack one against each other.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["measurement", "attribution"],
+    "applies_to": ["ios", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Map each key metric (revenue, installs, trials, conversions) to its most trusted data source",
+      "Never use ad network SDKs as your revenue source of truth — use store console or subscription platform",
+      "Build a dashboard that shows the same metric from multiple sources side by side",
+      "Define confidence ranges (high/low estimate) rather than relying on single-source exact numbers"
+    ]
+  },
+  {
+    "id": "lm-pt-009",
+    "title": "You Don't Need to Saturate Big 4 Before Skipping Ad Networks — $5M+/Month Threshold",
+    "insight": "App developers are told they need to diversify into DSPs and ad networks (AppLovin, Liftoff, Moloco) for growth. In reality, you're not saturating Meta, TikTok, Google, and Apple Ads until you're spending at least $5 million per month. Below that threshold, DSPs add complexity, MMP costs, and fraud risk without meaningful incremental reach. Ad networks also lack transparency and have been caught pushing fraud that MMPs couldn't detect.",
+    "raw_excerpt": "If you tell me that you are saturating Meta, TikTok, Google and Apple ads, it means that you should be spending at least 5 million a month at least... I will recommend people to stay away from these networks.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lucas Moscon",
+    "source_title": "Price Power Podcast Ep. 6: Conversion Values, SKAN, Fingerprinting, MMPs, and Mobile Attribution",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["scaling", "strategy", "measurement"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Don't add DSPs or ad networks to your channel mix until you're spending $5M+/month across Meta, TikTok, Google, and Apple Ads",
+      "Focus scaling efforts on creative diversity and new campaign types within existing platforms first",
+      "If you do test ad networks, demand full transparency on placements and implement independent fraud detection"
+    ]
+  }
+]

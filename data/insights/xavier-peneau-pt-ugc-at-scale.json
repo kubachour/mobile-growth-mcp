@@ -1,0 +1,211 @@
+[
+  {
+    "id": "xp-pt-001",
+    "title": "Creator Diversity Matters More Than Creator Fit Under Andromeda",
+    "insight": "Meta's Andromeda algorithm treats ads from the same creator as nearly identical, limiting reach to new audiences. Having 50 diverse creators outperforms 5 perfect-fit creators because diversity of faces and personas directly expands the audience segments Meta can deliver to. The bottleneck isn't finding the right creator — it's having enough different ones.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "audience_targeting", "ad_ranking"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Prioritize expanding your creator roster over perfecting a small pool of creators",
+      "Aim for diversity across demographics, energy levels, and visual presentation styles",
+      "Track reach per creator to identify when Andromeda is capping delivery due to similarity"
+    ]
+  },
+  {
+    "id": "xp-pt-002",
+    "title": "Minimum Viable UGC Test: 20-40 Creators, 4-5 Concepts, $20-50K First Month",
+    "insight": "A proper initial UGC test on one platform in one country (e.g., US on Meta) requires 20-40 creators across 4-5 concepts, with $20-50K minimum spend in the first month. Below that threshold, there's insufficient data to determine if UGC can scale for your app. Many teams under-invest in the initial test and wrongly conclude UGC doesn't work.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "creative_strategy", "budgeting"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Budget $20-50K for the first month of a UGC test on a single platform/country",
+      "Source 20-40 diverse creators before launching the test",
+      "Prepare 4-5 distinct creative concepts to test across the creator pool",
+      "Do not conclude UGC doesn't work if you tested with fewer creators or lower spend"
+    ]
+  },
+  {
+    "id": "xp-pt-003",
+    "title": "~5% Creative Success Rate; Top Spenders Need 1000+ Creatives/Month",
+    "insight": "Expect roughly 5% of UGC creatives to succeed. Even at 5-6 figure monthly spend, you need 20-50 new creatives per month due to ad fatigue. At 7-figure monthly spend, top clients produce 1000+ creatives per month. Creative lifespan is typically 2-3 weeks, and trend-based creatives burn out even faster. Plan production capacity around these numbers.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "creative_fatigue", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Plan for a ~5% creative success rate when forecasting production needs",
+      "At $100K+/month spend, produce at least 20-50 new creatives monthly",
+      "Refresh creatives every 2-3 weeks before fatigue degrades performance",
+      "Scale production capacity proportionally as spend increases"
+    ]
+  },
+  {
+    "id": "xp-pt-004",
+    "title": "Two-Campaign Structure: CPI Test Then BAU Scale",
+    "insight": "Split campaigns into a test campaign (optimized for CPI as a quick proxy signal) and a scale/BAU campaign (optimized for ROAS or subscriptions where all the budget goes). CPI winners from the test campaign get promoted into the scale campaign. This solves the slow feedback loop problem for subscription apps, where trial-to-subscription data can take weeks to materialize.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["campaign_structure", "creative_testing", "cpi_optimization", "scaling"],
+    "applies_to": ["subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Create a dedicated test campaign optimized for CPI to get fast signal on new creatives",
+      "Run a separate BAU/scale campaign optimized for ROAS or subscription events",
+      "Promote CPI winners from the test campaign into the scale campaign",
+      "Use CPI as a leading indicator while waiting for downstream subscription data"
+    ]
+  },
+  {
+    "id": "xp-pt-005",
+    "title": "Two Approaches for Scaling Winning UGC Concepts via Replication",
+    "insight": "Once you have a winning UGC concept, scale it two ways: (A) Give new creators the broad concept plus app-specific guidelines and let them interpret in their own style — same hook/narrative/CTA but different faces and energy. (B) Use AI to replicate the exact structure and script — because real creators forced to stick to rigid scripts sound unnatural. Some of the best performing campaigns are replications. Approach B works when the script matters; Approach A works when the persona matters.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_iteration", "creative_strategy", "scaling", "ai_tools"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "For persona-driven winners: brief new creators on the concept and let them bring their own style",
+      "For script-driven winners: use AI replication rather than forcing creators to follow rigid scripts",
+      "Test both replication approaches to find which works for each winning concept",
+      "Build a replication pipeline so winning concepts can be scaled within days of identification"
+    ]
+  },
+  {
+    "id": "xp-pt-006",
+    "title": "TikTok vs Meta Creative Differences: Length, Structure, and Format",
+    "insight": "Despite 'TikTokification' trends, platforms still behave differently. TikTok winners: very short (10s), no app demo, no CTA, organic/raw feel, trending sound, strong relatable hook, optimized for watch rate. Carousels with personal stories are underused but top-performing on TikTok (especially dating apps). Meta winners: longer (15-30s), clearer structured narratives, product demos, and use cases showing value directly. Don't assume the same creative works everywhere.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["creative_strategy", "creative_testing"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "For TikTok: keep ads under 10 seconds, use trending sounds, skip CTAs and app demos",
+      "For TikTok dating/lifestyle apps: test carousel formats with personal stories",
+      "For Meta: use 15-30s ads with structured narratives and product demos",
+      "Create platform-specific creative rather than repurposing the same asset across platforms"
+    ]
+  },
+  {
+    "id": "xp-pt-007",
+    "title": "US English Creatives Work in Non-English Markets",
+    "insight": "Counterintuitively, top-performing US English ads often work in non-English speaking markets like France and Germany. Not as well as in the US, but they deliver results. Recommendation: test English ads in new markets AND produce local-language versions with local creators or AI dubbing. Do both rather than waiting for localized creative before expanding.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Test your top US English creatives in non-English markets before localizing",
+      "Simultaneously produce local-language versions with native creators or AI dubbing",
+      "Don't delay market expansion while waiting for localized creative — run English ads first",
+      "Compare performance of English vs localized creative to decide investment level per market"
+    ]
+  },
+  {
+    "id": "xp-pt-008",
+    "title": "Winners Keep One Consistent Story From Ad to Paywall",
+    "insight": "Winning subscription apps maintain one consistent narrative end-to-end: ad → store page → onboarding → paywall. If the ad promises 'sleep better in 7 minutes,' that exact promise and hero feature should appear at every touchpoint. UGC tends to underperform for products that need longer technical demos (heavy utilities, some games) — those scale better on Google/AppLovin where format allows it.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["funnel_optimization", "creative_strategy", "paywall_optimization", "onboarding"],
+    "applies_to": ["subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Audit the promise in your top ads and verify it's echoed on store page, onboarding, and paywall",
+      "Align hero features shown in ads with the first thing users see post-install",
+      "For products requiring complex technical demos, consider Google/AppLovin over Meta UGC",
+      "Test narrative consistency by walking through the full ad-to-paywall flow as a new user"
+    ]
+  },
+  {
+    "id": "xp-pt-009",
+    "title": "Brief Sweet Spot: Structured Enough to Guide, Loose Enough for Happy Accidents",
+    "insight": "Too-loose briefs produce lazy, low-quality output. Too-strict briefs kill the creative accidents that become top performers. The best UGC briefs provide structure (hook direction, narrative arc, CTA) while leaving room for creator interpretation. One creator's mispronunciation of a brand name led to a 350M view ad — that kind of outcome is impossible with rigid scripting.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["creative_strategy"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Structure briefs around hook direction, narrative arc, and CTA — not word-for-word scripts",
+      "Leave explicit room in briefs for creator interpretation and personality",
+      "Review creator submissions for unexpected elements before dismissing them as off-brief",
+      "Track which top performers came from on-brief vs off-brief creative to calibrate brief strictness"
+    ]
+  },
+  {
+    "id": "xp-pt-010",
+    "title": "AI Creators Best for Hard-to-Source Personas, Not Full Replacement",
+    "insight": "AI-generated UGC excels in specific cases: hard-to-source personas (high income, pregnant women), complex scenes (street interviews, cinematic shots), and scaling winning concepts across variations (e.g., one winning job-persona ad expanded to dozens of jobs). But AI can't replace the happy accidents from real creators. Best strategy: find winning concepts with humans then scale with AI, or test cheaply with AI then produce winners with real creators.",
+    "raw_excerpt": null,
+    "source_type": "podcast_transcript",
+    "source_author": "Xavier Peneau",
+    "source_title": "The Real Math of UGC: 1000 Creatives/Month at Scale | Price Power Podcast Ep. 10",
+    "source_date": "2026-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["creative_strategy", "ai_tools", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Use AI creators for hard-to-source personas (specific demographics, professional roles)",
+      "Use AI to scale winning concepts across variations (e.g., same script with different job personas)",
+      "Keep real creators for concept discovery where happy accidents drive breakthroughs",
+      "Test a hybrid workflow: discover winners with humans, scale with AI (or vice versa)"
+    ]
+  }
+]

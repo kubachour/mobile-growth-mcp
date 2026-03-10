@@ -1,0 +1,226 @@
+[
+  {
+    "title": "Focus AI creative tools on concept generation, not variant multiplication — diminishing returns kick in fast",
+    "insight": "Eric Seufert argues that the most common misuse of AI in mobile marketing is scaling creative variants rather than generating new concepts. Going from 10 to 200 variants of the same concept yields vanishingly small gains. The real value lies in using AI (particularly LLMs) for creative concept prospecting — generating ideas humans wouldn't come up with on their own — and then letting the ad platform's algorithm test them. The concept, not the variant count, is what moves performance.",
+    "raw_excerpt": "When you talk to companies, especially in the app world about the use of AI, they immediately jump to creative. And I think that's probably the least valuable place to apply this. Yes, you can go from like 10 creatives to 200, but a lot of times it's just people are taking their 10 creatives and those themselves are variants and they're getting 200 variants of one concept. That's not actually doing anything for you. There's just diminishing returns on taking 20 variants of one concept and going to 200. What you really care about is the concept.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": [
+      "creative_strategy",
+      "creative_testing",
+      "creative_iteration",
+      "ai_tools",
+      "creative_fatigue"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 4,
+    "actionable_steps": [
+      "Audit your current AI creative pipeline: count how many distinct concepts vs. variants you're producing weekly — if variants outnumber concepts 10:1+, rebalance",
+      "Use LLMs (e.g., Claude, ChatGPT) for creative concept prospecting by feeding competitor ads from Meta Ad Library and asking for novel concept directions",
+      "Set up automated competitor ad monitoring (pull from Meta Ad Library into an S3 bucket or similar) and use an LLM agent to interpret concepts and hypothesize why they work",
+      "Stop trying to interpret why a specific winning ad won — instead track whether your concept generation process is increasing your overall win rate over time",
+      "Use off-the-shelf GenAI tools for variant production rather than building custom tools — the incremental value of custom tooling for variants is minimal"
+    ],
+    "id": "es-pt-001"
+  },
+  {
+    "title": "Don't try to interpret why an ad won in Advantage+ or PMax — optimize the input process, not the output",
+    "insight": "With Meta Advantage+ and Google PMax, the advertiser has no visibility into which audience saw the ad or why it converted. Seufert argues that trying to deconstruct a winning ad to learn 'why it worked' is a waste of time — the output is essentially random from the advertiser's perspective. Instead, the learning should come from tracking how changes to the input process (concept generation methodology, creative sources, prompt strategies) affect the overall win rate. The process is what you optimize, not the individual ad outcome.",
+    "raw_excerpt": "Given the use of PMax and Advantage Plus, there is no point for you to try to interpret why an ad won or didn't win. What you should be interpreting is if when you get a win or the win rate increases, the process worked. It's not the output because that was random. That was utterly random. Why that worked was utterly random. If you try to deconstruct it and take a learning from that, you're just wasting your time. What you should do is how am I changing the inputs such that I'm getting a higher win rate and let the machine do its thing.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": [
+      "creative_testing",
+      "creative_strategy",
+      "meta_ads",
+      "google_ads",
+      "automation"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 4,
+    "actionable_steps": [
+      "Stop running post-mortem analysis on individual winning creatives in Advantage+ or PMax campaigns — track win rate as a percentage across batches instead",
+      "Build a creative input log that tracks what changed in your concept generation process (new sources, new prompts, new formats) and correlate that to batch win rates",
+      "Deploy creatives in high volume through Advantage+ and let Meta's algorithm handle audience pairing — don't constrain targeting based on assumptions about why past ads won",
+      "Measure creative process effectiveness by win rate trends over time (e.g., weekly win rate % across all deployed concepts), not by analyzing individual ad metrics"
+    ],
+    "id": "es-pt-002"
+  },
+  {
+    "title": "Use signal engineering to create intent hurdles that improve ROAS — even artificial ones like CAPTCHAs",
+    "insight": "Signal engineering is the practice of creating intentional hurdles or events in the user journey that act as strong proxies for LTV, then passing those signals back to ad platforms for optimization. These don't have to be 'natural' product events — one practitioner added a CAPTCHA for no product reason and saw a ~40% increase in ROAS because it filtered for high-intent users whose signal was sent back to the ad platform. The concept extends beyond existing in-app events to any testable friction point that separates high-intent from low-intent users.",
+    "raw_excerpt": "This idea of signal engineering is not limited to the existing events that you have. You can do whatever you want. You could create hurdles for the user to clear that potentially are good proxies for LTV. The most high intent users, they will do it. And that could actually be a very strong signal of ultimate value. One of the hosts created a CAPTCHA for no reason other than to test the user's intent and it drove like a 40% increase in ROAS.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": [
+      "signal_engineering",
+      "conversion_rate",
+      "funnel_optimization",
+      "roas",
+      "ltv_modeling",
+      "optimization"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 3,
+    "actionable_steps": [
+      "Map your current post-install events being sent to ad platforms (Meta CAPI, Google S2S) and evaluate which are strongest LTV proxies",
+      "Design 1-2 intentional friction points early in the user journey (e.g., a preference quiz, email verification, or content selection step) that high-intent users will clear",
+      "Send the friction-clearing event back to Meta and Google as an optimization event via Conversion API / S2S postbacks",
+      "A/B test the funnel with and without the intent hurdle — measure ROAS lift on the cohorts optimized against the new signal",
+      "Iterate on signal strength: if the hurdle is too easy (everyone clears it), it's not differentiating; if too hard (nobody clears it), you've killed volume"
+    ],
+    "id": "es-pt-003"
+  },
+  {
+    "title": "Diversifying UA channels for the sake of diversification hurts performance — use the waterfall method instead",
+    "insight": "Seufert argues that channel diversification adds overhead (data integrations, new creative formats, new measurement accommodations) and the ROAS on a new channel must exceed what those resources could have achieved if allocated to your existing top channels. The recommended approach is the 'waterfall method': max out spend on Channel 1 until it hits your ROAS threshold, then move to Channel 2, and so on. Diversification should only happen at saturation or when there's a proven interaction effect (e.g., brand channel boosting performance on direct response channels). Performance degradation risk is also correlated across channels, so diversification provides less protection than people assume.",
+    "raw_excerpt": "Diversifying for the sake of diversifying is often a mistake. You diversify when you've reached saturation on the existing channels. When you have a new channel, the ROAS doesn't have to meet the ROAS of the other channels — it has to exceed that because you're supporting a new channel. Max out the biggest channel until it hits my ROAS threshold. Then move on to channel two. Max out channel two until it hits my ROAS threshold. Move on to channel 3. That's always the approach that I recommend because it minimizes overhead and complexity.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": [
+      "budget_allocation",
+      "scaling",
+      "roas",
+      "channel_diversification",
+      "campaign_structure"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 4,
+    "actionable_steps": [
+      "Calculate your spend-adjusted ROAS per channel — not just ROAS at current spend, but projected ROAS at the budget the new channel would absorb",
+      "Apply the waterfall method: rank channels by spend capacity at your ROAS target, max out #1 first, then move budget to #2 only at saturation",
+      "Before onboarding a new channel, estimate the full overhead cost (integration, creative adaptation, measurement setup, team time) and include that in your ROAS comparison",
+      "Only diversify proactively when you can demonstrate an interaction effect (e.g., CTV or influencer spend lifting Meta ROAS) through incrementality testing",
+      "Don't assume channel diversification reduces risk — if a competitor crowds you out on Meta, they're likely doing the same on TikTok and Google"
+    ],
+    "id": "es-pt-004"
+  },
+  {
+    "title": "Measurement disorganization is the #1 growth killer — align stakeholders on a shared measurement model before investing in tools",
+    "insight": "Seufert identifies 'measurement disorganization' as the most common problem across mobile growth teams: competing measurement tools that nobody knows how to reconcile, misalignment between Finance, UA, and Product on what 'good' looks like, and data points that can't be interpreted as an ensemble. The fix is not technical — it's a people-oriented alignment process where all stakeholders agree on an operational model for measurement. The measurement system is the heartbeat of the company, and misalignment on it leads to paralysis, preventing teams from expanding to new channels or ad types.",
+    "raw_excerpt": "The thing that I see most commonly is just a very chaotic approach to measurement. Just lacking any coherency. Either people using competing tools not knowing which one to trust, or misalignment across the various stakeholders. Often times finance and UA or UA and product not really being totally aligned on what good looks like. Your measurement model, your measurement system is essentially like the heartbeat of the company. Everything flows from that. Getting a group of people together in a room and finding alignment on that — that's the solution.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": [
+      "measurement",
+      "attribution",
+      "incrementality",
+      "cross_functional_alignment",
+      "analytics"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 4,
+    "actionable_steps": [
+      "Audit your current measurement stack: list every tool being used for attribution and analytics, who uses each, and where outputs conflict",
+      "Schedule a cross-functional alignment session with UA, Product, Finance, and Engineering to define what 'good' looks like as a shared set of KPIs and thresholds",
+      "Document a single measurement operating model that specifies: which tool is source of truth for which decisions, how conflicting signals are resolved, and what cadence data is reviewed",
+      "Ensure the CFO's reporting needs and the UA team's optimization needs are both served by the same underlying data — if they're using different LTV models, reconcile them into one",
+      "Only after measurement alignment is achieved, consider expanding to new channels — broken measurement will paralyze any diversification effort"
+    ],
+    "id": "es-pt-005"
+  },
+  {
+    "title": "Use iterative ROAS frontier expansion for early campaign optimization instead of terminal LTV projections",
+    "insight": "Seufert recommends against calculating terminal LTV from early cohort data (e.g., 10 days) to make campaign decisions. Instead, use an iterative ROAS frontier approach: start with low spend and a conservative D3 or D7 ROAS target (e.g., 150%), let cohorts age and track progression to D20, D30, then push the ROAS frontier out by increasing spend and adjusting bid targets based on actual cohort maturation curves. Creative testing follows a similar pattern — identify losers as quickly as possible (often same day or next day by delivery signals) rather than waiting to confirm winners.",
+    "raw_excerpt": "What I like to do is prove out these frontiers. I'm going to spend 5k a day and if I'm hitting 150 ROAS, great. Then let those cohorts age, understand how they progress, understand what their day 20 ROAS is, day 30. Then push that ROAS frontier out. What I really care about is where does that land at 110 or something. The way I approach creative testing is I'm trying to identify losers as quickly as possible. The winners take time to prove out, but the losers are pretty quick to prove out.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": [
+      "roas",
+      "ltv_modeling",
+      "bidding",
+      "budgeting",
+      "scaling",
+      "creative_testing"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 4,
+    "actionable_steps": [
+      "Start campaigns at low daily spend ($3-5k) with a conservative D7 ROAS target (e.g., 150%) as your initial proof point",
+      "Track cohort ROAS maturation curves at D7, D14, D20, D30 — use each new data point to adjust your ROAS target and push the spend frontier outward",
+      "Kill creative losers aggressively: if a creative gets no meaningful delivery within 24 hours, cut it — don't wait for statistical significance on losing ads",
+      "Don't project terminal LTV from 10-day cohorts for campaign-level decisions — instead, build a library of cohort maturation curves at different spend levels to inform bid adjustments",
+      "Increase budget only after you have at least 2-3 cohorts aged to D30+ proving the ROAS trajectory holds at the current spend level"
+    ],
+    "id": "es-pt-006"
+  },
+  {
+    "title": "Robust incrementality-focused measurement is the real unlock for growth — not new channels or tactics",
+    "insight": "Seufert argues that the biggest missed opportunity in app growth is not a channel or tactic — it's that measurement dysfunction prevents teams from growing. When teams don't trust their measurement to handle new channels, new ad types, or portfolio-level interpretation, they replicate past behavior and stagnate by definition. Building robust incrementality-focused measurement is the prerequisite to unlocking new growth vectors like influencer, CTV, digital out-of-home, or podcasts. The teams that break through invest in measurement credibility first.",
+    "raw_excerpt": "The real answer is the opportunity for growth is just that your measurement doesn't support true growth. It's broken or it's flimsy. And so you're just really trying to replicate what you've done in the past. If you don't believe that your measurement can adapt to new channels, new sources, new ad types, you're just going to do what you've been doing and by definition you won't grow. If you need to break out of that, you need to build truly robust incrementality focused measurement.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "The Post-Attribution Playbook for Growth — Sub Club Podcast",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": [
+      "incrementality",
+      "measurement",
+      "attribution",
+      "scaling",
+      "budget_allocation"
+    ],
+    "applies_to": [
+      "subscription_apps",
+      "mobile",
+      "all"
+    ],
+    "confidence": 4,
+    "actionable_steps": [
+      "Evaluate whether your current measurement stack can credibly attribute performance on a channel you're not yet running (e.g., CTV, influencer, podcasts) — if not, that's your growth blocker",
+      "Invest in incrementality testing infrastructure (geo-based lift tests, holdout groups) before expanding to new channels",
+      "Stop chasing deterministic attribution workarounds on iOS — probabilistic hacks give false confidence and tell you more about the measurement tool's flaws than about actual performance",
+      "Frame your measurement roadmap as a growth prerequisite in leadership conversations — tie measurement investment directly to the revenue upside of unlocking new channels"
+    ],
+    "id": "es-pt-007"
+  }
+]

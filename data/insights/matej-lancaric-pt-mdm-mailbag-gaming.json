@@ -1,0 +1,240 @@
+[
+  {
+    "id": "ml-pt-001",
+    "title": "Web onboarding for games: playable-first landing pages are emerging",
+    "insight": "Web onboarding for games is starting to gain traction, with some Turkish studios implementing it semi-successfully. The approach involves building a full playable on the web that users play for 1-2 minutes before receiving a prompt to download the game. The technical complexity is higher than app-style quiz-based web onboarding. Combining this with web shop purchases (subscription or IAP) and sending install events via Facebook CAPI on the landing page + MMP post-install is the target architecture, but syncing everything is the hardest part.",
+    "raw_excerpt": "I'm kind of experimenting with the web where you actually have full build playable. So you kind of play the playable after a minute or two minutes you get the event to download the game afterwards... the technical complexity is a little bit different and more tough to crack.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["web_to_app", "funnel_strategy", "funnel_optimization"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 2,
+    "actionable_steps": [
+      "Build a web playable that reflects actual gameplay (not fake mechanics) for web onboarding",
+      "Use Facebook CAPI on the landing page for conversion signal, then MMP post-install for attribution",
+      "Test with a genre where a short playable session can demonstrate real value in 1-2 minutes"
+    ]
+  },
+  {
+    "id": "ml-pt-002",
+    "title": "Removing IAP from app killed organic rankings — Apple needs revenue signals",
+    "insight": "A case study showed that when a game removed all in-app payments and moved everything to web, they saw a huge drop in organic installs. Without purchase signals flowing through the App Store, Apple has no way to gauge app quality/engagement, which directly impacts organic ranking and featuring. This is a strong argument against going 100% web monetization. The optimal approach is hybrid: maintain IAP in the app while supplementing with web shop revenue.",
+    "raw_excerpt": "They removed payments from the app and then moved everything to web. And then suddenly they saw huge dip in organics. If you're not getting revenues to the apps, which are signals, then you are losing the rankings.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["aso", "monetization", "web_to_app"],
+    "applies_to": ["mobile_gaming", "ios"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Never remove IAP from the app entirely — Apple uses purchase signals for organic ranking",
+      "Maintain a hybrid monetization approach: keep core IAP in-app, add web shop as supplementary",
+      "Monitor organic install trends closely when shifting any monetization to web"
+    ]
+  },
+  {
+    "id": "ml-pt-003",
+    "title": "Web shops viable for games earning 100K+/month; 20-30% additional revenue",
+    "insight": "Web shops can generate 20-30% additional revenue on top of in-app revenue for mobile games. The threshold for investing in a web shop is roughly $100K-$400K/month in revenue — below $100K it's not worth the investment. Even Pixel Federation (mid-size studio) runs web shops. Implementation requires a partner (e.g., Xsolla), and not all partners are equal — look for MMP integrations and payment infrastructure quality. Someone needs to manage the web shop ongoing.",
+    "raw_excerpt": "It's still can be like 20, 30% of the revenue on top of it... even smaller companies making a couple millions a month, it's still pretty big chunk of the revenue. Anything between 100k to 400k, I would still do it. Less than 100k, not really something interesting enough.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["monetization", "web_to_app", "strategy"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 4,
+    "actionable_steps": [
+      "If your game earns $100K+/month, evaluate web shop implementation for 20-30% revenue uplift",
+      "Choose a web shop partner with MMP integrations and proven payment infrastructure",
+      "Don't remove IAP from app — use web shop as supplementary channel",
+      "Plan for ongoing management: someone needs to own the web shop experience"
+    ]
+  },
+  {
+    "id": "ml-pt-004",
+    "title": "TikTok Smart Plus is 2nd or 3rd best iOS channel for mobile gaming",
+    "insight": "TikTok with Smart Plus has become the 2nd or 3rd best performing channel for iOS gaming UA, behind AppLovin and roughly on par with Meta. This applies across genres including hidden object, match-3, and strategy games. Smart Plus has improved dramatically in the last 4 months after initially being terrible at launch. The one-creative format (single creative per campaign) still works well on TikTok.",
+    "raw_excerpt": "TikTok is always up there with smart plus and then the tiktok one creative — amazing, still works. It doesn't matter really what kind of genre. It works for me for hidden object, for match-3, for strategy as well.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": "tiktok",
+    "topics": ["campaign_optimization", "scaling"],
+    "applies_to": ["mobile_gaming", "ios"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Test TikTok Smart Plus for iOS gaming UA if you haven't recently — performance has improved significantly",
+      "Try single-creative campaigns on TikTok (one creative format) alongside multi-creative campaigns",
+      "Don't limit TikTok testing to specific genres — it's working across casual, mid-core, and strategy"
+    ]
+  },
+  {
+    "id": "ml-pt-005",
+    "title": "Top gaming companies produce 60+ playables per month for Apple Search Ads",
+    "insight": "Top mobile gaming companies produce 60 playables per month according to AppLovin data. Playables are critical for Apple (iOS) UA because Apple Search Ads and the App Store increasingly favor interactive ad formats. Playable production has accelerated with tools and templates — what used to take weeks can now be done in a day using templates. The volume game applies to playables just as it does to video creatives.",
+    "raw_excerpt": "When I was at AppLovin they said top companies produce 60 playables per month which is insane... because Apple is already 50% of the spend and you need absolutely playables for Apple.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["creative_strategy", "creative_testing", "scaling"],
+    "applies_to": ["mobile_gaming", "ios"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Invest in playable production capability — aim for at least 5-10 per month, scaling toward 60 for top performance",
+      "Use playable templates and tools to accelerate production from weeks to days",
+      "Prioritize playables for iOS campaigns where they have outsized impact on performance"
+    ]
+  },
+  {
+    "id": "ml-pt-006",
+    "title": "Focus on creative process hit rate, not analyzing individual winners",
+    "insight": "The right mental model for creative testing is to focus on the consistency of the win rate from your production process, not on dissecting why any individual creative worked. With the volume of creatives needed (hundreds per week), there are too many variables to determine why someone clicked. If the process produces winners at a steady or increasing rate, the process works. Don't enter the never-ending feedback loop of stakeholder creative reviews — it kills testing velocity and doesn't improve outcomes.",
+    "raw_excerpt": "I am focused on the process I'm not focused on the output... if the hit rate stayed the same and the rate of change is increasing in favor of more winners that's what I care about not the actual output... we can enter the never ending feedback loop and then suddenly nothing is going to win.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["creative_testing", "creative_strategy", "testing_framework"],
+    "applies_to": ["mobile_gaming", "mobile", "subscription_apps"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Track creative win rate (% of creatives that achieve target KPIs) as your primary creative team metric",
+      "Focus on increasing win rate consistency over time rather than analyzing individual creative elements",
+      "Minimize stakeholder creative review loops — establish brand red lines upfront and let testing determine winners",
+      "Deploy 200+ creatives per week and kill losers fast rather than over-polishing fewer creatives"
+    ]
+  },
+  {
+    "id": "ml-pt-007",
+    "title": "Competitors clone winning creatives within days — playables offer slight defense",
+    "insight": "In mobile gaming, winning creatives are cloned by competitors within days (especially by large studios like Century Games with 400+ person creative teams). Same-genre cloning happens within a week; cross-genre cloning takes a couple of months. Stolen/cloned creatives often outperform original production because they're already validated. Playables offer slightly more defense than video because you need to swap assets rather than just crop/recolor, but it's still possible to clone them quickly.",
+    "raw_excerpt": "If your competitors are Century Games then you have maybe couple of days because every creative you produce it's basically after a couple of days it's already on their account... stolen creatives have like $1.2 CPI versus $5 CPI for the originals.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["creative_strategy", "competitive_analysis"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Assume any winning creative will be cloned within days — build for volume and velocity, not secrecy",
+      "Invest in playable production as a slight competitive moat (harder to clone than video)",
+      "Focus on creative process speed to stay ahead of cloners rather than trying to protect individual assets"
+    ]
+  },
+  {
+    "id": "ml-pt-008",
+    "title": "AI creative pipeline: full automation from asset generation to export is achievable",
+    "insight": "A fully automated AI creative pipeline is now achievable: transform game assets with AI (e.g., into cute/stylized versions), add slide animation, stitch scenes together, add end card, and export — all in 5 automated steps. Tools include Kling, V3, Layer AI, and Adobe After Effects. What used to take a week per video now takes about a day. The key is building workflows that chain these tools together rather than using them in isolation.",
+    "raw_excerpt": "Now I'm actually building one workflow which is pretty much fully automated... I have my own game assets, I want to transform these assets with AI to the cute animals and then add a slide animation on top of it and then stitch together, add the end card and then export — five steps workflow easily done.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["creative_strategy", "ai_tools", "automation"],
+    "applies_to": ["mobile_gaming", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Build chained AI workflows (asset transformation → animation → stitching → end card → export) rather than using tools in isolation",
+      "Test Kling, V3, and Layer AI for different steps in the creative production pipeline",
+      "Aim to reduce per-video production time from a week to a day through automation"
+    ]
+  },
+  {
+    "id": "ml-pt-009",
+    "title": "MMPs are here to stay — build on top, don't try to replace them",
+    "insight": "Despite discussions about moving away from MMPs, they remain essential infrastructure for mobile UA in 2026 and beyond. Even large companies that attempt to build internal replacements find it takes years and millions, and the result is often too slow to react to industry changes. The efficient approach is to keep the MMP as the attribution backbone and build additional tools on top of it — internal dashboarding, data warehousing, and custom analytics. Some smaller teams still don't even know what an MMP is, which is a problem.",
+    "raw_excerpt": "If it's a big company then it's going to take five years and then a lot of money and then eventually it's like oh we have this internal tool which is great but it's so slow... people build stuff on top of it, that's it, that's the more efficient use of the MMP.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["measurement", "attribution", "strategy"],
+    "applies_to": ["mobile_gaming", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Keep your MMP as the attribution backbone — don't invest in replacing it internally",
+      "Build supplementary analytics and dashboarding on top of MMP data",
+      "If you're a small team without an MMP, implement one immediately — it's baseline infrastructure"
+    ]
+  },
+  {
+    "id": "ml-pt-010",
+    "title": "Gaming producers resist testing and optimization — PMs vs producers cultural divide",
+    "insight": "Mobile games are typically led by producers (creative visionaries) rather than product managers (data-driven optimizers), creating a cultural resistance to A/B testing live ops, monetization, and onboarding flows. Producers view the game as art and resist changes, while subscription apps have a culture of relentless A/B testing. This is why gaming companies are often worse at subscription optimization, onboarding iteration, and pricing experimentation compared to non-gaming app companies. The solution is establishing brand red lines upfront and letting data drive everything else.",
+    "raw_excerpt": "Gaming companies are not led by product managers... games are led by producers... they see the game as their canvas to express their artistic vision. You say 'I want to change the onboarding flow' to a gaming producer and they'll yell at you — don't touch my baby, this is art.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["creative_testing", "onboarding", "monetization", "strategy"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Establish clear brand red lines with producers upfront, then let data drive all other decisions",
+      "Separate creative review from creative testing — don't let stakeholder opinions gate testing velocity",
+      "Look at subscription app best practices for onboarding and monetization testing as a model for games"
+    ]
+  },
+  {
+    "id": "ml-pt-011",
+    "title": "Apple 15% fee would have killed the web shop movement",
+    "insight": "At 30%, Apple's App Store commission creates strong economic incentive for developers to build web shops and alternative payment mechanisms. However, at 15%, most developers wouldn't bother — the hassle and complexity of web shops, the gray area around Apple policies, and the risk of organic ranking retaliation wouldn't justify the smaller savings. Apple could have prevented the entire web shop movement by simply reducing to 15% across the board.",
+    "raw_excerpt": "At 15% people would just say, okay, that's fine... it is a hassle. And there's the gray area of whatever else. So at 15% people wouldn't care that much.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["monetization", "strategy"],
+    "applies_to": ["mobile_gaming", "ios", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": null
+  },
+  {
+    "id": "ml-pt-012",
+    "title": "Subscriptions in games are a small portion of revenue — battle passes may be the only fit",
+    "insight": "Subscriptions in mobile games remain a very small portion of revenue, typically around 10-15%. The discussion around game subscriptions peaked a few years ago and largely disappeared. Battle passes could work as recurring subscriptions, but only if the game has a strong live ops loop — you can't layer a subscription on top of weak live ops because players won't see the value. The apps/non-gaming world is far ahead on subscription optimization and testing.",
+    "raw_excerpt": "Games and subscriptions, that was the thing a couple years ago and then it absolutely disappeared... I don't think it's going to be more than very small portion of the revenue, usually like 10% maybe-ish, 15%.",
+    "source_type": "podcast_transcript",
+    "source_author": "Matej Lancaric",
+    "source_title": "Mobile Dev Memo S7E7: MDM Mailbag with Matej Lancaric",
+    "source_date": "2026-02-17",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["subscription", "monetization"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Only implement game subscriptions if you have a strong live ops loop that demonstrates recurring value",
+      "Consider battle passes as the most natural subscription format for games",
+      "Look at non-gaming subscription apps for best practices on pricing tiers and renewal optimization"
+    ]
+  }
+]

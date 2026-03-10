@@ -1,0 +1,253 @@
+[
+  {
+    "id": "tp-pt-001",
+    "title": "Run non-delivering ads in separate campaigns to unlock different audiences",
+    "insight": "Meta's winner-takes-all delivery means 1-2 ads get all the spend while others are starved. This is bad for audience expansion because the winning ad may only be best for a specific audience. When non-delivering ads target different user personas or suit different placements (e.g., static vs UGC video), run them in parallel campaigns rather than the same ad set. Ideally, restrict by placement — video-only on Reels, statics-only on Feed — so formats don't compete against each other. Having 2-3 campaigns running in parallel is fine; 10 is too many.",
+    "raw_excerpt": "It's clear there's a winner takes all ads all the time, but I think it's bad decision from Meta to deliver this way because it prevents audience expansion... It's quite common from a certain scale to actually run in parallel with the other creative.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["campaign_architecture", "creative_strategy", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "If promising ads aren't getting delivery, run them in a separate parallel campaign rather than forcing spend",
+      "Split by placement: video ads in Reels-only campaigns, static ads in Feed-only campaigns",
+      "Limit parallel campaigns to 2-3 maximum to avoid fragmentation",
+      "Accept that Meta's delivery decision is often correct — forced delivery may just confirm the loser"
+    ]
+  },
+  {
+    "id": "tp-pt-002",
+    "title": "Two-step creative testing: traction test then funnel validation",
+    "insight": "Thomas Petit uses a two-step creative testing process. Step 1 (Traction): put ~50 creatives in with minimal budget and see which ones Meta wants to spend on first. Don't look at CPI or any downstream metric — just which ads get the first $100 of spend. This quickly eliminates losers for $0 or near-$0. Step 2 (Validation): take the 3-5 survivors and put more budget on them to validate they convert through the full funnel (installs, trials, revenue). Only after passing both tests do creatives enter the BAU campaign.",
+    "raw_excerpt": "I put 50 creative together and I look at on which one Facebook wants to spend the first hundred dollar... Once a creative can deliver, I'm gonna pass to a validation testing phase where I put more budget and validate that they don't trash my funnel... only then I put it in the main campaign.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "testing_framework", "creative_strategy"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Set up a low-budget traction test campaign: load ~50 creatives and watch which ones Meta spends on first",
+      "Kill losers after $0-100 spend — don't force equal budget on every creative",
+      "Graduate 3-5 traction winners to a validation campaign with more budget to test full-funnel conversion",
+      "Only promote creatives to BAU campaigns after they pass both traction and funnel validation"
+    ]
+  },
+  {
+    "id": "tp-pt-003",
+    "title": "Never force equal spend on creative testing — let Meta's delivery signal decide",
+    "insight": "The worst creative testing method is forcing equal spend on every ad (e.g., $500 each). This wastes massive budget on losers. Creative testing should be about eliminating losers as fast as possible, not searching for winners. If Meta doesn't want to spend on an ad, that's a signal — the ad likely has near-zero probability of converting at scale. Kill it after $0 spent. The platform's delivery decision is itself a quality signal because it's informed by first-party engagement data.",
+    "raw_excerpt": "They force spend on every single ad... this is the worst you can do. You're trashing a ton of budget like the losers. You want to eliminate them, sometimes after $0 spent. Meta doesn't want to spend, that's it, bye-bye.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "testing_framework", "budgeting"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Never allocate equal budget to all creatives in a test — this is the worst approach",
+      "Use Meta's delivery as the first quality filter: if it won't spend, kill the creative immediately",
+      "Treat creative testing as an exercise in eliminating losers quickly, not finding winners slowly",
+      "Anonymize creatives during testing — look at performance data before viewing the creative itself"
+    ]
+  },
+  {
+    "id": "tp-pt-004",
+    "title": "Learning phase requires 10+ events per day minimum — stop campaigns below that",
+    "insight": "Meta's learning phase requires approximately 50 events per week (~7/day), but Thomas recommends a minimum of 10 events per day as the practical threshold. If a campaign can only produce 2-3 events per day, it will never stabilize — no machine learning can work with that few data points. The solutions are: increase budget, change to a higher-volume optimization event (e.g., from purchase to trial start), or don't run the campaign. Waiting 25 days for 50 events is never the right answer.",
+    "raw_excerpt": "I try to never run anything that doesn't have the potential to reach about 10 events per day... the case you're describing, if it needs to wait for 25 days to have 50 events, I don't think it's ever going to work. It's ever going to stabilize.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["campaign_optimization", "bid_strategy", "signal_engineering"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Calculate if your budget and conversion rate can produce 10+ optimization events per day",
+      "If not reaching 10 events/day, increase budget OR switch to a higher-volume event (e.g., trial instead of purchase)",
+      "Never wait 20+ days hoping a low-volume campaign stabilizes — it won't",
+      "Kill campaigns that can't reach the event volume threshold and reallocate budget"
+    ]
+  },
+  {
+    "id": "tp-pt-005",
+    "title": "ASO is a must-do baseline, not a growth strategy — keywords have lost importance",
+    "insight": "ASO as a standalone growth strategy is dead. Keywords have lost importance, and no app can scale on ASO alone. However, the product page (icon, screenshots, value proposition) is a must-do because every single user passes through it regardless of acquisition source — paid, organic, referral, or PR. Iterate on product pages to improve conversion, but don't expect it to drive discovery. CPPs (Custom Product Pages) tied to paid UA are valuable. Thomas stopped selling ASO services in 2017 because he couldn't produce systematic impact at scale.",
+    "raw_excerpt": "I stopped selling ASO services in 2017... I couldn't see that the value, the impact I'm bringing can compensate for the money I ask in a reliable way... every single user, no matter where they come from, are going to go through that step before they enter your product. I do think you have to take care of it.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["aso", "conversion_rate", "funnel_optimization"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Treat your App Store product page as a conversion optimization exercise, not a discovery strategy",
+      "Regularly A/B test icon, screenshots, and value proposition copy",
+      "Use Custom Product Pages (CPPs) to match paid UA messaging with post-click experience",
+      "Don't invest in keyword optimization as a primary growth lever — it has diminishing returns"
+    ]
+  },
+  {
+    "id": "tp-pt-006",
+    "title": "View-through ASA conversions: never include in reporting, but useful for 1 diagnostic",
+    "insight": "Never include Apple Search Ads view-through conversions in attribution reporting — it's complete inflation, especially on the 2-day tap-through attribution window. However, there's one diagnostic use case: on brand defense campaigns, comparing tap-through + view-through totals before and after a store page change. If CTR drops but total installs (taps + views) stay the same, the new store page is actually winning — fewer paid clicks means more users are converting organically from the listing, saving you money.",
+    "raw_excerpt": "Never, ever. Don't do view-through on search... But there is one case — by looking at the view-through conversion, I can see the sum of the two. Less people were clicking on the ad, but the same amount of installs were coming. Lower CTR, I'm paying less, and I'm still getting the installs. It's a win.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["measurement", "attribution", "aso"],
+    "applies_to": ["subscription_apps", "ios", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Exclude ASA view-through conversions from all attribution reporting",
+      "Use view-through data only for diagnostics: compare total installs (tap + view) before/after store page changes",
+      "If brand defense CTR drops but total installs hold steady, the new store page is driving organic installs — it's a win"
+    ]
+  },
+  {
+    "id": "tp-pt-007",
+    "title": "Demographic targeting is largely irrelevant — use creative and signal filtering instead",
+    "insight": "Demographic targeting (age, gender) on ad platforms is largely irrelevant for UA. Many networks don't support it, and even where available (Meta), it's unreliable. Instead, control who engages through: (1) creative messaging — change who the ad appeals to by changing the content, (2) signal filtering — exclude unwanted segments by filtering conversion events sent back to the platform. For example, if users under 21 have poor trial conversion, include an age question in onboarding and filter out under-21 events from the optimization signal so the platform learns to avoid them.",
+    "raw_excerpt": "I believe demographic targeting is largely irrelevant... What I did is I'm filtering out the events going back to Google for people who are below a certain age so that their platform would end up learning that I don't want these users.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["audience_targeting", "signal_engineering", "creative_strategy"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Don't rely on platform demographic targeting — it's unreliable or unavailable on most networks",
+      "Use creative messaging to self-select the right audience rather than demographic restrictions",
+      "Filter conversion events by excluding unwanted segments (e.g., under-21) from signals sent to ad platforms",
+      "Add demographic questions in onboarding to enable server-side signal filtering for optimization"
+    ]
+  },
+  {
+    "id": "tp-pt-008",
+    "title": "Non-gaming iOS channel mix: Meta 30-60%, AppLovin 20-25%, TikTok 10-20%, Apple 5-10%",
+    "insight": "For non-gaming subscription apps spending $100K-$2M/month, the iOS channel mix typically looks like: Meta 30-60% (still #1 but less dominant than 5 years ago), AppLovin 20-25% (rapidly growing from near-zero 2 years ago), TikTok 10-20%, Apple Search Ads 5-10% (always in that range due to search-only nature), Google negligible on iOS. On Android, Google dominates with 50%+ market share, often approaching 100% for some apps. AppLovin is the gateway to ad networks — most apps start there before testing others.",
+    "raw_excerpt": "Meta is still the king... 30 and 60% of the iOS budget going to meta. Apple is always 5 or 10% but it's never less and it's never more... AppLovin gaining 20-25% of budget. TikTok rarely more than 10% or 20%. Google is meaningless on iOS.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["scaling", "campaign_optimization", "strategy"],
+    "applies_to": ["subscription_apps", "ios"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Prioritize Meta as primary iOS channel, allocating 30-60% of iOS budget",
+      "Test AppLovin as second channel — it's scaled to 20-25% of budget for many subscription apps",
+      "Add TikTok as third channel at 10-20% of budget",
+      "Keep Apple Search Ads at 5-10% as steady baseline — don't expect it to scale beyond that",
+      "On Android, lean into Google as dominant channel (50%+ of spend)"
+    ]
+  },
+  {
+    "id": "tp-pt-009",
+    "title": "Small platform syndrome: must exceed Meta ROAS plus onboarding cost to justify adoption",
+    "insight": "Smaller ad platforms (Snap, Pinterest, Reddit, X) face 'small platform syndrome' — they don't just need to match Meta's ROAS, they need to exceed it by whatever magnitude covers the headcount, engineering, data integration, and CAPI setup costs of onboarding them. Even if they slightly exceed Meta's ROAS, the incremental management burden may not justify the investment. The diminishing returns of adding channels means the marginal dollar is often better spent scaling an existing platform than onboarding a new one.",
+    "raw_excerpt": "They don't have to match Meta's ROAS. They have to exceed Meta's ROAS by whatever magnitude the headache of onboarding them is... Even if they exceeded a little bit, it still might not be worth the effort.",
+    "source_type": "podcast_transcript",
+    "source_author": "Eric Seufert",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": "cross_platform",
+    "topics": ["scaling", "strategy", "campaign_optimization"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Before onboarding a new ad platform, calculate the full cost: headcount, engineering, data integration, ongoing management",
+      "The new platform's ROAS must exceed your best existing channel's ROAS by more than the onboarding cost",
+      "Consider scaling existing channels further before adding new ones — diminishing returns are real but often less painful",
+      "Limit your active channel count to 3-5 maximum for most subscription apps"
+    ]
+  },
+  {
+    "id": "tp-pt-010",
+    "title": "App-to-web monetization favors big brands — mixed results for smaller apps",
+    "insight": "Testing app-to-web monetization (redirecting users to web for payment to avoid Apple's 30% fee) shows mixed results. Bigger brands benefit most because brand recognition helps convert users to enter credit card details on an external website. Smaller apps struggle because users don't trust unfamiliar brands enough to pay outside the App Store. Below $1M annual revenue (Small Business Program at 15% fee), the savings don't justify the complexity. Many developers are deliberately waiting for legal/regulatory dust to settle before investing, as Apple may retaliate via reduced organic visibility as seen in Europe.",
+    "raw_excerpt": "I'm seeing mixed results. It tends to be that the bigger ones are profiting the most, probably because of brand awareness... I've seen a lot of people fail at this. The smaller people under 1,000,000, the win is not going to be big enough to justify it.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["monetization", "web_to_app", "strategy"],
+    "applies_to": ["subscription_apps", "ios"],
+    "confidence": 4,
+    "actionable_steps": [
+      "If under $1M annual revenue (15% Apple fee tier), don't invest in app-to-web monetization — the savings aren't worth it",
+      "If large brand with strong recognition, test app-to-web for high-value users who are most likely to convert on web",
+      "Not all users should be routed to web — build logic to determine which user segments convert better on web vs in-app",
+      "Monitor Apple's policy changes and potential organic visibility retaliation before going all-in"
+    ]
+  },
+  {
+    "id": "tp-pt-011",
+    "title": "AI creative value is speed and volume, not cost savings — reinvest savings into more production",
+    "insight": "The primary value of AI creative tools is producing more creatives faster, not producing them cheaper. Teams that were testing 5 ads are now testing 50; those testing 50 are testing 2000. Even if production is 40x cheaper, the savings get reinvested into 40x more production. AI-produced video has just reached the tipping point of being actually usable in ads. Within 6 months, it will be obvious to everyone that AI is the dominant creative production method. However, the real underexplored frontier is AI for concept ideation and data analysis, not just production.",
+    "raw_excerpt": "Producing more and faster was even more important than producing cheaper... even if it's 40 times cheaper, you're going to reinvest this money into actually producing 40 times more. So I'm not sure that the cost saving is the driver.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["ai_tools", "creative_strategy", "creative_testing"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Frame AI creative tools as a volume multiplier, not a cost savings tool",
+      "Reinvest any production cost savings into producing more creative variations",
+      "Explore AI for concept ideation and performance data analysis — these are underexplored high-value use cases",
+      "Start experimenting with AI video production now — it just crossed the usability threshold"
+    ]
+  },
+  {
+    "id": "tp-pt-012",
+    "title": "AI for performance analytics is hugely underexplored — spotting micro-segments in real time",
+    "insight": "AI applied to creative production dominates the conversation, but the bigger untapped opportunity is AI for performance analytics. No data analyst can monitor every segment, funnel step, country, platform, creative, and channel combination simultaneously. AI could surface micro-segments that deteriorated overnight — like a 2% spend segment that dropped performance but went unnoticed because it's small on a percentage basis but significant in absolute dollars. MMPs, analytics tools (Amplitude, Firebase), and BI systems have been slow to integrate AI for anomaly detection and pattern recognition.",
+    "raw_excerpt": "Who's better than AI to tell me, hey, here, there's a tiny segment that just got worse yesterday, and you didn't spot it because it's like 2% of your spend, but 2% of many millions is still significant... I'm surprised we're not there yet.",
+    "source_type": "podcast_transcript",
+    "source_author": "Thomas Petit",
+    "source_title": "Mobile Dev Memo S6E1: MDM Mailbag #3 (with Thomas Petit)",
+    "source_date": "2025-07-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["ai_tools", "measurement", "campaign_optimization"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Explore AI-powered anomaly detection for campaign performance data",
+      "Build or adopt tools that can alert on micro-segment performance changes across all dimensions",
+      "Don't limit AI adoption to creative production — performance analytics is the bigger unlock"
+    ]
+  }
+]

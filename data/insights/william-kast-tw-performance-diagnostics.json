@@ -1,0 +1,44 @@
+[
+  {
+    "id": "wk-tw-001",
+    "title": "Four Core Metric Patterns That Diagnose Every Meta Performance Issue",
+    "insight": "Every Meta performance problem maps to one of four metric patterns: (1) Frequency 2+ and CPA rising → creative fatigue, need fresh TOF creatives with fresh angles. (2) CPM and CPA rising → audience saturation or poor engagement, need more engaging messaging and new audiences. (3) CPA rising and CVR dropping → ad-to-landing-page mismatch, fix landing page alignment with ad messaging. (4) CTR dropping and CPA rising → creative fatigue again, need fresh TOF creatives with fresh angles. Understanding which metrics are moving together tells you exactly where the problem is — creative, audience, or landing page.",
+    "raw_excerpt": "It all comes down to the 4 core metrics on Meta. If you understand them and how they come to be, you know how to solve any performance issue in the account. 1. Frequency 2+ and CPA rising? -> You need fresh TOF ad creatives with fresh angles. 2. CPM and CPA rising? -> Find a more engaging way to deliver your message, and target new audiences. 3. CPA rising and CVR dropping? -> Your ads are misaligned with your landing page. 4. CTR dropping and CPA rising? -> You need fresh TOF ad creatives with fresh angles.",
+    "source_type": "other",
+    "source_author": "William Kast",
+    "source_title": "Tweet - 4 core metrics diagnostic framework",
+    "source_date": "2026-03-05",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "creative_strategy", "scaling"],
+    "applies_to": ["ecommerce", "subscription_apps", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "When ROAS drops, check frequency first — if 2+ with rising CPA, it's creative fatigue",
+      "If CPM and CPA are both rising, the problem is audience saturation or poor ad engagement — test new audiences and messaging",
+      "If CPA rises while CVR drops, the issue is post-click — audit landing page alignment with your ad creative",
+      "If CTR drops with rising CPA, creatives are stale — launch new TOF concepts with fresh angles"
+    ]
+  },
+  {
+    "id": "wk-tw-002",
+    "title": "ROAS Troubleshooting Decision Tree: CPM, CTR, AOV, and CR as Sequential Diagnostics",
+    "insight": "When ROAS drops, diagnose sequentially: First check CPM — if rising, target cheaper audiences. If CPM is stable, check CTR — if dropping, refresh creatives. If CTR is stable, check AOV — if dropping, bundle higher value offers. If AOV is stable, check conversion rate — if dropping, fix or rebuild the landing page. Each branch isolates a different lever: audience (CPM), creative (CTR), offer (AOV), or landing page (CR). Work through them in order to avoid fixing the wrong thing.",
+    "raw_excerpt": "ROAS down? -> CPM rising? -> Target cheaper audiences. CTR down? -> Refresh creatives. AOV down? -> Bundle higher value offers. CR down? -> Fix / build better landing page.",
+    "source_type": "other",
+    "source_author": "William Kast",
+    "source_title": "Tweet - ROAS troubleshooting decision tree",
+    "source_date": "2026-03-05",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "creative_strategy", "scaling"],
+    "applies_to": ["ecommerce", "subscription_apps", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "When ROAS drops, start diagnosis with CPM — rising CPM means you're paying too much for impressions",
+      "If CPM is fine but CTR is dropping, the creative isn't resonating — refresh or launch new concepts",
+      "If CTR is fine but AOV is dropping, the offer needs work — test bundles or higher-value products",
+      "If AOV is fine but CR is dropping, the landing page is the bottleneck — rebuild or optimize it"
+    ]
+  }
+]

@@ -1,0 +1,123 @@
+[
+  {
+    "id": "jl-pt-001",
+    "title": "Meta targeting inputs are now just suggestions — expansion overrides everything",
+    "insight": "Meta's targeting expansion has evolved to the point where detailed targeting, lookalike audiences, and even custom audiences are effectively just suggestions. Tests show that reaching a custom audience was higher when using wide-open targeting than when explicitly targeting that audience with expansion on. Lookalike audiences now have expansion applied across far more optimization objectives than before. Meta provides no breakdown showing how much budget was spent on your targeting suggestions vs expanded audiences. Advertisers should accept this and redirect energy from targeting to creative.",
+    "raw_excerpt": "Expansion is now morphed into, these are just suggestions that you're providing... I did custom audiences with expansion turned on versus wide open targeting. It turned out I reached the people I tried to target with the custom audiences more when I didn't target anybody at all.",
+    "source_type": "podcast_transcript",
+    "source_author": "Jon Loomer",
+    "source_title": "Marketing Made Social: Creative Testing on Meta Ads in 2026 (With Jon Loomer)",
+    "source_date": "2026-02-16",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["audience_targeting", "meta_ads", "automation"],
+    "applies_to": ["ecommerce", "all"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Stop spending time optimizing interest-based or lookalike targeting — it's overridden by expansion",
+      "Focus targeting effort on providing quality first-party data (customer lists, pixel events) as training signals",
+      "Redirect time saved from targeting work into creative production and messaging diversity",
+      "Accept that Meta's delivery decisions are a black box — optimize what you can control (creative, offer, landing page)"
+    ]
+  },
+  {
+    "id": "jl-pt-002",
+    "title": "Andromeda is just an upgraded ad retrieval system — not an evil algorithm",
+    "insight": "Andromeda is simply Meta's new ad retrieval system, upgraded to handle the exponential growth of ad variations (5 primary texts, 5 headlines, AI enhancements, flexible formats). It's faster, more powerful, and more efficient at matching ads to people. It was first announced in 2024 and has been rolling out gradually. Advertisers should stop treating it as some mysterious force and instead understand it as infrastructure that makes creative diversification more important — because the system can now process thousands of ad variations per single ad unit.",
+    "raw_excerpt": "There was a need, and then Andromeda was a solution. The old system couldn't handle it all. Andromeda is the new ad retrieval system. It's all it is. It's faster, it's more powerful, it's more efficient to find the right people for the right ad.",
+    "source_type": "podcast_transcript",
+    "source_author": "Jon Loomer",
+    "source_title": "Marketing Made Social: Creative Testing on Meta Ads in 2026 (With Jon Loomer)",
+    "source_date": "2026-02-16",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["ad_ranking", "meta_ads", "creative_strategy"],
+    "applies_to": ["ecommerce", "all"],
+    "confidence": 3,
+    "actionable_steps": null
+  },
+  {
+    "id": "jl-pt-003",
+    "title": "Creative diversification doesn't require many ads — one ad with full options creates thousands of variations",
+    "insight": "Creative diversification on Meta doesn't mean creating 25 or 50 separate ads. A single ad using 5 primary texts, 5 headlines, placement-customized creative (different aspect ratios, images vs video by placement), AI-generated backgrounds, and Advantage+ creative enhancements can generate thousands of variations. Flexible format allows up to 10 images/videos per ad. Even small-budget advertisers can achieve meaningful creative diversification with just 1-2 ads by fully utilizing these built-in options rather than creating many separate ad units.",
+    "raw_excerpt": "With a single ad, you could easily create thousands and thousands of variations. So it's being open to all of these different things, even on a small budget, even with a single ad, you can satisfy much of what creative diversification is all about.",
+    "source_type": "podcast_transcript",
+    "source_author": "Jon Loomer",
+    "source_title": "Marketing Made Social: Creative Testing on Meta Ads in 2026 (With Jon Loomer)",
+    "source_date": "2026-02-16",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "creative_testing", "meta_ads"],
+    "applies_to": ["ecommerce", "all"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Use all 5 primary text and 5 headline slots per ad with genuinely different angles and personas",
+      "Customize creative by placement: different aspect ratios, images for Feed, video for Reels/Stories",
+      "Enable AI-generated backgrounds as a safe starting point for Advantage+ creative enhancements",
+      "Try flexible format ads with up to 10 images or videos — one all-image, one all-video",
+      "Don't equate creative diversification with ad count — exploit variation options within fewer ads"
+    ]
+  },
+  {
+    "id": "jl-pt-004",
+    "title": "In BAU campaigns, don't turn off underperforming ads if aggregate performance is good",
+    "insight": "With Meta's current delivery system, individual ad performance metrics can be misleading in BAU (business-as-usual) campaigns. An ad with poor direct conversion numbers may be playing a halo role — users see it first, then convert on a different ad later. If aggregate ad set performance is good, don't turn off seemingly underperforming ads. Meta shows ads for a reason based on user signals you can't see. Only consider turning off individual ads when aggregate performance is bad and you have nothing to lose. Note: this applies specifically to BAU campaigns with good aggregate results. In test campaigns where you're validating new creatives, the opposite may apply — pausing the dominant ad can let promising alternatives get delivery (see at-pt-002).",
+    "raw_excerpt": "If you've got 10 different ads and certain ads are underperforming, you don't know their role. Did someone see one of those ads first, got their interest, but it wasn't one of those that really made them take an action?... Assume that an ad is being shown the way it's being shown for a reason. Note: context-specific — contrasts with at-pt-002 (Alper Taner) which recommends pausing dominant ads in test ad sets to democratize spend.",
+    "source_type": "podcast_transcript",
+    "source_author": "Jon Loomer",
+    "source_title": "Marketing Made Social: Creative Testing on Meta Ads in 2026 (With Jon Loomer)",
+    "source_date": "2026-02-16",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["campaign_optimization", "creative_testing", "meta_ads"],
+    "applies_to": ["ecommerce", "all"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Evaluate ad performance at the ad set or campaign level in aggregate, not per individual ad",
+      "Don't turn off underperforming individual ads if the ad set is meeting your KPIs overall",
+      "Only kill individual ads when aggregate performance is poor and you need to experiment",
+      "Accept the halo effect: ads may contribute to conversions without receiving direct attribution"
+    ]
+  },
+  {
+    "id": "jl-pt-006",
+    "title": "Advantage+ creative enhancements are applied selectively — not to every impression",
+    "insight": "A common misconception is that enabling Advantage+ creative enhancements means every ad impression will be modified. In reality, enhancements are applied to a small percentage of impressions, only when Meta's systems predict that a specific enhancement will improve performance for that specific person, placement, and context. This means the risk of enabling them is lower than most advertisers fear. AI-generated backgrounds perform on par or slightly better than originals in testing. Music, text generation, and video translation to other languages are increasingly safe to enable.",
+    "raw_excerpt": "These enhancements don't mean that every ad impression is going to utilize that enhancement. It's probably going to be a very small percentage... The enhancements will be applied in situations where Meta systems have shown that a certain person is more likely to respond with that enhancement.",
+    "source_type": "podcast_transcript",
+    "source_author": "Jon Loomer",
+    "source_title": "Marketing Made Social: Creative Testing on Meta Ads in 2026 (With Jon Loomer)",
+    "source_date": "2026-02-16",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "ai_tools", "meta_ads"],
+    "applies_to": ["ecommerce", "all"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Enable AI-generated backgrounds as a safe starting enhancement — they perform on par or better",
+      "Don't disable all enhancements out of fear — they're applied selectively, not universally",
+      "Check the AI-generated vs original breakdown in reporting to validate performance",
+      "Consider enabling video language translation (Spanish, Portuguese, Hindi) for broader reach"
+    ]
+  },
+  {
+    "id": "jl-pt-008",
+    "title": "Detailed targeting and lookalike audiences will likely be removed from Meta",
+    "insight": "Jon Loomer predicts that Meta will eventually remove detailed targeting (interests) and lookalike audiences entirely. Interest targeting data is inaccurate and incomplete — users can see which interests Meta assigned to them, and the data is often wrong or outdated. Lookalike expansion has already been forced across most optimization objectives. Removing these would force advertisers to focus on creative as the targeting mechanism, which is where Meta wants them. This would eliminate the illusion of control that keeps advertisers making suboptimal decisions.",
+    "raw_excerpt": "I don't know why detailed targeting still exists, lookalike audiences don't make any sense. Those are very likely going to be gone at some point... It'd be smart on Meta's part to take that step away just to get our hands off of it so we can focus on what's more important.",
+    "source_type": "podcast_transcript",
+    "source_author": "Jon Loomer",
+    "source_title": "Marketing Made Social: Creative Testing on Meta Ads in 2026 (With Jon Loomer)",
+    "source_date": "2026-02-16",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["audience_targeting", "meta_ads", "strategy"],
+    "applies_to": ["ecommerce", "all"],
+    "confidence": 2,
+    "actionable_steps": [
+      "Start treating interest targeting and lookalikes as non-essential now — don't build strategies that depend on them",
+      "Build your targeting strategy around creative messaging and first-party data signals",
+      "Prepare for a future where the only targeting inputs are budget, optimization event, and creative"
+    ]
+  }
+]

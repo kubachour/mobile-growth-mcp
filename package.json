@@ -1,0 +1,16 @@
+{
+  "name": "meta-editor",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "packages/mcp-server",
+    "packages/ingestion"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "ingest": "npm run ingest --workspace=packages/ingestion"
+  },
+  "devDependencies": {
+    "supabase": "^2.76.16"
+  }
+}

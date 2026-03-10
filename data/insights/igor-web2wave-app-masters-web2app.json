@@ -1,0 +1,349 @@
+[
+  {
+    "id": "iw-pt-001",
+    "title": "Web2App funnel conversion benchmarks: ~2% visitor-to-purchase overall",
+    "insight": "In a typical web-to-app funnel with paid traffic, expect ~50% drop-off on the first screen, 20-30% of initial visitors reaching the end of the quiz, and 4-8% (sometimes 10-12%) paywall conversion. Overall visitor-to-purchase conversion is around 2%. These benchmarks are comparable to or better than the ~50% drop-off you'd see sending users to the App Store directly.",
+    "raw_excerpt": "You will lose around 50% of users on the first screen... to the end of the quiz only 20-30% of users will reach this point... on the pay wall from 4 to 8 sometimes 10-12% of users will buy your subscription. Overall visitor to purchase conversion is around 2%.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["funnel_strategy", "measurement"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Benchmark your funnel: 50% first-screen drop-off, 20-30% quiz completion, 4-8% paywall conversion",
+      "Target ~2% overall visitor-to-purchase conversion rate",
+      "If significantly below benchmarks at any step, optimize that step before scaling spend"
+    ]
+  },
+  {
+    "id": "iw-pt-002",
+    "title": "Send all conversion events from the web funnel, not the mobile app",
+    "insight": "In web-to-app campaigns, all conversion events (quiz completion, paywall view, purchase) must be sent from the web funnel to Meta via pixel and Conversion API — never from the mobile app. This is a common mistake among new advertisers. After purchase on web, use deferred deep links (Adjust, AppsFlyer, Branch) to pass the web user ID to the mobile app for subscription activation and RevenueCat sync.",
+    "raw_excerpt": "All the events are sent not from mobile application. You don't send purchase events from mobile application because I have a lot of clients who come in the beginning and say that hey we want to send our purchase events from mobile application because they didn't understand how it works.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["funnel_strategy", "measurement", "eac"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Send ALL conversion events from the web funnel (pixel + CAPI), not from the mobile app",
+      "Use deferred deep links (Adjust/AppsFlyer/Branch) to pass web user ID to the app post-purchase",
+      "Sync subscription status via RevenueCat or similar after app install"
+    ]
+  },
+  {
+    "id": "iw-pt-003",
+    "title": "Always send both browser pixel and Conversion API events with proper deduplication",
+    "insight": "Send events to Meta via both browser pixel (faster delivery) and server-side Conversion API (not blocked by ad blockers, VPNs, or Private Relay). Browser events arrive faster but can be blocked; CAPI events are reliable but slower. You must deduplicate by passing the same event_id and FBC (Facebook Click ID) with both. Without deduplication, Meta counts them as separate events, doubling your conversion count and corrupting campaign optimization.",
+    "raw_excerpt": "We highly recommend to send both events from browser and from server... but you have to do the deduplication. If you send the purchase event from browser and then to server and if they will be not properly set up, Facebook will treat them as two events.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "eac", "first_party_data"],
+    "applies_to": ["web2app"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Implement both Meta Pixel (browser) and Conversion API (server) event sending",
+      "Deduplicate using the same event_id and FBC parameters in both browser and server events",
+      "Use the Meta Pixel Helper Chrome extension to verify events are firing correctly",
+      "Send events in real time, not batched"
+    ]
+  },
+  {
+    "id": "iw-pt-004",
+    "title": "Enrich Meta events with user data for better matching and optimization",
+    "insight": "Beyond required fields (event_id, event_time, FBC, URL, FBP cookie), send as much user data as possible with each Meta event: external user ID, country, city, state, zip code (via IP geolocation), email, first name, last name, gender, subscription ID, currency, and amount. Even if you don't collect name during the quiz, you can extract it from Apple Pay or payment processor data. More matching data = higher event quality = better campaign optimization.",
+    "raw_excerpt": "You have to add additional data... external ID meaning the user ID from your system, information about country, city, state, zip code... if you do not ask the user their first name or last name but they paid you with Apple Pay you can get their name from Apple Pay and send this information to Facebook.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "first_party_data", "eac"],
+    "applies_to": ["web2app"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Send external_id (your user ID), geo data (country, city, state, zip via IP lookup), email, and name with every event",
+      "Extract first/last name from payment processor (Apple Pay, Stripe) if not collected in quiz",
+      "Send currency and amount with purchase-related events (initiate_checkout, purchase)",
+      "Enable automatic advanced matching in Meta campaign settings"
+    ]
+  },
+  {
+    "id": "iw-pt-005",
+    "title": "Use standard Meta events, not custom events, for campaign optimization",
+    "insight": "Always optimize campaigns on standard Meta events (purchase, complete_registration, initiate_checkout) rather than custom events. Meta has billions of data points for standard events and understands the behavioral patterns leading to them. Custom events lack this historical context, making algorithm optimization significantly worse. Out of 60-70 Web2Wave clients, only 1-2 chose to optimize on custom events.",
+    "raw_excerpt": "We highly recommend to use standard meta events... when they have standard events they have like billions of these events and they know the purchase event. They know what can be before the purchase event... the algorithm will be way more better when you optimize onto standard events.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "funnel_strategy"],
+    "applies_to": ["web2app"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Use standard Meta events: purchase, complete_registration, initiate_checkout",
+      "Custom events are fine as proxy metrics for analytics but don't optimize campaigns on them",
+      "The primary optimization event should be 'purchase'"
+    ]
+  },
+  {
+    "id": "iw-pt-006",
+    "title": "Two-strategy approach: start with proxy event optimization, then switch to purchase",
+    "insight": "New pixels with no purchase history can't effectively optimize for purchase events — Meta sends random, low-quality traffic. Start with Strategy 2: optimize on a proxy event before payment (complete_registration/paywall view or initiate_checkout) at $50/day for 1-2 weeks. This generates 10x more events, educates the pixel faster, and validates your funnel. Then launch a purchase-optimized campaign (Strategy 1) as your main scaling campaign. You can run both in parallel.",
+    "raw_excerpt": "When you set up campaigns for the very first time, Facebook pixel basically doesn't know who will purchase your product... in the beginning you may lose hundreds sometimes thousand dollars... in this case we recommend starting with strategy two... optimize on proxy event... spend like a week maybe 10 days with $50 a day budget and you will educate your pixel.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["funnel_strategy", "campaign_architecture", "bid_strategy"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Start with a campaign optimizing on complete_registration or initiate_checkout at $50/day",
+      "Run for 7-10 days to educate the pixel and validate your funnel",
+      "Then launch a purchase-optimized campaign as your main scaling campaign",
+      "Use the proxy-event campaign for creative testing even after scaling on purchase"
+    ]
+  },
+  {
+    "id": "iw-pt-007",
+    "title": "Creative testing framework: 15-20 creatives at ~$100 each to find winners",
+    "insight": "Start with 15-20 creatives across 2-4 target audiences, 1-3 hooks per audience, and 1-3 formats per hook (video, static). Budget ~$100 per creative for the initial test ($2-3K total). Put all creatives in one campaign with campaign-level budget optimization. After the test, expect 60-70% to underperform — focus on the top 20-30%. Then spend 70% of future creative effort on iterations of winners and 30% on new concepts.",
+    "raw_excerpt": "We recommend starting with 15-20 different creatives... define 2-3-4 target audiences. For every target audience come up with 1-2-3 hooks... for every hook create 1-2-3 different formats... you have to spend around $100 per creative which means your first budget just to test creatives will be like 2-3K.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "creative_strategy"],
+    "applies_to": ["web2app", "mobile"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Define 2-4 target audiences and 1-3 hooks per audience",
+      "Create 1-3 format variations per hook (video, static) — aim for 15-20 total creatives",
+      "Budget $100 per creative ($2-3K total initial test)",
+      "Put all in one campaign with campaign-level budget optimization (Advantage Campaign Budget)",
+      "After test: 70% iterations of winners, 30% new concepts"
+    ]
+  },
+  {
+    "id": "iw-pt-008",
+    "title": "Create multiple size versions for every creative across placements",
+    "insight": "Every creative needs multiple size versions for different Meta placements. With 20 creatives and 3 sizes each, expect to manage ~60 creative assets. This is tedious but necessary for optimal delivery across placements (feed, stories, reels). Use creative production tools to simplify the process.",
+    "raw_excerpt": "You have to make different size versions for every creative. It may be tiresome when you have 20 of them, you better create different formats for every creative. So it's like 60 creators. But well this is how you do the traffic.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy"],
+    "applies_to": ["web2app", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Create 2-3 size versions per creative (9:16 for reels/stories, 1:1 for feed, 4:5 for feed video)",
+      "Use production tools to batch-resize efficiently",
+      "Budget time for managing 3x the number of base creatives"
+    ]
+  },
+  {
+    "id": "iw-pt-009",
+    "title": "Wait 3 days minimum before making creative decisions, remove non-spenders and non-converters",
+    "insight": "Give creatives at least 3 days of delivery before making any decisions. After 3 days, remove creatives that either spent money without generating purchases OR received no spend at all. Save underperforming creatives in a 'trash bin' — revisit them every couple months by launching a new test with all previous losers. Occasionally, timing or audience shifts can turn losers into winners.",
+    "raw_excerpt": "You have to wait for at least 3 days for the creative to be alive on the campaigns before they make decisions. You remove creatives that are either spending money but not bringing you any purchases and you also remove those who does not have any spent.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing"],
+    "applies_to": ["web2app", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Wait minimum 3 days before evaluating creative performance",
+      "Remove creatives spending without conversions and zero-spend creatives",
+      "Save losers in a 'trash bin' and re-test them every couple months",
+      "Create new creatives weekly to maintain a pipeline"
+    ]
+  },
+  {
+    "id": "iw-pt-010",
+    "title": "Scale by duplicating performing campaigns rather than increasing budget aggressively",
+    "insight": "The simplest scaling approach: when a campaign hits a budget ceiling where increased spend degrades performance, duplicate the campaign with the same settings and budget in the same account. Duplicate campaigns often perform as well as the original. You may end up with 10 campaigns with identical settings. When increasing budget on a single campaign, do it gradually — 20-25% every few days, never 2-3x at once.",
+    "raw_excerpt": "If you copy the same campaign in the same account, it will be performing with the same results as another campaign. So you may have like 10 different campaigns but with the same settings... don't increase it 2-3 times at a time. Increase it gradually adding 20-25% every few days.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["scaling", "campaign_architecture"],
+    "applies_to": ["web2app", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "When a campaign maxes out, duplicate it with same settings and budget",
+      "Increase budget by only 20-25% every few days",
+      "Never change targeting on a performing campaign — duplicate and modify the copy instead",
+      "Run multiple identical campaigns in parallel for horizontal scaling"
+    ]
+  },
+  {
+    "id": "iw-pt-011",
+    "title": "Don't change performing campaigns — duplicate for new geos and tests",
+    "insight": "Never modify targeting, geos, or settings on a performing campaign — any change triggers a new learning phase. Instead, duplicate the campaign and modify the copy. When expanding to new countries, duplicate your US campaign and change only the geo on the copy. Start with one market (usually US), prove performance, then expand geographically by duplicating.",
+    "raw_excerpt": "Every time you change the targeting of the campaign, it starts to learn from the beginning. So if your campaign is performed, you're not touching it... if you created the campaign for United States and now you want to go to United Kingdom or Canada then you have to copy this campaign and change the geo.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["scaling", "campaign_architecture"],
+    "applies_to": ["web2app", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Never change targeting/geo on a performing campaign",
+      "Duplicate the campaign and modify settings on the copy only",
+      "Start with US, then duplicate for UK, Canada, etc.",
+      "Consider a worldwide campaign for broad reach but support local currencies on paywall"
+    ]
+  },
+  {
+    "id": "iw-pt-012",
+    "title": "Don't panic on bad days at low budgets — wait 2-3 days before stopping",
+    "insight": "At budgets under $1K/day, expect significant day-to-day performance volatility. Bad days are normal and not a reason to make changes. Wait at least 2-3 days of consistent underperformance before stopping a campaign. Never scale on bad days. If you know your weekly patterns (e.g., weekends perform better for lifestyle apps), set up automated rules to increase budget on good days and decrease on bad days.",
+    "raw_excerpt": "On low budgets... there will be really bad days. Don't panic, don't worry. It happens. On these days don't change anything. Just wait it. If it will be not performing for two three days then you can stop this campaign.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["scaling", "bid_strategy"],
+    "applies_to": ["web2app", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Don't make changes on a single bad day — wait 2-3 days of consistent underperformance",
+      "Never scale budget on bad-performing days",
+      "Set up automated rules to adjust budget by day-of-week if you see weekly patterns",
+      "Increase budget on historically strong days (e.g., weekends for lifestyle apps)"
+    ]
+  },
+  {
+    "id": "iw-pt-013",
+    "title": "Track post-purchase app activation to predict refunds and chargebacks",
+    "insight": "Measure how many web purchasers actually install and start using your app after buying. Users who purchase on web but never activate the app have much higher refund and chargeback rates. This is a critical health metric for web-to-app funnels that is often overlooked. Use deferred deep links to track the handoff from web purchase to app activation.",
+    "raw_excerpt": "Another important metric that you have to measure is how many people actually started to use your product after they made a purchase because if they didn't start it then the chances that they will ask for refund for chargeback are way more high.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["funnel_strategy", "retention", "measurement"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Track web-purchase-to-app-activation rate as a key funnel metric",
+      "Use deferred deep links to ensure smooth handoff from web to app",
+      "Investigate and optimize if activation rate is low — it predicts refunds/chargebacks",
+      "Consider in-app prompts or email nudges for users who purchased but haven't activated"
+    ]
+  },
+  {
+    "id": "iw-pt-014",
+    "title": "Web2App market is $5-10B/year and growing — not just hype",
+    "insight": "The web-to-app funnel market is estimated at $5-10 billion per year in subscription revenue flowing through web funnels for mobile apps. This has been growing for years and is now mainstream, with the largest subscription apps adopting web-to-app funnels. 80-90% of traffic to web funnels comes from Meta ads, making Meta the primary channel for this strategy.",
+    "raw_excerpt": "We estimate the market to be like from 5 to 10 billions a year of the revenue that is going through web to app funnels for mobile applications... 80 to 90% of the traffic that we get to our web funnels is coming from meta ads.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["funnel_strategy"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 3,
+    "actionable_steps": null
+  },
+  {
+    "id": "iw-pt-015",
+    "title": "Predict LTV and set ROAS targets when you lack historical data",
+    "insight": "If you're starting web-to-app campaigns without historical data, predict LTV using subscription economics: e.g., if 50% of monthly subscribers renew month 2, 25% month 3, etc. Set your ROAS target based on predicted LTV rather than day-1 revenue. Track revenue retention by campaign and channel to validate predictions over time. Focus on ROAS as the primary metric, not CPA alone.",
+    "raw_excerpt": "If you will not have 100% ROAS on day one, try to predict it... for instance, I have a monthly subscription like 50% of the users will renew it on the second month. So on the third month I will have like 25% of the users. So predict LTV and try to set up your campaigns using this predicted LTV.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "retention", "bid_strategy"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Model predicted LTV using renewal rate assumptions (e.g., 50% M2, 25% M3 for monthly)",
+      "Set ROAS targets based on predicted LTV, not just day-1 revenue",
+      "Track revenue retention by campaign/channel to validate predictions",
+      "Adjust targets as real retention data comes in"
+    ]
+  },
+  {
+    "id": "iw-pt-016",
+    "title": "Web2App branded search uplift: an uncredited benefit of web funnel campaigns",
+    "insight": "Running web-to-app Meta campaigns increases branded App Store search volume significantly, similar to traditional app install campaigns. Apps running heavy web-to-app spend see branded search scores of 30+ in App Store. This organic uplift is an additional ROI benefit that isn't captured in direct attribution. Monitor branded search trends in tools like AppFollow alongside your paid campaigns.",
+    "raw_excerpt": "One of the things you should pay attention to is that search volume for your brand... Corive, running a lot of web to app campaigns... branded search score of 30 plus. We've seen this with other apps too where we're running meta, whether it's web to app or typical app install, your branded search goes up.",
+    "source_type": "podcast_transcript",
+    "source_author": "Steve P. Young",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["aso", "funnel_strategy", "measurement"],
+    "applies_to": ["web2app", "subscription_apps"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Monitor branded search score in AppFollow or similar ASO tool",
+      "Track branded search trends alongside Meta spend to measure organic uplift",
+      "Factor organic search uplift into blended ROAS calculations"
+    ]
+  },
+  {
+    "id": "iw-pt-017",
+    "title": "Add comprehensive UTM parameters at the creative/ad level for granular attribution",
+    "insight": "Add all available UTM parameters to your web funnel links — utm_source, utm_medium, utm_campaign, utm_content, utm_term. Go as granular as possible, ideally to the individual ad/creative level. This gives you performance visibility per creative in your own analytics, independent of Meta's reporting. Sounds obvious but many advertisers skip this and lose critical attribution data.",
+    "raw_excerpt": "We highly recommend to add all the UTM sources. It may sound obvious, but still you have to put all the UTM tags and the more UTM tags you add, the more detailed information you will have. It's great to have performance on the creative level on the ad level.",
+    "source_type": "podcast_transcript",
+    "source_author": "Igor (Web2Wave)",
+    "source_title": "App Masters YouTube - Meta Ads for Web2App Campaigns",
+    "source_date": "2025-09-30",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "attribution"],
+    "applies_to": ["web2app"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Add utm_source, utm_medium, utm_campaign, utm_content, utm_term to all funnel links",
+      "Use Meta's dynamic URL parameters (e.g., {{ad.id}}, {{campaign.name}}) for automatic tagging",
+      "Track performance per creative in your own analytics, not just Meta Ads Manager"
+    ]
+  }
+]

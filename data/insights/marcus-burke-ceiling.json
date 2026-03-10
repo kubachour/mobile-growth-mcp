@@ -1,0 +1,107 @@
+[
+  {
+    "id": "mb-li-001",
+    "title": "Creative unlocks scale, iterations maintain it",
+    "insight": "Variations of existing creatives fight fatigue, but only genuinely new concepts unlock new audiences. Once you've established a creative pillar that works, never let it die — keep iterating on it while launching new concepts in parallel. Most subscription apps hit spend walls because they run too-similar ad formats to the same placements.",
+    "raw_excerpt": "More creative = same ads get all the spend. More budget = increased CPA. Broad targeting ≠ broad reach. Every subscription app hits a Meta ads ceiling.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "Breaking the Meta Ads Ceiling for Subscription Apps",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Audit current creative portfolio for concept diversity vs mere variations",
+      "Establish 3-5 distinct creative pillars (different angles, formats, hooks)",
+      "For each winning pillar, create ongoing iterations to fight fatigue",
+      "Launch at least 1 genuinely new concept per week alongside iterations"
+    ]
+  },
+  {
+    "id": "mb-li-002",
+    "title": "Force deconsolidation to prevent self-cannibalization",
+    "insight": "Splitting creative types and messaging angles into separate ad sets prevents self-cannibalizing your targeting. Meta will stop delivery on one audience segment over another with zero visibility on downstream performance. Over-consolidation — cramming everything into one campaign — is a common mistake that limits scale. Architecture for scale means maximizing placement composition and unique reach across ad sets.",
+    "raw_excerpt": "Force deconsolidation — Split creative types and messaging angles into separate ad sets to avoid self-cannibalizing your targeting. You're not increasing your own CPMs. Yet Meta will happily stop delivery on one audience over another (with 0 visibility on downfunnel).",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "Breaking the Meta Ads Ceiling for Subscription Apps",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["campaign_architecture", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Split creative types (UGC, statics, carousels) into separate ad sets",
+      "Split messaging angles (problem-solution, social proof, feature demo) into separate ad sets",
+      "Monitor placement composition per ad set to ensure unique reach",
+      "Compare downstream metrics across ad sets to identify which audiences Meta suppresses"
+    ]
+  },
+  {
+    "id": "mb-li-003",
+    "title": "Signal quality over signal volume for algorithm training",
+    "insight": "Moving to an upper-funnel event because you don't have 50 conversions per week is backwards. It teaches the algorithm to optimize for the wrong thing — burning cash efficiently rather than driving actual business outcomes. Always train the algorithm on the event that matters most, even if volume is low. Signal quality trumps signal volume.",
+    "raw_excerpt": "Signal quality > Signal volume — Moving to an upper funnel event because you don't have 50 conversions/week is backwards. Train the algorithm on what matters. Otherwise, you're teaching it to burn cash efficiently.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "Breaking the Meta Ads Ceiling for Subscription Apps",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["bid_strategy", "measurement"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Optimize for the deepest funnel event you care about (purchase, not trial start)",
+      "If conversion volume is low, increase budget or broaden targeting before switching events",
+      "Monitor CAPI event match quality score for web campaigns",
+      "Never sacrifice signal quality for the sake of hitting 50 events/week"
+    ]
+  },
+  {
+    "id": "mb-li-004",
+    "title": "Product improvements multiply ad efficiency",
+    "insight": "Every point of lift in trial conversion rate or retention lets you increase your target CPA and scale more aggressively. Product improvements have a multiplicative effect on ad performance — they raise the ceiling of what you can profitably spend. Your next feature release won't fix unit economics on its own, but systematic product improvements compound with paid acquisition.",
+    "raw_excerpt": "Product improvements multiply ad efficiency — Every point of lift in trial conversion or retention lets you increase your target CPA and scale more aggressively.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "Breaking the Meta Ads Ceiling for Subscription Apps",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["scaling", "cpi_optimization"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Calculate how a 1% lift in trial-to-paid conversion changes your allowable CPA",
+      "Prioritize product changes that affect conversion rate over new features",
+      "Track trial CVR and retention as leading indicators for ad scalability",
+      "Run A/B tests on onboarding flow and paywall in parallel with ad optimization"
+    ]
+  },
+  {
+    "id": "mb-li-005",
+    "title": "Pricing variance enables audience expansion",
+    "insight": "One price point means one audience. Without offers for price-sensitive users, you'll never efficiently scale on Reels for younger demographics. Broad audience targeting needs broad pricing — lead with higher prices for high-intent audiences, then follow up with offers to convert the long tail. This is how you unlock younger demographics profitably.",
+    "raw_excerpt": "Pricing variance = audience expansion — One price = one audience. With no offer for price-sensitive users, you're never going to efficiently scale on Reels for younger demos.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "Breaking the Meta Ads Ceiling for Subscription Apps",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["pricing", "scaling", "audience_targeting"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Create at least 2-3 pricing tiers or promotional offers",
+      "Lead with premium pricing in campaigns targeting high-intent segments",
+      "Use discounted trials or lower-priced plans for Reels/TikTok placements",
+      "Test introductory offers specifically for younger demographics"
+    ]
+  }
+]

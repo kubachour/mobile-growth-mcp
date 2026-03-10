@@ -1,0 +1,45 @@
+[
+  {
+    "id": "mb-li-008",
+    "title": "Value Rules maximize subsegments within broad targeting",
+    "insight": "Meta Value Rules let you set custom bid modifiers for age, gender, placement, device platform, mobile OS, and location — all within the same broad-targeting ad set. Each rule supports up to 2 criteria, and you can create up to 10 rules total. This avoids campaign fragmentation while still optimizing for different subsegment values. Meta is heavily pushing this feature and actively expanding available dimensions. Maximizing an app event alone is far from driving business outcomes; Value Rules let you correct for that.",
+    "raw_excerpt": "Value Rules maximize subsegments — Set custom bids for age, gender and placement while running broad. Maximize every slice without fragmenting campaigns.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "On Meta Value Rules",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["value_rules", "bid_strategy", "scaling"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Go to Advertising Settings > Value Rules",
+      "Set up rules on age and gender based on trial-to-paid conversion data",
+      "Modify location value for consolidated international ad sets",
+      "Modify OS value in consolidated web campaigns (iOS vs Android vs Web)",
+      "Apply rules to relevant ad sets and monitor performance lift"
+    ]
+  },
+  {
+    "id": "mb-li-009",
+    "title": "Placement-level Value Rules for bid optimization",
+    "insight": "Meta added placement as a Value Rules dimension, allowing you to bid differently on each placement (IG Feed, FB Reels, Audience Network) within the same broad targeting ad set. Setting up separate placement-targeted campaigns kills performance because Meta's algorithm hates fragmentation. Value Rules on placement solve this by letting the algorithm optimize distribution while respecting your value signals per placement.",
+    "raw_excerpt": "Meta quietly added 'placement' to their Value Rules feature. You can now bid differently on each placement within the same broad targeting ad set.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "On Placement Selection in Value Rules",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["value_rules", "bid_strategy"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Go to Value Rules in Advertising Settings",
+      "Create a new rule set with placement as the condition",
+      "Set bid adjustments based on actual placement-level ROAS data",
+      "Combine with age/gender Value Rules for compound optimization"
+    ]
+  }
+]

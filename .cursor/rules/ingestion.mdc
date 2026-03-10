@@ -1,0 +1,46 @@
+---
+description: How to extract insights from raw content and ingest them into the knowledge base
+globs:
+  - data/insights/**
+  - packages/ingestion/**
+alwaysApply: false
+---
+
+# Content Ingestion
+
+When the user provides raw content (podcast transcript, LinkedIn post, article) to add to the knowledge base, follow these steps. Full methodology is in `skills/extract-insights.md` and `skills/ingest-content.md`.
+
+## Quick Reference
+
+1. **Extract** — Parse raw content into structured insight JSON objects
+2. **Review** — Present summary table to user for approval
+3. **Save** — Write to `data/insights/{author}-{source}-{descriptor}.json`
+4. **Ingest** — Run `npm run build && npm run ingest`
+5. **Verify** — Check embeddings and search work
+
+## Insight JSON Schema
+
+```json
+{
+  "id": "mb-li-001",
+  "title": "Descriptive title",
+  "insight": "2-5 sentences, specific and actionable",
+  "raw_excerpt": "Original text quote",
+  "source_type": "podcast_transcript | linkedin_post | ...",
+  "source_author": "Person name",
+  "source_title": "Episode/post title",
+  "source_date": "YYYY-MM-DD",
+  "platform": "meta | google | tiktok",
+  "topics": ["scaling", "creative_strategy"],
+  "applies_to": ["subscription_apps", "ios"],
+  "confidence": 4,
+  "actionable_steps": ["Step 1", "Step 2"]
+}
+```
+
+## ID Format
+`{author_initials}-{source_code}-{NNN}`
+- Source codes: `li` (LinkedIn), `pt` (podcast), `cd` (community), `pdf` (PDF), `ct` (conference), `nt` (notes)
+
+## Cross-Reference
+After extracting, use `search_insights` to check for duplicates or reinforcing insights already in the database.

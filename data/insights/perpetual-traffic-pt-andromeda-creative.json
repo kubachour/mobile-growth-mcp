@@ -1,0 +1,203 @@
+[
+  {
+    "id": "lp-pt-001",
+    "title": "Meta requires at least 25% creative difference — format changes count toward threshold",
+    "insight": "Meta's Andromeda system treats ads that are less than 25% different as essentially identical ('ad blurriness'). This 25% threshold comes from Meta directly. The difference isn't just about the image — copy, format (video vs static vs carousel), and creative concept all contribute to the differentiation score. A product shot with different text overlays or minor color changes doesn't qualify. Aim for 70%+ difference for best results. Think of it as ice cream flavors: French vanilla, vanilla bean, and vanilla extract are all still vanilla to the algorithm.",
+    "raw_excerpt": "We always talk about how Andromeda and Meta demands diversification... It has to be at least 25% different. Those numbers come from Meta, not me. Otherwise, it's just ad blurriness. Everything looks like vanilla... the format, the video versus the static versus the carousel, those match the 25% difference.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lauren Petrullo",
+    "source_title": "Perpetual Traffic - Meta Andromeda 'Ice Cream Strategy' - Stop Killing Your Best Flavors!",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "ad_ranking"],
+    "applies_to": ["ecommerce", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Audit current ads: would a human see them as genuinely different concepts or just variations?",
+      "Change at least one of: format (video/static/carousel), creative concept, or hook — not just copy or colors",
+      "Use Meta's creative diversification playbook as a reference for what counts as 25% different"
+    ]
+  },
+  {
+    "id": "lp-pt-002",
+    "title": "Start with 6 ad creatives per offering: 6 unique concepts or 2 concepts × 3 formats",
+    "insight": "Use 6 as the minimum benchmark for ad creatives per product or offering. This forces genuine angle diversification rather than lazy variations. Two practical approaches: (1) create 6 entirely different creative concepts, or (2) create 2 strong concepts and produce each in 3 formats (static, video, carousel). The second approach leverages Meta's 25% difference rule since format changes qualify as sufficiently different. If resource-constrained, 3 is the absolute minimum. Don't launch a campaign with fewer — you won't have enough creative diversity for Andromeda to work with.",
+    "raw_excerpt": "I start with Lauren Petrullo saying, OK, let's have 6 different flavor ice cream ads, I don't want to run a campaign for it yet... I like the 2 options of you can create 6 unique flavors or you can create 2 unique flavors and then do 3 different ways that you can consume that flavor because the 25% rule comes from Meta.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lauren Petrullo",
+    "source_title": "Perpetual Traffic - Meta Andromeda 'Ice Cream Strategy' - Stop Killing Your Best Flavors!",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "creative_strategy"],
+    "applies_to": ["ecommerce", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Before launching any campaign, prepare at least 6 creatives (or 3 if resource-constrained)",
+      "Option A: 6 genuinely different concepts with different angles, hooks, and visuals",
+      "Option B: 2 strong concepts × 3 formats each (static, video, carousel)"
+    ]
+  },
+  {
+    "id": "lp-pt-003",
+    "title": "Contribution vs attribution: ads feed conversions without getting last-click credit",
+    "insight": "In Meta's Andromeda system, many ads contribute to a conversion path without receiving last-click attribution. One ad may build awareness or interest (the 'Rocky Road' that gets attention), while a completely different ad gets the final click and the attributed sale. This is contribution vs attribution — and it means killing low-converting ads can collapse the entire funnel. Don't turn off ads that Meta is still serving impressions to, even if they show zero purchases. Meta will naturally throttle impressions on truly underperforming ads; let the algorithm manage the rotation rather than manually pausing based on CPA.",
+    "raw_excerpt": "The Rocky Road in your example got the attention, right? And then maybe there was other ice creams... maybe there was 10 and then the orange sherbet got the attribution for the sale. All the other ads that preceded that contributed. So this is contribution versus attribution.",
+    "source_type": "podcast_transcript",
+    "source_author": "Lauren Petrullo",
+    "source_title": "Perpetual Traffic - Meta Andromeda 'Ice Cream Strategy' - Stop Killing Your Best Flavors!",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["attribution", "measurement", "creative_strategy"],
+    "applies_to": ["ecommerce", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Stop pausing ads based solely on in-platform CPA — check backend sales data first",
+      "Let Meta's algorithm throttle impressions on underperformers rather than manually killing ads",
+      "Monitor contribution signals: hook rate, hold rate, and impression volume, not just last-click conversions"
+    ]
+  },
+  {
+    "id": "jm-pt-001",
+    "title": "Ads with zero in-platform conversions can drive significant backend sales — don't kill based on CPA",
+    "insight": "A Tier 11 case study showed a Meta campaign with $275 spend and literally zero attributed conversions in the platform. Yet the product category it promoted went from 21 to 35 new customers in the backend (Shopify). The campaign had a 38% hook rate and 2.57% outbound CTR — strong engagement signals. The lesson: Meta is a fantastic marketing channel but a terrible attribution platform. Use in-platform engagement metrics (hook rate, CTR) as directional signals, but always validate against your actual source of truth (Shopify, CRM, or data warehouse).",
+    "raw_excerpt": "The video that is getting the most spend has absolutely 0 purchases attributed to it... I spent $275 and I made 350 bucks more in the first 2 weeks... Do I shut off the CPA? Hell no, I'm doubling it... Meta is a fantastic marketing channel. You know what it sucks at? Attribution.",
+    "source_type": "podcast_transcript",
+    "source_author": "John Moran",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "attribution"],
+    "applies_to": ["ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Never kill ads based on in-platform CPA alone — always cross-reference backend sales data",
+      "Track engagement metrics (hook rate, CTR outbound) as leading indicators of ad contribution",
+      "Build a dashboard that maps Meta spend per product to backend new customer acquisition"
+    ]
+  },
+  {
+    "id": "jm-pt-002",
+    "title": "Hook rate benchmarks: below 15% is dead, above 25% is thriving; CTR outbound target 1.5%+",
+    "insight": "Tier 11's benchmarks from Meta's Andromeda team for ad engagement: hook rate below 15% means the ad is on life support — pull the plug. Above 25% is thriving and flourishing. The 15-20% range is the danger zone — watch closely. For outbound click-through rate, 1.5% is the target threshold. These benchmarks are industry-agnostic; obviously results vary (free gold bars vs. niche services), but these ranges hold as general guidelines. Use these engagement metrics as your primary creative health indicators instead of in-platform CPA.",
+    "raw_excerpt": "If it's below 15, that's like, it's dead and gone... pull the plug. It's on life support. The over 25 is thriving and flourishing. So those are the kinds of ranges... click-through rate outbound, 1.5 is where we're gonna try to get to, right now we're at 2.57.",
+    "source_type": "podcast_transcript",
+    "source_author": "John Moran",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "measurement"],
+    "applies_to": ["ecommerce", "mobile"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Add hook rate and outbound CTR columns to your ads manager view",
+      "Kill creatives with hook rate consistently below 15%",
+      "Prioritize spend on creatives with hook rate above 25% and CTR outbound above 1.5%",
+      "Use these engagement metrics — not CPA — as your primary creative kill/scale signals"
+    ]
+  },
+  {
+    "id": "jm-pt-003",
+    "title": "Cross-channel halo: Meta creative refresh drove +37% Google new customers at -19% Google spend",
+    "insight": "A Tier 11 case study showed that revamping Meta creative strategy (2/3 video, high hook rate focus) while reducing Google spend by 19% resulted in: Google first-click new customers stayed flat, but total Google new customers rose 37% and Google revenue increased 55%. The difference was entirely Meta-driven demand that Google captured. First-click new customers from Google actually dropped 14%, proving the incremental new customers came from Meta awareness. This demonstrates that Meta top-of-funnel spend directly feeds Google conversion, and Google takes credit for Meta-generated demand.",
+    "raw_excerpt": "My first click new customer stayed flat 50 to 50... But my new customer purchase went up 37%... You made actually 55% more revenue... How did I do that with 19% less ad spend? Well, that's because if you actually took the 19% less ad spend and see where the first click new customers came from, that actually went down 14%.",
+    "source_type": "podcast_transcript",
+    "source_author": "John Moran",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["measurement", "scaling", "attribution"],
+    "applies_to": ["ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Use first-click vs all-conversions breakdown in Google to isolate Meta's halo effect",
+      "When evaluating Google ROAS, subtract non-first-click conversions to see Google's true contribution",
+      "Consider shifting budget from Google to Meta if first-click Google customers are flat or declining"
+    ]
+  },
+  {
+    "id": "jm-pt-004",
+    "title": "Meta drives Amazon demand: +20% Amazon sales while Amazon ad spend decreased",
+    "insight": "In a Tier 11 DTC case study, after increasing Meta spend by 100% with a product-category feeder strategy, Amazon sales grew 20% even though Amazon ad spend was reduced by ~$575. Meanwhile, Meta attributed sales grew 139% and Google grew 14%. Amazon acts as a 'selfish child' in attribution — it takes credit for demand that Meta generated. The recommendation: reduce Amazon ad spend and reallocate to Meta. Customers will still convert on Amazon organically once Meta has made them aware. This is especially relevant for brands selling on both Shopify and Amazon.",
+    "raw_excerpt": "Facebook gets 139% better and Amazon spending basically $575 less makes 20% more sales. So do we see Amazon really moving the needle or is Amazon like the really good shopping cart that offers free next day shipping that is just kind of pissing off your Shopify?",
+    "source_type": "podcast_transcript",
+    "source_author": "John Moran",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "scaling", "attribution"],
+    "applies_to": ["ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Track Amazon sales lift alongside Meta spend changes to measure the halo effect",
+      "Consider reducing Amazon ad spend and reallocating to Meta for brands selling on both channels",
+      "Use a data suite or MMM tool that unifies Meta, Google, and Amazon sales to see true contribution"
+    ]
+  },
+  {
+    "id": "rb-pt-001",
+    "title": "Brand search volume up 75% from Meta campaigns — Meta builds brand that converts via organic",
+    "insight": "A Tier 11 services client saw branded Google search queries rise from ~800 to ~1,400 (75% increase) after launching diversified Meta campaigns. The client had strong SEO and geographic placement, so the organic search conversions were essentially free — driven entirely by Meta awareness. This demonstrates that Meta functions as a brand-building platform whose ROI extends far beyond in-platform attribution. The true value of Meta spend includes organic search conversions, direct traffic, and word-of-mouth that no attribution tool captures.",
+    "raw_excerpt": "When we went into their Google search console, search terms for their name went from about 800 up to about 1,400 ever since they started working with us... Where do you think that brand name recognition came from? It came from all of the different ads that we had done prior.",
+    "source_type": "podcast_transcript",
+    "source_author": "Ralph Burns",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["measurement", "scaling", "attribution"],
+    "applies_to": ["ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Monitor Google Search Console branded query volume as a leading indicator of Meta campaign effectiveness",
+      "Calculate the value of incremental branded search traffic when evaluating Meta ROAS",
+      "Use branded search lift as an argument for maintaining or increasing Meta top-of-funnel spend"
+    ]
+  },
+  {
+    "id": "jm-pt-005",
+    "title": "In-platform CPA improvement overstates real impact — benchmark against total NCAC",
+    "insight": "When Meta's in-platform CPA improves by 16%, the actual top-line new customer acquisition cost (NCAC) may only improve by 8% — because Meta is only a portion of total spend. The analogy: if you have 2 C students and one becomes an A student, your class average goes from C to B, not to A. Always benchmark in-platform improvements against total business NCAC. A 100% improvement in one channel that represents half your spend equals only a 50% improvement at the top line. This prevents over-celebrating channel-specific wins that barely move the overall needle.",
+    "raw_excerpt": "My $85 conversion goes down to $71 in my cost per conversion... My NCAC on the top line didn't go down 16%. Why? Because meta is not 100% of our spend... So you being 100 percent better, wouldn't have 100 percent increase to my top line. You're only 30% effective towards my top line.",
+    "source_type": "podcast_transcript",
+    "source_author": "John Moran",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["measurement", "attribution", "scaling"],
+    "applies_to": ["ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Calculate each channel's share of total ad spend to weight its impact on overall NCAC",
+      "Report channel improvements alongside total business NCAC — never in isolation",
+      "Use the formula: top-line impact = channel improvement × channel's share of total spend"
+    ]
+  },
+  {
+    "id": "jm-pt-006",
+    "title": "Ad spend allocation across channels is the #1 MMM lever — bigger than in-platform optimization",
+    "insight": "Tier 11's cross-channel data shows that reallocating spend between platforms (e.g., shifting from Amazon to Meta) moves the total NCAC needle more than any in-platform optimization. In their tablet company case study, adding just $700/week more to Meta while reducing Amazon spend transformed the entire business metrics across all channels. The 6 previous agencies that managed this client failed because they optimized within individual platforms. The breakthrough came from treating spend allocation as the primary lever and using engagement metrics (not CPA) to guide creative decisions within each platform.",
+    "raw_excerpt": "I can take an additional $125 in additional ad spend over the course of 2 weeks and literally changed the outcome of every single channel, including Amazon... Ad spend in MMM moves needle more than anything.",
+    "source_type": "podcast_transcript",
+    "source_author": "John Moran",
+    "source_title": "Perpetual Traffic - Stop Pausing Winning Ads With Meta Andromeda, Kill Conversions Instead (Part 2)",
+    "source_date": "2025-01-01",
+    "growth_gems_edition": null,
+    "platform": null,
+    "topics": ["scaling", "measurement"],
+    "applies_to": ["ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Before optimizing within a platform, ask: are we spending the right amount on each channel?",
+      "Use a unified data suite to see how spend changes in one channel affect all others",
+      "Treat cross-channel spend allocation as a higher-priority lever than bid or targeting tweaks"
+    ]
+  }
+]

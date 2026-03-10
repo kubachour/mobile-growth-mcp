@@ -1,0 +1,43 @@
+[
+  {
+    "id": "pq-tw-001",
+    "title": "Haus Incrementality Data: Manual ABO Beats Advantage+ Shopping Campaigns Long-Term",
+    "insight": "Analysis of 640 incrementality tests over 18 months ($14M spend) by Haus found that Advantage+ Shopping Campaigns (ASC) outperform at midpoint (+9%), but Manual Ad Set Budget Optimization (ABO) campaigns deliver $12 more revenue per $100 spent by the end. ASC burns through high-intent audiences quickly then struggles — it front-loads results. Manual ABO campaigns build audiences gradually and find buyer pockets ASC misses. Recommendation: use ASC tactically for sales/promotions, use Manual ABO for sustainable scaling.",
+    "raw_excerpt": "ASC campaigns win early (9% better at midpoint) but Manual campaigns destroy them long-term. Manual delivered $12 MORE revenue per $100 spent by the end. ASC burns through your highest-intent audience fast, then struggles. It's like sprinting a marathon.",
+    "source_type": "other",
+    "source_author": "Peter Quadrel",
+    "source_title": "Tweet - Haus incrementality report on ASC vs Manual",
+    "source_date": "2025-07-29",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["advantage_plus", "campaign_architecture", "scaling"],
+    "applies_to": ["ecommerce"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Don't default to Advantage+ Shopping Campaigns (ASC) for all campaigns — evaluate campaign duration and goals",
+      "Use ASC tactically during sales events and promotions where quick optimization matters",
+      "Use Manual ABO campaigns for sustained scaling and long-term growth",
+      "Monitor ASC campaigns for audience exhaustion signs (rising CPAs after initial strong performance)"
+    ]
+  },
+  {
+    "id": "ks-tw-001",
+    "title": "Value Optimization Requires 6+ Price Point Ranges to Work Well",
+    "insight": "According to a Meta Product Manager at the 2025 Performance Summit, value optimization works best when the value distribution has at least 6 different price point ranges. This means VO is better suited for catalogs with meaningful price variation rather than single-product or narrow-AOV stores. If your product range is too narrow, VO has insufficient signal to differentiate high-value from low-value conversions.",
+    "raw_excerpt": "On day 2 of the Meta Performance Summit I heard a golden nugget from a Meta Product manager: 'Value optimization works best if the value distribution is at least 6. As in 6 value ranges of price points.'",
+    "source_type": "other",
+    "source_author": "Kushal Shah",
+    "source_title": "Tweet - Meta Performance Summit insight on VO",
+    "source_date": "2025-06-11",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["bid_strategy"],
+    "applies_to": ["ecommerce"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Audit your product catalog for price point variation before enabling VO",
+      "If you have 6+ distinct price ranges, test value optimization",
+      "If your catalog has narrow AOV range, stick with conversion optimization"
+    ]
+  }
+]

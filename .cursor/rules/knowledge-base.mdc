@@ -1,0 +1,77 @@
+---
+description: How to use the knowledge base tools when the user asks about mobile advertising best practices, campaign optimization, creative strategy, or any industry knowledge
+globs:
+alwaysApply: false
+---
+
+# Using the Knowledge Base
+
+The knowledge base contains curated insights from industry experts about mobile advertising, focused on subscription apps and user acquisition across Meta, Google, and TikTok.
+
+## Tools
+
+### search_insights
+Semantic + keyword hybrid search. Best for specific questions.
+```
+search_insights(query="how to structure Meta campaigns for subscription apps", topics=["campaign_architecture"], limit=5)
+```
+
+### list_insights
+Browse everything. Good for seeing what's available.
+```
+list_insights(topic="creative_strategy")
+```
+
+### get_insight
+Read the full content of a specific insight by slug.
+```
+get_insight(id="mb-li-002")
+```
+
+## When to Use
+
+- User asks "how should I..." or "what are best practices for..." → `search_insights`
+- User asks about a specific insight ID → `get_insight`
+- User wants to browse what's available → `list_insights`
+- Running a report and need to cite recommendations → `get_insight` for the specific IDs
+
+## Key Insight IDs to Know
+
+These are the most frequently referenced insights across reports:
+
+| ID | Author | Topic |
+|----|--------|-------|
+| wk-tw-001 | William Kast | 4 diagnostic metric patterns |
+| wk-tw-002 | William Kast | ROAS troubleshooting decision tree |
+| ds-pt-001 | Dara Saeed | Primary vs secondary metrics |
+| ds-pt-003 | Dara Saeed | Frequency >5 = saturation |
+| ds-pt-004 | Dara Saeed | Don't force spend to low-spend winners |
+| ds-pt-005 | Dara Saeed | ASC needs 20+ creatives |
+| ds-pt-008 | Dara Saeed | Analyze first, optimize second |
+| mb-li-001 | Marcus Burke | Creative unlocks scale |
+| mb-li-002 | Marcus Burke | Deconsolidation |
+| mb-li-003 | Marcus Burke | Signal quality > volume |
+| mb-li-005 | Marcus Burke | One price = one audience |
+| mb-li-006 | Marcus Burke | App vs Web campaign demographics |
+| mb-li-008 | Marcus Burke | Value Rules (age/gender) |
+| mb-li-009 | Marcus Burke | Placement Value Rules |
+| mb-li-010 | Marcus Burke | Age-based conversion rates |
+| mb-cd-001 | Marcus Burke | EAC for subscription apps |
+| oh-li-001 | Olly Hudson | Andromeda: first 3 seconds matter |
+| oh-li-003 | Olly Hudson | Persona-based ads unlock audiences |
+| lp-pt-001 | Lauren Petrullo | 25% visual difference required |
+| lp-pt-002 | Lauren Petrullo | Minimum 6 creatives per offering |
+| lp-pt-003 | Lauren Petrullo | Contribution vs attribution |
+| jl-pt-004 | Jon Loomer | Don't kill ads if aggregate is good |
+| vs-nt-001 | Virendra Shekhawat | Meta auto-shifts spend |
+| vs-nt-002 | Virendra Shekhawat | Don't re-test degraded creatives |
+| br-li-001 | Ben Radack | CBO scaling with winner rotation |
+| br-li-002 | Ben Radack | Zombie campaign |
+
+## Topic Filters
+
+Common topics: `scaling`, `creative_strategy`, `creative_testing`, `campaign_architecture`, `audience_targeting`, `bid_strategy`, `value_rules`, `attribution`, `signal_engineering`, `eac`, `web_to_app`, `advantage_plus`
+
+## Applies-to Filters
+
+`subscription_apps`, `mobile_gaming`, `ios`, `android`, `mobile`, `web2app`, `ecommerce`, `all`

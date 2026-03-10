@@ -1,0 +1,72 @@
+---
+description: Project overview and conventions for the Mobile Growth MCP codebase
+globs:
+alwaysApply: true
+---
+
+# Mobile Growth MCP — Project Overview
+
+A curated knowledge base of mobile advertising insights + direct Meta Marketing API integration, served via MCP server. Focused on subscription apps and user acquisition across Meta, Google, and TikTok.
+
+## Architecture
+
+Three knowledge layers, all accessed via MCP server:
+
+| Layer | What | Retrieval |
+|-------|------|-----------|
+| What Works | Industry best practices | Hybrid RAG via `search_insights` |
+| What Happened | Past audits, baselines | SQL via `account_audits` table |
+| What Is | Live campaign data | Meta Marketing API via `get_meta_*` tools |
+
+## MCP Tools Available
+
+### Knowledge Base
+- `search_insights` — semantic + keyword hybrid search (query, topics, applies_to, limit)
+- `list_insights` — browse all insights with optional filtering
+- `get_insight` — full content by ID or slug (e.g. "mb-li-001")
+
+### Meta Marketing API (requires META_ACCESS_TOKEN)
+- `get_meta_campaigns` — list campaigns (defaults: active, last_7d, lean fields)
+- `get_meta_adsets` — list ad sets, optionally scoped to campaign
+- `get_meta_ads` — list ads, optionally scoped to ad set
+- `get_meta_insights` — performance data with breakdowns, levels, date ranges
+- `get_meta_ad_fatigue` — built-in creative fatigue detection report
+
+### MCP Prompts (Reports)
+- `ad-fatigue-report` — detect creative fatigue with daily granularity
+- `weekly-performance` — week-over-week health with Kast diagnostic framework
+- `creative-performance` — categorize ads by health status
+- `placement-efficiency` — identify placement waste
+- `audience-composition` — age × gender heatmap
+- `architecture-review` — campaign structure evaluation
+- `audit-meta-account` — comprehensive account audit
+- `campaign-comparison` — side-by-side campaign comparison
+- `placement-audit` — detailed placement audit
+- `attribution-analysis` — conversion quality validation
+
+## Key Conventions
+
+- All Meta tools default to `last_7d`, `ACTIVE` only, minimal fields (rate limit safety)
+- No auto-pagination — first page + cursor returned
+- Conversion event defaults to `mobile_app_install`, configurable per call
+- Reports reference specific knowledge base insight IDs (e.g. wk-tw-001, mb-li-002)
+- Insight slugs follow `{author_initials}-{source_code}-{NNN}` pattern
+
+## Project Structure
+
+```
+packages/mcp-server/src/meta/     — Meta API client + types
+packages/mcp-server/src/tools/    — All MCP tools
+packages/mcp-server/src/prompts/  — MCP prompt registrations
+packages/mcp-server/src/resources/— MCP resources
+packages/shared/src/              — Types, Supabase client
+skills/                           — Skill markdown files (methodologies)
+data/insights/                    — Curated insight JSON files
+```
+
+## Commands
+
+```bash
+npm run build    # Build all packages
+npm run ingest   # Validate & upsert insights to Supabase
+```

@@ -1,0 +1,107 @@
+---
+description: How to run Meta ad account reports when the user asks for audits, fatigue checks, performance snapshots, creative analysis, placement audits, audience reports, or architecture reviews
+globs:
+alwaysApply: false
+---
+
+# Running Reports
+
+Reports are pre-built analysis workflows. Each combines Meta API tool calls with knowledge base insights for grounded recommendations.
+
+Always ask for the `ad_account_id` if not provided.
+
+## Report Quick Reference
+
+### Ad Fatigue Report
+**When:** User asks about creative fatigue, frequency issues, declining CTR, or rising CPA.
+
+Use `get_meta_ad_fatigue` tool directly — it's a single API call that returns a full analysis.
+
+Key thresholds: frequency >3 (warning), >5 (critical). CTR decline >30% from peak. CPA rising >20%.
+
+Diagnosis framework [wk-tw-001]:
+- High frequency + rising CPA → audience saturation
+- Declining CTR + rising CPA → creative fatigue
+
+Recommendations cite: wk-tw-001, ds-pt-003, vs-nt-001, vs-nt-002, oh-li-001, lp-pt-001.
+
+### Weekly Performance Snapshot
+**When:** User wants a performance overview, Monday check-in, or week-over-week comparison.
+
+2 API calls:
+1. `get_meta_insights(date_preset="this_week_mon_today", level="campaign")`
+2. `get_meta_insights(date_preset="last_week_mon_sun", level="campaign")`
+
+Compute deltas per campaign, apply Kast's 4 diagnostic patterns [wk-tw-001]:
+1. Frequency↑ + CPA↑ → creative fatigue
+2. CPM↑ + CPA↑ → audience saturation
+3. CPA↑ + CVR↓ → ad-to-LP mismatch
+4. CTR↓ + CPA↑ → creative fatigue
+
+End with: "Analyze first, optimize second" [ds-pt-008].
+
+### Creative Performance Report
+**When:** User wants to know which ads are working, which to pause, creative health.
+
+1 API call: `get_meta_insights(level="ad", sort="spend_descending", limit=50)`
+
+Categorize each ad:
+- **Scaling**: High spend, good CPA → let it run [mb-li-001]
+- **Promising**: Low spend, good CPA → don't force spend [ds-pt-004]
+- **Contributing**: Low conversions but ad set is healthy → halo role [jl-pt-004, lp-pt-003]
+- **Fatiguing**: Frequency >3, CTR declining → prepare replacement [oh-li-001]
+- **Dead weight**: High spend, CPA >2x target → pause only if ad set also bad [jl-pt-004]
+
+### Placement Efficiency Report
+**When:** User suspects placement waste, high CPI, or asks about Advantage+ placement choices.
+
+1 API call per campaign: `get_meta_insights(breakdowns="publisher_platform,platform_position")`
+
+Known waste placements for app installs: facebook/instream_video, facebook/facebook_reels_overlay, threads/threads_feed, audience_network/classic.
+
+Flag CPI >3x average. Recommend: restrict, keep broad, or use Placement Value Rules [mb-li-009].
+
+### Audience Composition Report
+**When:** User asks about demographics, age performance, gender splits, who's converting.
+
+1-2 API calls: `get_meta_insights(level="account", breakdowns="age,gender")`
+
+Key insight [mb-li-010]: 35+ users convert 2-3x better for subscription apps. App Promotion campaigns skew young (Reels-heavy) [mb-li-006].
+
+### Campaign Architecture Review
+**When:** User asks about account structure, campaign setup, scaling readiness.
+
+3 API calls (structure only, no insights): `get_meta_campaigns`, `get_meta_adsets`, `get_meta_ads`
+
+Checks: over-consolidation [mb-li-002], creative count [lp-pt-002], campaign type diversity [mb-li-006], optimization events [mb-li-003], EAC opportunity [mb-cd-001].
+
+### Full Account Audit
+**When:** User wants a comprehensive audit.
+
+6+ API calls. Covers structure + performance + breakdowns. References all relevant knowledge base insights.
+
+See `skills/audit-meta-account.md` for the full procedure.
+
+### Campaign Comparison
+**When:** User wants to compare two campaigns.
+
+3+ API calls. Side-by-side analysis with Kast diagnostic framework [wk-tw-001].
+
+### Attribution Analysis
+**When:** User questions conversion quality, attribution windows, view-through.
+
+2+ API calls. Validates conversion data using multi-window analysis and daily consistency.
+
+## Grounding in Knowledge Base
+
+All reports should reference specific insight IDs. Use `get_insight` to read the full context when citing a recommendation. Key insight IDs:
+- **wk-tw-001**: 4 diagnostic metric patterns (the core diagnostic framework)
+- **ds-pt-001**: Primary vs secondary metrics
+- **ds-pt-003**: Frequency >5 = saturation
+- **ds-pt-004**: Don't force spend to low-spend winners
+- **mb-li-002**: Deconsolidation
+- **mb-li-006**: App vs Web campaign demographics
+- **mb-li-010**: Age-based conversion rates
+- **vs-nt-002**: Don't re-test degraded creatives
+- **lp-pt-001**: 25% visual difference required
+- **jl-pt-004**: Don't kill ads if aggregate is good

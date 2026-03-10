@@ -1,0 +1,44 @@
+[
+  {
+    "id": "mb-li-006",
+    "title": "Campaign types access different pretraining and demographics",
+    "insight": "App Promotion campaigns on Meta are Reels-heavy and skew young by default. Static creatives are hard to scale, bid/cost caps are less reactive, and signal quality is lower through AEM. Web Sales campaigns have better placement distribution, scale on Facebook Feed, skew older, and benefit from higher signal quality via CAPI. Scaled brands spend 50% on statics in web campaigns. Choose campaign type based on the demographic you want to reach.",
+    "raw_excerpt": "Campaign types access different pretraining — App campaigns skew young and Reels-heavy. Web campaigns with quizzes or landing pages break into older audiences on Feed placements.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "App vs Web Acquisition — Direct2App vs Web2App Traffic Composition",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["campaign_architecture", "funnel_strategy", "audience_targeting"],
+    "applies_to": ["subscription_apps", "mobile", "web2app"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Use App Promotion campaigns to target younger users via Reels",
+      "Layer Web Sales campaigns to reach older, higher-converting audiences on Feed",
+      "Invest in static creatives for web campaigns — they scale better there",
+      "Compare placement composition between app and web campaigns monthly"
+    ]
+  },
+  {
+    "id": "mb-li-007",
+    "title": "ASO and organic installs lower blended CAC",
+    "insight": "Meta-driven installs feed your app store ranking, which generates free organic installs. Ensure a strong install-to-rating conversion so paid acquisition builds organic momentum. Tight paid UA margins today become free organic revenue tomorrow. Design onboarding to generate ratings quickly, and bring in high-volume younger audiences to outpace competition in App Store Search rankings.",
+    "raw_excerpt": "ASO and organic lower blended CAC — Meta-driven installs feed your app store ranking. Ensure a strong install to rating conversion. Tight UA margins today become free organic revenue tomorrow.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "Breaking the Meta Ads Ceiling for Subscription Apps",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["aso", "scaling", "retention"],
+    "applies_to": ["subscription_apps", "mobile", "ios"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Track organic install lift alongside paid campaigns",
+      "Optimize onboarding to prompt ratings at the right moment",
+      "Use high-volume younger demographics to boost App Store rankings",
+      "Monitor blended CAC (paid + organic) rather than just paid CPI"
+    ]
+  }
+]

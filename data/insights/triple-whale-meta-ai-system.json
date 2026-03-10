@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tw-ar-001",
+    "title": "GEM Foundation Model Learns From Both Organic and Ad Content Across All Surfaces",
+    "insight": "Meta's GEM (Generative Ads Model) sits at the top of the ad delivery stack and trains on both organic and ad user behavior across all surfaces — Feed, Stories, Reels, Messenger, and WhatsApp. It then teaches downstream systems (Lattice, Andromeda) via knowledge distillation. This means your organic content performance indirectly influences how the ad system understands your brand and audience. Accounts with strong organic engagement may benefit from richer signal flowing into ad delivery.",
+    "raw_excerpt": "GEM occupies the top tier, functioning as a foundation model that learns from all surfaces (Feed, Stories, Reels, Messenger, WhatsApp) across both ad and organic content. It then teaches Lattice, Andromeda, and other models through knowledge distillation.",
+    "source_type": "other",
+    "source_author": "Triple Whale",
+    "source_title": "Meta's AI Ad Stack: Four Systems Working Together",
+    "source_date": "2025-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["ad_ranking", "creative_strategy"],
+    "applies_to": ["subscription_apps", "mobile", "ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Invest in organic content quality on Meta surfaces — it feeds into the same foundation model that drives ad delivery",
+      "Maintain consistent brand presence across Feed, Stories, and Reels to give GEM more signal about your audience",
+      "Monitor organic engagement metrics as a leading indicator of ad delivery health"
+    ]
+  },
+  {
+    "id": "tw-ar-002",
+    "title": "Lattice Placement Consolidation Yields 12% Quality Improvement — Don't Split Placements Manually",
+    "insight": "When Meta consolidated Facebook Stories into its Lattice coordination system, it produced a 12% ads quality improvement, 10% revenue improvement, and 11.5% user satisfaction increase. Lattice coordinates ranking, sequence learning (customer journey), and cross-surface learning as one unified system. Manually restricting placements works against this — the unified system performs better when it can coordinate delivery across all surfaces and learn from the full customer journey.",
+    "raw_excerpt": "Lattice produced 10% revenue improvement, 11.5% user satisfaction increase, 6% conversion boost, 12% ads quality improvement after consolidating Facebook Stories.",
+    "source_type": "other",
+    "source_author": "Triple Whale",
+    "source_title": "Meta's AI Ad Stack: Four Systems Working Together",
+    "source_date": "2025-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["ad_ranking", "campaign_structure"],
+    "applies_to": ["subscription_apps", "mobile", "ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Default to Advantage+ placements rather than manually restricting surfaces",
+      "Only restrict placements when you have clear data showing specific surfaces underperform for your app",
+      "If you previously excluded Stories or Reels, retest with all placements enabled — Lattice coordination may have changed the math"
+    ]
+  },
+  {
+    "id": "tw-ar-003",
+    "title": "First-Time Impression Ratio (FTI): Target 10-20% New Users Monthly",
+    "insight": "First-Time Impression Ratio (FTI) measures what percentage of your monthly impressions reach users who haven't seen your ads before. The target is 10-20% for true incremental growth. Below 10%, your campaigns are recirculating to the same audience and you're paying for frequency, not reach. This is a concrete metric to diagnose whether creative diversity and audience expansion efforts are actually working.",
+    "raw_excerpt": "First-Time Impression Ratio (FTI) Target: 10-20% of monthly impressions should reach new users for true incremental growth.",
+    "source_type": "other",
+    "source_author": "Triple Whale",
+    "source_title": "Meta's AI Ad Stack: Four Systems Working Together",
+    "source_date": "2025-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["audience_targeting", "measurement", "scaling"],
+    "applies_to": ["subscription_apps", "mobile", "ecommerce"],
+    "confidence": 3,
+    "actionable_steps": [
+      "Track your First-Time Impression Ratio monthly — aim for 10-20% new users",
+      "If FTI drops below 10%, prioritize new creative with diverse creators and visuals to unlock fresh audiences",
+      "Use FTI as a leading indicator of audience saturation before CPAs start rising"
+    ]
+  },
+  {
+    "id": "tw-ar-004",
+    "title": "Partnership/Creator Ads Unlock New Entity IDs in Andromeda, Not Just Social Proof",
+    "insight": "Partnership ads (ads run through creator accounts) perform better not just because of social proof, but because each creator represents a different entity ID in Meta's Andromeda retrieval system. The same creative published through different creator accounts reaches entirely separate audience segments. This is the technical mechanism behind why creator diversity expands reach — Andromeda treats each entity ID as a distinct ad source with its own audience pool.",
+    "raw_excerpt": "Partnership ads perform better not simply due to social proof, but because they unlock new entity IDs. The same creative through different creators reaches entirely separate audience segments.",
+    "source_type": "other",
+    "source_author": "Triple Whale",
+    "source_title": "Meta's AI Ad Stack: Four Systems Working Together",
+    "source_date": "2025-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "audience_targeting", "ad_ranking"],
+    "applies_to": ["subscription_apps", "mobile", "ecommerce"],
+    "confidence": 4,
+    "actionable_steps": [
+      "Run winning creatives as partnership ads through creator accounts rather than only from your brand account",
+      "Each new creator partnership gives you a new entity ID — prioritize expanding creator partnerships for reach",
+      "Test the same creative from your brand account vs a creator's account to measure the entity ID effect on reach and CPA"
+    ]
+  }
+]

@@ -1,0 +1,81 @@
+---
+description: How to use Meta Marketing API tools when the user asks about campaign data, performance, ads, or ad sets
+globs:
+alwaysApply: false
+---
+
+# Using Meta Marketing API Tools
+
+When the user asks about their Meta ad account data, use the MCP tools. All tools require `ad_account_id` (e.g. `act_123456789`).
+
+## Rate Limit Safety
+
+- All tools default to `last_7d`, active-only, minimal fields
+- No auto-pagination — returns first page + cursor for explicit next page
+- Throttle header monitored — warns at >75% utilization
+- If rate limited, wait and retry. Don't make unnecessary calls.
+
+## Tool Reference
+
+### get_meta_campaigns
+```
+get_meta_campaigns(ad_account_id="act_XXX")
+```
+Returns: id, name, status, objective, bid_strategy, budgets. Optional: fields, effective_status, limit, after.
+
+### get_meta_adsets
+```
+get_meta_adsets(ad_account_id="act_XXX", campaign_id="optional")
+```
+Returns: id, name, status, campaign_id, optimization_goal, bid_strategy, targeting. Optional: fields, effective_status, limit, after.
+
+### get_meta_ads
+```
+get_meta_ads(ad_account_id="act_XXX", adset_id="optional")
+```
+Returns: id, name, status, adset_id, creative info. Optional: fields, effective_status, limit, after.
+
+### get_meta_insights
+The most flexible tool. Configurable level, breakdowns, date range.
+```
+get_meta_insights(
+  ad_account_id="act_XXX",
+  level="campaign",           # account | campaign | adset | ad
+  date_preset="last_7d",      # or time_range={since, until}
+  time_increment="1",         # "1" daily, "7" weekly, omit for aggregated
+  breakdowns="age,gender",    # or "publisher_platform,platform_position"
+  conversion_event="mobile_app_install",
+  sort="spend_descending",
+  limit=50
+)
+```
+
+### get_meta_ad_fatigue
+Built-in fatigue detection. Single API call.
+```
+get_meta_ad_fatigue(
+  ad_account_id="act_XXX",
+  campaign_id="optional",
+  frequency_warning=3,
+  frequency_critical=5,
+  ctr_decline_threshold=30
+)
+```
+
+## Common Patterns
+
+**Campaign overview:** `get_meta_campaigns` → `get_meta_insights` at campaign level
+
+**Deep dive on one campaign:** `get_meta_adsets(campaign_id=X)` → `get_meta_insights(level="ad")` filtered to that campaign
+
+**Placement analysis:** `get_meta_insights(breakdowns="publisher_platform,platform_position")`
+
+**Age/gender analysis:** `get_meta_insights(level="account", breakdowns="age,gender")`
+
+**Daily trend:** `get_meta_insights(time_increment="1", date_preset="last_14d")`
+
+**Week-over-week:** Two calls — `date_preset="this_week_mon_today"` and `date_preset="last_week_mon_sun"`
+
+## Without META_ACCESS_TOKEN
+
+If the token is not set, Meta tools return a clear error. Knowledge base tools (`search_insights`, `list_insights`, `get_insight`) still work.

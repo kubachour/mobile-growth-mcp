@@ -1,0 +1,24 @@
+[
+  {
+    "id": "mb-li-010",
+    "title": "Age composition analysis reveals hidden audience value",
+    "insight": "Different creatives attract wildly different age demographics, and age has massive impact on downstream conversion. Trial CVR by age group: 18-24 = 18%, 25-34 = 26%, 35-44 = 32%, 45-54 = 44%, 55-64 = 48%, 65+ = 42%. Ads that attract older users are more valuable and need different Cost per Trial goals. Analyze age composition using pivot tables in Ads Reporting to identify which creatives push older and design hypotheses for replication.",
+    "raw_excerpt": "As creative = targeting you'll find wildly different demographic distribution across different ads. Downstream trial CVR by age: 18-24 = 18%, 25-34 = 26%, 35-44 = 32%, 44-45 = 44%, 55-64 = 48%, 65+ = 42%.",
+    "source_type": "linkedin_post",
+    "source_author": "Marcus Burke",
+    "source_title": "On Age Composition by Creative",
+    "source_date": "2024-12-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["audience_targeting", "creative_strategy", "measurement"],
+    "applies_to": ["subscription_apps", "mobile"],
+    "confidence": 5,
+    "actionable_steps": [
+      "Go to Ads Reporting and set up a pivot table with ad name, age, gender, spend",
+      "Visualize age distribution per creative using a 100% stacked bar chart",
+      "Identify which creatives attract 35+ audiences with higher conversion rates",
+      "Set different Cost per Trial goals by age group using Value Rules",
+      "Design and test creative hypotheses that skew toward older demographics"
+    ]
+  }
+]

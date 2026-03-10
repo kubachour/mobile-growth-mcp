@@ -1,0 +1,39 @@
+[
+  {
+    "id": "vs-nt-001",
+    "title": "Meta auto-shifts spend when creative degrades",
+    "insight": "When a creative starts degrading in performance, Meta's algorithm immediately begins shifting spend to the second-best performing creative in the ad set. This happens automatically without manual intervention, so advertisers don't need to pause degraded creatives proactively — the system reallocates budget on its own.",
+    "raw_excerpt": "If a creative starts degrading, Meta starts immediately spending on the second best creative.",
+    "source_type": "notes",
+    "source_author": "Virendra Shekhawat",
+    "source_title": "Best agency practices",
+    "source_date": "2026-03-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_strategy", "ad_ranking"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 4,
+    "actionable_steps": null
+  },
+  {
+    "id": "vs-nt-002",
+    "title": "Avoid re-testing degraded creatives — explore new angles first",
+    "insight": "Do not re-test creatives that have degraded in performance. Exhaust all other creative options and angles first. If you absolutely must re-test a degraded creative, wait 3-6 months before doing so. Prioritize testing entirely different creative angles over recycling old ones.",
+    "raw_excerpt": "We do not re-test creatives that degrade - only in extreme cases after all other options and angles are depleted. If you need to do it, do it after 3-6 months ideally. But try to test different angles before this.",
+    "source_type": "notes",
+    "source_author": "Virendra Shekhawat",
+    "source_title": "Best agency practices",
+    "source_date": "2026-03-01",
+    "growth_gems_edition": null,
+    "platform": "meta",
+    "topics": ["creative_testing", "creative_strategy"],
+    "applies_to": ["mobile_gaming"],
+    "confidence": 4,
+    "actionable_steps": [
+      "When a creative degrades, do not re-test it — let Meta shift spend automatically",
+      "Test different creative angles and concepts instead of recycling degraded ones",
+      "Only re-test a degraded creative as a last resort after exhausting all other angles",
+      "If re-testing, wait at least 3-6 months before reintroducing the creative"
+    ]
+  }
+]

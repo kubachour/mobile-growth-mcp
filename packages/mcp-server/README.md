@@ -12,7 +12,26 @@ You'll need an API key — get one from the person who set up your account.
 
 ## Setup
 
-Add this to your MCP client config (Claude Desktop, Cursor, Claude Code, Codex, etc.):
+There are three ways to provide your API key and Meta token. The server checks them in this order:
+
+### Option 1: CLI arguments
+
+Pass keys directly in the `args` array. Works with every MCP client.
+
+```json
+{
+  "mcpServers": {
+    "mobile-growth": {
+      "command": "npx",
+      "args": ["-y", "mobile-growth-mcp", "--api-key=me_your-api-key", "--meta-token=your-meta-access-token"]
+    }
+  }
+}
+```
+
+### Option 2: Environment variables
+
+Use the `env` block in your MCP client config.
 
 ```json
 {
@@ -29,7 +48,18 @@ Add this to your MCP client config (Claude Desktop, Cursor, Claude Code, Codex, 
 }
 ```
 
-- `API_KEY` (required) — authenticates with the knowledge base. You'll get this when your account is created.
+### Option 3: `.env` file
+
+Create a `.env` file in your working directory:
+
+```
+API_KEY=me_your-api-key
+META_ACCESS_TOKEN=your-meta-access-token
+```
+
+### Keys
+
+- `API_KEY` — authenticates with the knowledge base. Without it, the server still starts but only Meta tools are available. Call the `connection_status` tool to see what's connected.
 - `META_ACCESS_TOKEN` (optional) — enables Meta Marketing API tools. Without it, knowledge base tools still work.
 
 ## What you get
@@ -44,6 +74,7 @@ Add this to your MCP client config (Claude Desktop, Cursor, Claude Code, Codex, 
 
 | Tool | Description |
 |------|-------------|
+| `connection_status` | Check KB and Meta API connection status; shows how to fix issues |
 | `search_insights` | Semantic + keyword hybrid search across curated insights |
 | `get_insight` | Full content of a specific insight by slug or ID |
 | `get_meta_campaigns` | List campaigns with objectives, budgets, bid strategies |

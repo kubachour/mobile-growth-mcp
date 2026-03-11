@@ -59,7 +59,7 @@ async function jsonRpcRequest(
     headers: {
       "Content-Type": "application/json",
       "x-api-key": apiKey,
-      Accept: "application/json",
+      Accept: "application/json, text/event-stream",
     },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(15_000),
@@ -150,20 +150,14 @@ function jsonSchemaToZodShape(
   return shape;
 }
 
-export async function registerRemoteTools(
+/**
+ * Register an already-fetched array of remote tools on the server.
+ */
+export function registerFetchedTools(
   server: McpServer,
-  apiKey: string
-): Promise<void> {
-  let tools: RemoteTool[];
-  try {
-    tools = await fetchRemoteTools(apiKey);
-  } catch (err) {
-    console.error(
-      `Failed to fetch remote tools: ${(err as Error).message}. KB tools will not be available.`
-    );
-    return;
-  }
-
+  apiKey: string,
+  tools: RemoteTool[]
+): void {
   for (const tool of tools) {
     const zodShape = jsonSchemaToZodShape(tool.inputSchema);
 
@@ -180,7 +174,24 @@ export async function registerRemoteTools(
   }
 }
 
-async function fetchRemotePrompts(
+export async function registerRemoteTools(
+  server: McpServer,
+  apiKey: string
+): Promise<void> {
+  let tools: RemoteTool[];
+  try {
+    tools = await fetchRemoteTools(apiKey);
+  } catch (err) {
+    console.error(
+      `Failed to fetch remote tools: ${(err as Error).message}. KB tools will not be available.`
+    );
+    return;
+  }
+
+  registerFetchedTools(server, apiKey, tools);
+}
+
+export async function fetchRemotePrompts(
   apiKey: string
 ): Promise<RemotePrompt[]> {
   const resp = await jsonRpcRequest(apiKey, "prompts/list");
@@ -205,22 +216,15 @@ async function getRemotePrompt(
   return resp.result?.messages ?? [];
 }
 
-export async function registerRemotePrompts(
+/**
+ * Register an already-fetched array of remote prompts on the server.
+ */
+export function registerFetchedPrompts(
   server: McpServer,
-  apiKey: string
-): Promise<void> {
-  let remotePrompts: RemotePrompt[];
-  try {
-    remotePrompts = await fetchRemotePrompts(apiKey);
-  } catch (err) {
-    console.error(
-      `Failed to fetch remote prompts: ${(err as Error).message}. Prompts will not be available.`
-    );
-    return;
-  }
-
-  for (const prompt of remotePrompts) {
-    // Build Zod shape from arguments
+  apiKey: string,
+  prompts: RemotePrompt[]
+): void {
+  for (const prompt of prompts) {
     const zodShape: Record<string, z.ZodTypeAny> = {};
     for (const arg of prompt.arguments) {
       let field: z.ZodTypeAny = z.string().describe(arg.description);
@@ -252,4 +256,21 @@ export async function registerRemotePrompts(
       }
     );
   }
+}
+
+export async function registerRemotePrompts(
+  server: McpServer,
+  apiKey: string
+): Promise<void> {
+  let remotePrompts: RemotePrompt[];
+  try {
+    remotePrompts = await fetchRemotePrompts(apiKey);
+  } catch (err) {
+    console.error(
+      `Failed to fetch remote prompts: ${(err as Error).message}. Prompts will not be available.`
+    );
+    return;
+  }
+
+  registerFetchedPrompts(server, apiKey, remotePrompts);
 }

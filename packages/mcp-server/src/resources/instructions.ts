@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { StartupStatus } from "../tools/connection-status.js";
 
 const INSTRUCTIONS = `# Mobile Growth MCP — Knowledge Base + Meta Ad Tools
 
@@ -96,7 +97,44 @@ Lists all topic tags, applies_to tags, and platforms with counts.
 - For custom date ranges, use time_range instead of date_preset
 `;
 
-export function registerInstructionsResource(server: McpServer): void {
+function buildStatusSection(status?: StartupStatus): string {
+  if (!status) return "";
+
+  const lines: string[] = ["\n## Connection Status\n"];
+
+  if (status.kb.connected) {
+    lines.push(
+      `- **Knowledge Base**: Connected (${status.kb.toolCount} tools, ${status.kb.promptCount} prompts)`
+    );
+  } else {
+    lines.push(
+      `- **Knowledge Base**: Not connected — ${status.kb.error ?? "API_KEY not configured"}`
+    );
+    lines.push(
+      "  - Fix: provide your API key via `--api-key=me_...` CLI arg, `API_KEY` env var, or `.env` file"
+    );
+  }
+
+  if (status.meta.tokenConfigured) {
+    lines.push("- **Meta Marketing API**: Token configured");
+  } else {
+    lines.push(
+      "- **Meta Marketing API**: Token not configured — Meta tools will return errors"
+    );
+    lines.push(
+      "  - Fix: provide your token via `--meta-token=...` CLI arg, `META_ACCESS_TOKEN` env var, or `.env` file"
+    );
+  }
+
+  return lines.join("\n");
+}
+
+export function registerInstructionsResource(
+  server: McpServer,
+  status?: StartupStatus
+): void {
+  const text = INSTRUCTIONS + buildStatusSection(status);
+
   server.resource(
     "instructions",
     "instructions://getting-started",
@@ -110,7 +148,7 @@ export function registerInstructionsResource(server: McpServer): void {
         {
           uri: "instructions://getting-started",
           mimeType: "text/plain",
-          text: INSTRUCTIONS,
+          text,
         },
       ],
     })

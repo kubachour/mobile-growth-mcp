@@ -14,6 +14,7 @@ import { validateApiKey } from "../_shared/auth.ts";
 import { tools } from "../_shared/tools.ts";
 import { prompts } from "../_shared/prompts.ts";
 import { promptContent } from "../_shared/prompt-content.ts";
+import { sanitizeToolInput } from "../_shared/sanitize.ts";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -65,10 +66,25 @@ Deno.serve(async (req: Request) => {
   }
 
   // Fire-and-forget usage logger
-  const logUsage = (method: string, name: string, isError = false) => {
+  const logUsage = (
+    method: string,
+    name: string,
+    isError = false,
+    errorMessage?: string,
+    inputSummary?: string,
+    isEmptyResult = false
+  ) => {
     supabase
       .from("api_key_usage")
-      .insert({ key_id: auth.key_id, method, name, is_error: isError })
+      .insert({
+        key_id: auth.key_id,
+        method,
+        name,
+        is_error: isError,
+        error_message: errorMessage ?? null,
+        tool_input_summary: inputSummary ?? null,
+        is_empty_result: isEmptyResult,
+      })
       .then(({ error }) => {
         if (error) console.error(`[usage] log failed: ${error.message}`);
       });
@@ -104,14 +120,20 @@ Deno.serve(async (req: Request) => {
       };
     }
 
+    const inputSummary = sanitizeToolInput(name, (args ?? {}) as Record<string, unknown>);
+
     try {
-      const content = await tool.handler(args ?? {}, supabase);
-      logUsage("tool", name);
+      const content = await tool.handler(args ?? {}, supabase, auth);
+      const isEmptyResult =
+        name === "search_insights" &&
+        content.some((c) => c.text?.startsWith("No insights found"));
+      logUsage("tool", name, false, undefined, inputSummary, isEmptyResult);
       return { content };
     } catch (err) {
-      logUsage("tool", name, true);
+      const errMsg = (err as Error).message;
+      logUsage("tool", name, true, errMsg, inputSummary);
       return {
-        content: [{ type: "text", text: (err as Error).message }],
+        content: [{ type: "text", text: errMsg }],
         isError: true,
       };
     }

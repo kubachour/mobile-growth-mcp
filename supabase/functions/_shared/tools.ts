@@ -1,29 +1,49 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.0";
+import type { AuthResult } from "./auth.ts";
 
-// --- Embedding helper ---
+// --- Embedding helper (with retry for transient errors) ---
 
 async function embedQuery(query: string): Promise<number[]> {
   const openaiKey = Deno.env.get("OPENAI_API_KEY")!;
+  const maxRetries = 2;
+  let lastError: Error | undefined;
 
-  const res = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${openaiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "text-embedding-3-small",
-      input: query,
-    }),
-  });
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, 500 * attempt));
+    }
+    try {
+      const res = await fetch("https://api.openai.com/v1/embeddings", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openaiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "text-embedding-3-small",
+          input: query,
+        }),
+      });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Embedding generation failed: ${err}`);
+      if (!res.ok) {
+        const err = await res.text();
+        const status = res.status;
+        // Don't retry client errors (4xx)
+        if (status < 500)
+          throw new Error(`Embedding failed (${status}): ${err}`);
+        lastError = new Error(`Embedding failed (${status}): ${err}`);
+        continue;
+      }
+
+      const data = await res.json();
+      return data.data[0].embedding;
+    } catch (err) {
+      lastError = err as Error;
+      // Don't retry 4xx errors that were re-thrown above
+      if ((err as Error).message?.startsWith("Embedding failed (4")) throw err;
+    }
   }
-
-  const data = await res.json();
-  return data.data[0].embedding;
+  throw lastError!;
 }
 
 // --- Tool definitions ---
@@ -35,7 +55,8 @@ export interface ToolDef {
   adminOnly?: boolean;
   handler: (
     args: Record<string, unknown>,
-    supabase: SupabaseClient
+    supabase: SupabaseClient,
+    auth?: AuthResult
   ) => Promise<{ type: string; text: string }[]>;
 }
 
@@ -254,6 +275,262 @@ export const tools: ToolDef[] = [
           : "");
 
       return [{ type: "text", text }];
+    },
+  },
+
+  {
+    name: "submit_feedback",
+    description:
+      "Report a gap in the knowledge base or a missing capability. " +
+      "Call this when you searched for something and couldn't find useful results, " +
+      "or when the user needs guidance on a topic not covered by the knowledge base. " +
+      "This helps improve the product. " +
+      "IMPORTANT: anonymize the summary — no ad account IDs, access tokens, or personal data.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        category: {
+          type: "string",
+          enum: [
+            "missing_knowledge",
+            "missing_feature",
+            "search_quality",
+            "other",
+          ],
+          description:
+            "Type of gap: missing_knowledge (topic not in KB), missing_feature (tool doesn't exist), search_quality (results were irrelevant), other",
+        },
+        summary: {
+          type: "string",
+          description:
+            "What was needed but not available. Be specific about the topic/capability. Example: 'User needed TikTok Spark Ads creative best practices but KB has no TikTok creative insights'",
+        },
+        search_queries_tried: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Search queries that were tried but returned poor/no results",
+        },
+      },
+      required: ["category", "summary"],
+    },
+    handler: async (args, supabase, auth) => {
+      if (!auth?.key_id) throw new Error("Authentication required");
+
+      const { error } = await supabase.from("feedback").insert({
+        key_id: auth.key_id,
+        category: args.category as string,
+        summary: args.summary as string,
+        search_queries_tried:
+          (args.search_queries_tried as string[] | undefined) ?? null,
+      });
+
+      if (error) throw new Error(`Failed to submit feedback: ${error.message}`);
+
+      return [
+        {
+          type: "text",
+          text: "Feedback submitted — thank you. This will be reviewed to improve the knowledge base.",
+        },
+      ];
+    },
+  },
+
+  {
+    name: "suggest_improvement",
+    adminOnly: true,
+    description:
+      "Summarize recent feedback, failed searches, and usage patterns. Returns anonymized product improvement insights.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        days: {
+          type: "number",
+          description: "Look back N days (default 7, max 30)",
+        },
+      },
+    },
+    handler: async (args, supabase) => {
+      const days = Math.max(1, Math.min((args.days as number | undefined) ?? 7, 30));
+      const cutoff = new Date(Date.now() - days * 86400000).toISOString();
+
+      // 1. Recent feedback submissions
+      const { data: feedback } = await supabase
+        .from("feedback")
+        .select("category, summary, search_queries_tried, created_at")
+        .gte("created_at", cutoff)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      // 2. Zero-result searches
+      const { data: emptySearches } = await supabase
+        .from("api_key_usage")
+        .select("tool_input_summary, created_at")
+        .eq("name", "search_insights")
+        .eq("is_empty_result", true)
+        .gte("created_at", cutoff)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      // 3. Error patterns
+      const { data: errors } = await supabase
+        .from("api_key_usage")
+        .select("name, error_message, created_at")
+        .eq("is_error", true)
+        .gte("created_at", cutoff)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      // 4. Top search queries (all, not just failures)
+      const { data: allSearches } = await supabase
+        .from("api_key_usage")
+        .select("tool_input_summary, created_at")
+        .eq("name", "search_insights")
+        .gte("created_at", cutoff)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      // --- Format report ---
+      const sections: string[] = [
+        `# Improvement Suggestions — Last ${days} days\n`,
+      ];
+
+      // Feedback by category
+      if (feedback && feedback.length > 0) {
+        const byCategory: Record<string, typeof feedback> = {};
+        for (const f of feedback) {
+          (byCategory[f.category] ??= []).push(f);
+        }
+        sections.push(`## Feedback (${feedback.length} submissions)\n`);
+        for (const [cat, items] of Object.entries(byCategory)) {
+          sections.push(`### ${cat} (${items.length})`);
+          for (const f of items) {
+            sections.push(`- ${f.summary}`);
+            if (f.search_queries_tried?.length) {
+              sections.push(
+                `  Queries tried: ${f.search_queries_tried.join(", ")}`
+              );
+            }
+          }
+        }
+      } else {
+        sections.push("## Feedback\nNo feedback submitted in this period.");
+      }
+
+      // Empty searches
+      if (emptySearches && emptySearches.length > 0) {
+        const queries = emptySearches
+          .map((s) => s.tool_input_summary)
+          .filter(Boolean);
+        const unique = [...new Set(queries)];
+        sections.push(
+          `\n## Zero-Result Searches (${emptySearches.length} total, ${unique.length} unique)\n`
+        );
+        for (const q of unique) {
+          sections.push(`- ${q}`);
+        }
+      } else {
+        sections.push(
+          "\n## Zero-Result Searches\nNo zero-result searches in this period."
+        );
+      }
+
+      // Errors
+      if (errors && errors.length > 0) {
+        const byTool: Record<string, number> = {};
+        for (const e of errors) {
+          byTool[e.name] = (byTool[e.name] ?? 0) + 1;
+        }
+        sections.push(`\n## Errors (${errors.length} total)\n`);
+        for (const [tool, count] of Object.entries(byTool).sort(
+          (a, b) => b[1] - a[1]
+        )) {
+          sections.push(`- **${tool}**: ${count} errors`);
+        }
+        // Show recent unique error messages
+        const uniqueErrors = [
+          ...new Set(errors.map((e) => e.error_message).filter(Boolean)),
+        ].slice(0, 10);
+        if (uniqueErrors.length > 0) {
+          sections.push("\nRecent error messages:");
+          for (const msg of uniqueErrors) {
+            sections.push(`- ${msg}`);
+          }
+        }
+      } else {
+        sections.push("\n## Errors\nNo errors in this period.");
+      }
+
+      // Top searches
+      if (allSearches && allSearches.length > 0) {
+        const queries = allSearches
+          .map((s) => s.tool_input_summary)
+          .filter(Boolean);
+        const counts: Record<string, number> = {};
+        for (const q of queries) {
+          counts[q] = (counts[q] ?? 0) + 1;
+        }
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        sections.push(
+          `\n## Top Searches (${allSearches.length} total)\n`
+        );
+        for (const [q, count] of sorted.slice(0, 20)) {
+          sections.push(`- ${q} (${count}×)`);
+        }
+      }
+
+      return [{ type: "text", text: sections.join("\n") }];
+    },
+  },
+
+  {
+    name: "delete_insight",
+    adminOnly: true,
+    description:
+      "Permanently delete one or more insights from the knowledge base by slug. Also removes embeddings and search vectors. Remember to also remove the insight from its JSON file in data/insights/ to prevent re-ingestion.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slugs: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "One or more insight slugs to delete (e.g. ['ab-pt-002'])",
+        },
+      },
+      required: ["slugs"],
+    },
+    handler: async (args, supabase) => {
+      const slugs = args.slugs as string[];
+      if (!slugs?.length) throw new Error("At least one slug is required");
+
+      const results: string[] = [];
+      let deleted = 0;
+
+      for (const slug of slugs) {
+        const { data, error } = await supabase
+          .from("insights")
+          .delete()
+          .eq("slug", slug)
+          .select("slug");
+
+        if (error) {
+          results.push(`FAIL ${slug}: ${error.message}`);
+        } else if (!data || data.length === 0) {
+          results.push(`SKIP ${slug}: not found`);
+        } else {
+          results.push(`OK   deleted ${slug}`);
+          deleted++;
+        }
+      }
+
+      const summary = `Deleted ${deleted}/${slugs.length} insight(s).\n\n${results.join("\n")}`;
+      const reminder =
+        deleted > 0
+          ? "\n\nRemember to also remove the insight(s) from data/insights/ to prevent re-ingestion."
+          : "";
+
+      return [{ type: "text", text: summary + reminder }];
     },
   },
 ];

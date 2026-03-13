@@ -36,9 +36,19 @@ type Row = {
 
 const QUEUE_NAME = "embedding_jobs";
 
+const EMBED_SECRET = Deno.env.get("EMBED_SECRET");
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("expected POST request", { status: 405 });
+  }
+
+  // Validate shared secret (set via `supabase secrets set EMBED_SECRET=...`)
+  if (EMBED_SECRET) {
+    const provided = req.headers.get("x-embed-secret");
+    if (provided !== EMBED_SECRET) {
+      return new Response("unauthorized", { status: 401 });
+    }
   }
 
   if (req.headers.get("content-type") !== "application/json") {

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "ingest": "node --env-file=../../.env dist/ingest.js"
+    "ingest": "node --env-file=../../.env dist/ingest.js",
+    "delete": "node --env-file=../../.env dist/delete.js"
   },
   "dependencies": {
     "@mobile-growth/shared": "*"

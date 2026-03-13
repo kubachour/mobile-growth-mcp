@@ -3,6 +3,19 @@ import type { StartupStatus } from "../tools/connection-status.js";
 
 const INSTRUCTIONS = `# Mobile Growth MCP — Knowledge Base + Meta Ad Tools
 
+## Welcome
+
+You're connected to the Mobile Growth knowledge base — curated expert insights on mobile advertising, campaign optimization, and subscription app growth.
+
+**The knowledge base is always on.** Use \`search_insights\` freely — before making recommendations, when diagnosing issues, or exploring strategies. The more specific your query, the better the results.
+
+Quick examples:
+- "subscription app creative fatigue signals"
+- "Meta CBO vs ABO tradeoffs for subscription apps"
+- "iOS attribution strategies post-ATT"
+
+If you can't find what you need, call \`submit_feedback\` to report the gap — it helps us improve the knowledge base.
+
 ## What This Is
 A curated knowledge base of mobile advertising insights + direct Meta Marketing API integration. Query expert knowledge, pull live campaign data, and run pre-built reports — all from your LLM.
 
@@ -23,6 +36,12 @@ Browse all insights with optional filtering. Returns titles and metadata.
 ### get_insight
 Fetch the full content of a specific insight by ID or slug.
 - **id** (required): Numeric ID or string slug (e.g. "mb-li-001")
+
+### submit_feedback
+Report a gap in the knowledge base or a missing capability. Helps improve the product.
+- **category** (required): missing_knowledge, missing_feature, search_quality, or other
+- **summary** (required): What was needed but not available (anonymized — no account IDs or tokens)
+- **search_queries_tried** (optional): Search queries that returned poor/no results
 
 ## Meta Marketing API Tools
 

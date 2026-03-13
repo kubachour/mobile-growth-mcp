@@ -1,11 +1,13 @@
 // Supabase Edge Function: hybrid search proxy for non-MCP users
-// Deploy with: supabase functions deploy search
+// Deploy with: supabase functions deploy search --no-verify-jwt
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.0";
+import { validateApiKey } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-api-key, x-client-info, apikey, content-type",
 };
 
 Deno.serve(async (req: Request) => {
@@ -14,6 +16,27 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    // Auth: validate x-api-key
+    const apiKey = req.headers.get("x-api-key");
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: "Missing x-api-key header" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const auth = await validateApiKey(apiKey, supabase);
+    if (!auth.valid) {
+      return new Response(
+        JSON.stringify({ error: "Invalid API key" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { query, topics, applies_to, limit } = await req.json();
 
     if (!query || typeof query !== "string") {
@@ -23,8 +46,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const openaiKey = Deno.env.get("OPENAI_API_KEY")!;
 
     // Generate embedding via OpenAI
@@ -52,8 +73,6 @@ Deno.serve(async (req: Request) => {
     const embedding = embeddingData.data[0].embedding;
 
     // Call hybrid search RPC
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
     const { data, error } = await supabase.rpc("hybrid_search_insights", {
       query_text: query,
       query_embedding: JSON.stringify(embedding),

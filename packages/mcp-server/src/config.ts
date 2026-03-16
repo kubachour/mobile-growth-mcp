@@ -83,3 +83,54 @@ export function resolveMetaToken(): {
 } {
   return resolve("META_ACCESS_TOKEN", "meta-token");
 }
+
+export interface GoogleAdsConfigResult {
+  configured: boolean;
+  missing: string[];
+  sources: Record<string, string>;
+  developerToken?: string;
+  clientId?: string;
+  clientSecret?: string;
+  refreshToken?: string;
+  loginCustomerId?: string;
+}
+
+export function resolveGoogleAdsConfig(): GoogleAdsConfigResult {
+  const devToken = resolve("GOOGLE_ADS_DEVELOPER_TOKEN", "google-dev-token");
+  const clientId = resolve("GOOGLE_ADS_CLIENT_ID", "google-client-id");
+  const clientSecret = resolve("GOOGLE_ADS_CLIENT_SECRET", "google-client-secret");
+  const refreshToken = resolve("GOOGLE_ADS_REFRESH_TOKEN", "google-refresh-token");
+  const loginCustomerId = resolve("GOOGLE_ADS_LOGIN_CUSTOMER_ID", "google-login-customer-id");
+
+  const required = [
+    { name: "GOOGLE_ADS_DEVELOPER_TOKEN", result: devToken },
+    { name: "GOOGLE_ADS_CLIENT_ID", result: clientId },
+    { name: "GOOGLE_ADS_CLIENT_SECRET", result: clientSecret },
+    { name: "GOOGLE_ADS_REFRESH_TOKEN", result: refreshToken },
+  ];
+
+  const missing = required
+    .filter((r) => !r.result.value)
+    .map((r) => r.name);
+
+  const sources: Record<string, string> = {};
+  for (const r of required) {
+    sources[r.name] = r.result.source;
+  }
+  sources["GOOGLE_ADS_LOGIN_CUSTOMER_ID"] = loginCustomerId.source;
+
+  return {
+    configured: missing.length === 0,
+    missing,
+    sources,
+    developerToken: devToken.value,
+    clientId: clientId.value,
+    clientSecret: clientSecret.value,
+    refreshToken: refreshToken.value,
+    loginCustomerId: loginCustomerId.value,
+  };
+}
+
+export function getDotEnvPath(): string {
+  return join(process.cwd(), ".env");
+}

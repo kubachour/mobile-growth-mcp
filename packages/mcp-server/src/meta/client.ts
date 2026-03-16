@@ -16,8 +16,11 @@ export function getMetaAccessToken(): string {
   const token = process.env.META_ACCESS_TOKEN;
   if (!token) {
     throw new Error(
-      "Missing META_ACCESS_TOKEN environment variable. " +
-        "Provide a Meta Marketing API access token to use Meta tools."
+      "Missing META_ACCESS_TOKEN. To fix, add it to your MCP config:\n" +
+        '  • Claude Code / Cursor: add "META_ACCESS_TOKEN": "..." to the "env" block in .mcp.json\n' +
+        '  • Claude Desktop: add "META_ACCESS_TOKEN": "..." to the "env" block in claude_desktop_config.json\n' +
+        "  • CLI: add META_ACCESS_TOKEN=... to a .env file in your working directory\n" +
+        "Then restart your MCP client."
     );
   }
   return token;

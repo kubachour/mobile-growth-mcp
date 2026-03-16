@@ -10,6 +10,10 @@ export interface StartupStatus {
   meta: {
     tokenConfigured: boolean;
   };
+  google: {
+    configured: boolean;
+    missing: string[];
+  };
   apiKey: {
     source: string;
   };
@@ -62,9 +66,43 @@ export function registerConnectionStatus(
           "",
           "### How to fix",
           "Provide your Meta access token using one of these methods:",
-          "1. CLI argument: add `--meta-token=...` to the args array",
-          '2. Environment variable: add `"META_ACCESS_TOKEN": "..."` to the env block',
-          "3. `.env` file: add `META_ACCESS_TOKEN=...` to your `.env` file"
+          '1. MCP config: add `"META_ACCESS_TOKEN": "..."` to the `"env"` block in `.mcp.json` (Claude Code/Cursor) or `claude_desktop_config.json` (Claude Desktop)',
+          "2. CLI argument: add `--meta-token=...` to the args array",
+          "3. `.env` file: add `META_ACCESS_TOKEN=...` to a `.env` file in your working directory",
+          "",
+          "Then restart your MCP client."
+        );
+      }
+
+      lines.push("");
+
+      // Google Ads status
+      if (status.google.configured) {
+        lines.push(
+          "## Google Ads API: Configured",
+          "- Google Ads tools are available and ready to use"
+        );
+      } else {
+        lines.push(
+          "## Google Ads API: Not Configured",
+          "- Google Ads tools will return an error when called",
+          `- Missing: ${status.google.missing.join(", ")}`,
+          "",
+          "### How to fix",
+          "Option 1 — Interactive setup (recommended):",
+          "```",
+          "npx mobile-growth-mcp auth google",
+          "```",
+          "This walks you through developer token, OAuth credentials, and authorization. Saves to `.env`.",
+          "",
+          'Option 2 — Add credentials manually to the `"env"` block in your MCP config:',
+          "- `GOOGLE_ADS_DEVELOPER_TOKEN`",
+          "- `GOOGLE_ADS_CLIENT_ID`",
+          "- `GOOGLE_ADS_CLIENT_SECRET`",
+          "- `GOOGLE_ADS_REFRESH_TOKEN`",
+          "- `GOOGLE_ADS_LOGIN_CUSTOMER_ID` (optional, for MCC accounts)",
+          "",
+          "Then restart your MCP client."
         );
       }
 

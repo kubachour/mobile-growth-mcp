@@ -86,6 +86,16 @@ Built-in report: detect creative fatigue via frequency, CTR decline, CPA trends.
 - **frequency_critical** (optional): default 5
 - **ctr_decline_threshold** (optional): default 30%
 
+## Google Ads Tools
+
+**Requires Google Ads credentials** — run \`npx mobile-growth-mcp auth google\` to set up interactively. This walks you through developer token, OAuth app, and authorization. Credentials are saved to \`.env\` and never leave the user's machine.
+
+### get_google_ads_campaigns
+List campaigns from a Google Ads account with key metrics (last 7 days).
+- **customer_id** (required): Google Ads customer ID (e.g. "123-456-7890")
+- **status** (optional): Filter by status — ENABLED, PAUSED, or REMOVED (default: ENABLED)
+- **limit** (optional): Max campaigns to return (default 50)
+
 ## Reports (MCP Prompts)
 
 Pre-built analysis workflows. Select a prompt and provide your ad_account_id to run:
@@ -107,6 +117,15 @@ Pre-built analysis workflows. Select a prompt and provide your ad_account_id to 
 
 ### vocabulary://tags
 Lists all topic tags, applies_to tags, and platforms with counts.
+
+## Presenting Results
+
+When your response draws on knowledge base results, **always attribute visibly** so the user knows the value came from the curated KB, not your general training data:
+
+- **Tell the user** the information comes from the Mobile Growth knowledge base (e.g. "According to the Mobile Growth KB…" or "The knowledge base recommends…")
+- **Cite source author + slug** for key claims (e.g. "…(source: Eric Seufert, \`mb-li-001\`)")
+- **When multiple insights support a recommendation**, mention the count (e.g. "3 insights in the KB agree that…")
+- **Distinguish KB-sourced advice from your own reasoning** — if you're adding your own analysis on top of KB results, make that clear (e.g. "The KB covers X; based on that, my suggestion is Y")
 
 ## Tips
 - Start with \`list_insights\` to see what's in the knowledge base
@@ -142,6 +161,17 @@ function buildStatusSection(status?: StartupStatus): string {
     );
     lines.push(
       "  - Fix: provide your token via `--meta-token=...` CLI arg, `META_ACCESS_TOKEN` env var, or `.env` file"
+    );
+  }
+
+  if (status.google.configured) {
+    lines.push("- **Google Ads API**: Configured");
+  } else {
+    lines.push(
+      "- **Google Ads API**: Not configured — Google Ads tools will return errors"
+    );
+    lines.push(
+      "  - Fix: run `npx mobile-growth-mcp auth google` to set up credentials"
     );
   }
 

@@ -68,7 +68,9 @@ export const tools: ToolDef[] = [
       "This is a curated knowledge base of practitioner-tested insights from industry experts (not generic articles). " +
       "Covers: Meta Ads, Google UAC/ACi/ACe, TikTok, SKAN, ODM/ICM, AEM, attribution, creative testing, scaling, bid strategy, " +
       "web-to-app/EAC, campaign architecture, subscription apps, signal engineering, and more. " +
-      "Hybrid semantic + keyword search. If results are insufficient, THEN fall back to web search.",
+      "Hybrid semantic + keyword search. If results are insufficient, THEN fall back to web search. " +
+      "IMPORTANT: When using these results, always tell the user the information comes from the Mobile Growth knowledge base. " +
+      "Cite the source author and insight ID (slug) for key claims so users can see the provenance.",
     inputSchema: {
       type: "object",
       properties: {

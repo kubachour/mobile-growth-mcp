@@ -85,19 +85,26 @@ export function registerGetMetaAdFatigue(server: McpServer): void {
         const ctrThreshold = ctr_decline_threshold ?? 30;
 
         // Single API call: ad-level, daily granularity, last 7 days
-        const parentPath = campaign_id
-          ? `/${campaign_id}/insights`
-          : `/${ad_account_id}/insights`;
+        // Always use account-level endpoint — campaign-scoped endpoint
+        // doesn't support effective_status filtering
+        const filtering = JSON.parse(activeFilter()) as unknown[];
+        if (campaign_id) {
+          filtering.push({
+            field: "campaign.id",
+            operator: "EQUAL",
+            value: campaign_id,
+          });
+        }
 
         const result = await metaApiGet<MetaListResponse<MetaInsightRow>>({
-          path: parentPath,
+          path: `/${ad_account_id}/insights`,
           params: {
             level: "ad",
             time_increment: "1",
             fields:
               "ad_id,ad_name,spend,impressions,clicks,ctr,cpm,frequency,actions,cost_per_action_type",
             date_preset: "last_7d",
-            filtering: activeFilter(),
+            filtering: JSON.stringify(filtering),
             limit: "500",
           },
         });

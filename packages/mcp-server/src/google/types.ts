@@ -25,6 +25,11 @@ export interface GoogleAdsSearchStreamResponse {
 
 export interface GoogleAdsRow {
   campaign?: GoogleAdsCampaign;
+  adGroup?: GoogleAdsAdGroup;
+  asset?: GoogleAdsAsset;
+  adGroupAdAssetView?: GoogleAdsAdGroupAdAssetView;
+  segments?: GoogleAdsSegments;
+  campaignBudget?: GoogleAdsCampaignBudget;
   metrics?: GoogleAdsMetrics;
   customer?: { id: string; descriptiveName: string };
 }
@@ -35,10 +40,63 @@ export interface GoogleAdsCampaign {
   name: string;
   status: "ENABLED" | "PAUSED" | "REMOVED" | "UNKNOWN" | "UNSPECIFIED";
   advertisingChannelType?: string;
+  advertisingChannelSubType?: string;
   biddingStrategyType?: string;
+  targetCpa?: { targetCpaMicros?: string };
+  targetRoas?: { targetRoas?: number };
   campaignBudget?: string;
+  appCampaignSetting?: {
+    appId?: string;
+    appStore?: string;
+    biddingStrategyGoalType?: string;
+  };
   startDate?: string;
   endDate?: string;
+}
+
+export interface GoogleAdsAdGroup {
+  resourceName?: string;
+  id: string;
+  name: string;
+  status?: string;
+  type?: string;
+}
+
+export interface GoogleAdsAsset {
+  resourceName?: string;
+  id: string;
+  name: string;
+  type?: string;
+  textAsset?: { text?: string };
+  imageAsset?: {
+    fullSize?: {
+      url?: string;
+      widthPixels?: number;
+      heightPixels?: number;
+    };
+  };
+  youtubeVideoAsset?: {
+    youtubeVideoId?: string;
+    youtubeVideoTitle?: string;
+  };
+}
+
+export interface GoogleAdsAdGroupAdAssetView {
+  resourceName?: string;
+  fieldType?: string;
+  performanceLabel?: string;
+}
+
+export interface GoogleAdsSegments {
+  date?: string;
+  adNetworkType?: string;
+  device?: string;
+}
+
+export interface GoogleAdsCampaignBudget {
+  resourceName?: string;
+  amountMicros?: string;
+  type?: string;
 }
 
 export interface GoogleAdsMetrics {
@@ -47,9 +105,14 @@ export interface GoogleAdsMetrics {
   costMicros?: string;
   conversions?: number;
   conversionsValue?: number;
+  allConversions?: number;
   ctr?: number;
   averageCpc?: string;
   averageCpm?: string;
+  videoViews?: string;
+  interactions?: string;
+  biddableAppInstallConversions?: number;
+  biddableAppPostInstallConversions?: number;
 }
 
 export interface GoogleAdsConfig {

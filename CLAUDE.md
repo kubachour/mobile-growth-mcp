@@ -22,30 +22,30 @@ Three knowledge layers:
 
 ## Tech Stack
 
-- **Database**: Supabase (PostgreSQL + pgvector + pg_trgm + pgmq + pg_cron)
-- **Embeddings**: OpenAI `text-embedding-3-small` (1536d), runs server-side in Supabase Edge Function
+- **Database**: Supabase (PostgreSQL + pgvector + pg_trgm)
+- **Embeddings**: OpenAI `text-embedding-3-small` (1536d), generated during ingestion + query-time in search Edge Function
 - **Interfaces**: MCP stdio server (npm, proxies KB to Edge Function) + Edge Function (JSON-RPC MCP endpoint)
 - **Auth**: Per-person API key (SHA-256 hashed, revocable)
 - **Monorepo**: npm workspaces with TypeScript
 
 ## Embedding Pipeline
 
-Embeddings are generated **entirely server-side** in Supabase:
-- OpenAI API key stored in Supabase secrets (not in local `.env`)
-- On insert/update of insights → trigger → pgmq queue → `embed` Edge Function → OpenAI → updates row
-- Search: `search` Edge Function embeds the query + runs hybrid search, all server-side
-- No AI dependencies in the Node.js packages
+Embeddings are generated **during ingestion** by the CLI:
+- `npm run ingest` upserts insights, then calls OpenAI to generate embeddings for any rows missing them
+- Requires `OPENAI_API_KEY` in local `.env`
+- Batched (100 per API call), idempotent (re-run to retry failures), with final verification
+- Search: `search` Edge Function embeds the query + runs hybrid search (OpenAI key in Supabase secrets)
 
 ## Project Structure
 
 ```
 packages/shared/src/                         — Types, Supabase client (used by ingestion)
 packages/mcp-server/src/                     — MCP stdio server (proxies KB tools + prompts to Edge Function, runs Meta tools locally)
-packages/ingestion/src/                      — CLI to validate & upsert insight JSONs (no embedding)
+packages/ingestion/src/                      — CLI to validate, upsert & embed insight JSONs
 skills/                                      — Canonical skill .md files (source of truth for MCP prompts)
 data/insights/                               — Curated insight JSON files (git-tracked)
-supabase/migrations/                         — SQL migrations (001-007)
-supabase/functions/embed/                    — Edge Function: processes embedding jobs from pgmq
+supabase/migrations/                         — SQL migrations (001-017)
+supabase/functions/embed/                    — Edge Function: embedding helper (legacy, kept for manual use)
 supabase/functions/search/                   — Edge Function: embeds query + hybrid search
 supabase/functions/_shared/prompts.ts        — Prompt manifest (metadata for each MCP prompt)
 supabase/functions/_shared/prompt-content.ts — Generated from skills/*.md (DO NOT EDIT directly)
@@ -56,14 +56,13 @@ supabase/functions/_shared/prompt-content.ts — Generated from skills/*.md (DO 
 ```bash
 npm run build              # Build all packages
 npm run build:prompts      # Generate prompt-content.ts from skills/*.md
-npm run ingest             # Validate & upsert insights to Supabase (embeddings auto-generated)
+npm run ingest             # Validate, upsert & embed insights to Supabase
 ```
 
 ## Supabase Secrets Setup
 
 ```bash
 supabase secrets set OPENAI_API_KEY=sk-your-openai-key
-# project_url must also be set in Supabase Vault for the auto-embed pipeline
 ```
 
 ## Key Conventions

@@ -12,6 +12,11 @@ import { registerGetMetaAds } from "./tools/meta-ads.js";
 import { registerGetMetaInsights } from "./tools/meta-insights.js";
 import { registerGetMetaAdFatigue } from "./tools/meta-ad-fatigue.js";
 import { registerGetGoogleAdsCampaigns } from "./tools/google-campaigns.js";
+import { registerGetGoogleAdsAdGroups } from "./tools/google-ad-groups.js";
+import { registerGetGoogleAdsAssets } from "./tools/google-assets.js";
+import { registerGetGoogleAdsInsights } from "./tools/google-insights.js";
+import { registerGetGoogleAdsNetworkMix } from "./tools/google-network-mix.js";
+import { registerGetGoogleAdsAssetFatigue } from "./tools/google-asset-fatigue.js";
 import {
   registerConnectionStatus,
   type StartupStatus,
@@ -111,6 +116,11 @@ registerGetMetaAdFatigue(server);
 // ── Google Ads tools (run locally) ───────────────────────────────
 
 registerGetGoogleAdsCampaigns(server);
+registerGetGoogleAdsAdGroups(server);
+registerGetGoogleAdsAssets(server);
+registerGetGoogleAdsInsights(server);
+registerGetGoogleAdsNetworkMix(server);
+registerGetGoogleAdsAssetFatigue(server);
 
 // ── Connection status tool (always present) ────────────────────────
 

@@ -258,7 +258,7 @@ async function runGoogleAuthFlow(): Promise<void> {
   try {
     // Step 1: Developer token
     console.log("Step 1: Developer token");
-    console.log("  (Found in Google Ads → Tools → API Center)\n");
+    console.log("  (Found in Google Ads → Admin → API Center, or https://ads.google.com/aw/apicenter)\n");
 
     const developerToken = await prompt(rl, "  Developer token: ");
     if (!developerToken) {

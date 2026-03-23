@@ -64,49 +64,17 @@ Run:
 npm run build && npm run ingest
 ```
 
-Check for errors. If validation fails, fix the JSON and retry.
+This will:
+1. Validate all JSON files against the schema
+2. Upsert all insights to Supabase
+3. Generate embeddings via OpenAI for any rows missing them (batched, 100 per API call)
+4. Verify all insights have embeddings
 
-### Step 5: Verify Embeddings
+Check the output for errors. If validation fails, fix the JSON and retry. If some embeddings fail (transient OpenAI errors), re-run — it's idempotent and only processes rows with NULL embeddings.
 
-After ingestion, check that embeddings were generated for the new insights:
+**Requires:** `OPENAI_API_KEY` set in `.env`. If not set, insights are upserted but embeddings are skipped (with a warning).
 
-```bash
-source .env
-# Check new insights for embeddings (replace slugs with your new ones)
-curl -s "${SUPABASE_URL}/rest/v1/insights?select=slug&embedding=is.null&slug=in.(xx-li-001,xx-li-002)" \
-  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}"
-```
-
-**If the response is `[]` (empty):** Embeddings exist. Proceed to Step 6.
-
-**If slugs are returned:** Embeddings are missing. The pg_cron auto-embed pipeline may not have run yet (runs every 30s). Wait 60 seconds and check again. If still missing after 2 minutes, generate them manually:
-
-```bash
-source .env
-# Get IDs of insights missing embeddings
-MISSING=$(curl -s "${SUPABASE_URL}/rest/v1/insights?select=id,slug&embedding=is.null" \
-  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
-
-# Build jobs array and call embed function directly (batches of 10)
-echo "$MISSING" | python3 -c "
-import sys, json
-rows = json.load(sys.stdin)
-batch_size = 10
-for i in range(0, len(rows), batch_size):
-    batch = rows[i:i+batch_size]
-    jobs = [{'jobId': 900000+i+j, 'id': r['id'], 'schema': 'public', 'table': 'insights', 'contentFunction': 'embedding_input', 'embeddingColumn': 'embedding'} for j, r in enumerate(batch)]
-    print(json.dumps(jobs))
-" | while IFS= read -r batch; do
-  curl -s -X POST "${SUPABASE_URL}/functions/v1/embed" \
-    -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-    -H "Content-Type: application/json" \
-    -d "$batch" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'Completed: {len(d[\"completedJobs\"])}, Failed: {len(d[\"failedJobs\"])}')"
-done
-```
-
-### Step 6: Verify Search
+### Step 5: Verify Search
 
 Pick a distinctive keyword or phrase from one of the new insights and run:
 
@@ -124,35 +92,21 @@ Pick a distinctive keyword or phrase from one of the new insights and run:
 
 Work through this checklist in order:
 
-### 1. Check embedding count
+### 1. Check embedding output
 
-```bash
-source .env
-# Count rows missing embeddings
-curl -s "${SUPABASE_URL}/rest/v1/insights?select=slug&embedding=is.null" \
-  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d)} insights missing embeddings')"
-```
+The ingestion script reports how many embeddings were generated and verifies zero NULL embeddings remain. If some failed (transient OpenAI errors), re-run `npm run ingest` — it only processes rows with NULL embeddings.
 
-If most rows have `null` embeddings, the embedding pipeline isn't running.
-
-### 2. Generate embeddings manually
-
-The auto-embed pipeline (pg_cron → pg_net → embed function) can fail silently if the auth chain breaks. The reliable fix is to call the embed function directly with the service role key (see Step 5 above).
-
-### 3. Known infrastructure issues
+### 2. Known issues
 
 | Problem | Fix |
 |---------|-----|
-| `embed` function not deployed | `npx supabase functions deploy embed --no-verify-jwt` |
-| `embed` rejects pg_cron calls | Redeploy with `--no-verify-jwt` (pg_cron has no auth context) |
-| Missing `project_url` vault secret | Insert via SQL Editor: `select vault.create_secret('https://<ref>.supabase.co', 'project_url');` |
-| OpenAI key not set | `npx supabase secrets set OPENAI_API_KEY=sk-...` |
-| pg_cron sends null auth header | Migration 010 fixes this — `util.invoke_edge_function()` falls back to anon key from vault |
+| `OPENAI_API_KEY` not in `.env` | Add it — embeddings are generated locally during ingestion |
+| OpenAI API transient failure | Re-run `npm run ingest` — idempotent, picks up failed rows |
+| OpenAI key not in Supabase secrets | `npx supabase secrets set OPENAI_API_KEY=sk-...` (needed for search query embedding) |
 
-### 4. Fallback
+### 3. Fallback
 
-Even without embeddings, keyword-based results should still appear (the hybrid search includes full-text keyword matching). If keyword results show up but semantic results don't, the issue is specifically in the embedding pipeline. Use the manual embed script in Step 5 to unblock.
+Even without embeddings, keyword-based results should still appear (the hybrid search includes full-text keyword matching). If keyword results show up but semantic results don't, re-run ingestion to regenerate embeddings.
 
 ---
 
@@ -161,7 +115,7 @@ Even without embeddings, keyword-based results should still appear (the hybrid s
 | File | Role |
 |------|------|
 | `skills/extract-insights.md` | Extraction methodology, schema, vocabularies |
-| `packages/ingestion/src/ingest.ts` | Ingestion CLI (upserts to Supabase) |
+| `packages/ingestion/src/ingest.ts` | Ingestion CLI (upserts + embeds via OpenAI) |
 | `packages/ingestion/src/validate.ts` | Validation rules |
 | `packages/shared/src/types.ts` | Canonical types, topic/applies_to vocabulary |
 | `scripts/test-search.sh` | Search verification script |

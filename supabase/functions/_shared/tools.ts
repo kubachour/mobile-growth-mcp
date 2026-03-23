@@ -46,6 +46,58 @@ async function embedQuery(query: string): Promise<number[]> {
   throw lastError!;
 }
 
+// --- Shared insight input schema (for suggest + save_private) ---
+
+const insightInputProperties = {
+  title: { type: "string", description: "Concise title summarizing the insight" },
+  insight: {
+    type: "string",
+    description:
+      "The distilled insight text. Should be practitioner-tested, specific, and actionable.",
+  },
+  raw_excerpt: {
+    type: "string",
+    description: "Original excerpt from the source (verbatim or close paraphrase)",
+  },
+  source_type: {
+    type: "string",
+    enum: [
+      "podcast_transcript", "podcast", "linkedin_post", "linkedin_carousel",
+      "community_discussion", "conference_talk", "webinar", "presentation",
+      "youtube_video", "data_visualization", "screenshot", "pdf_guide", "notes", "other",
+    ],
+    description: "Type of source the insight was extracted from",
+  },
+  source_author: { type: "string", description: "Author or speaker name" },
+  source_title: { type: "string", description: "Title of the source (article, episode, post)" },
+  source_date: { type: "string", description: "Publication date (YYYY-MM-DD)" },
+  platform: {
+    type: "string",
+    enum: ["meta", "google", "tiktok", "cross_platform"],
+    description: "Ad platform this insight applies to",
+  },
+  topics: {
+    type: "array",
+    items: { type: "string" },
+    description:
+      "Topic tags (e.g. creative_strategy, scaling, bid_strategy, campaign_architecture)",
+  },
+  applies_to: {
+    type: "array",
+    items: { type: "string" },
+    description: "Applicability tags (e.g. subscription_apps, ios, mobile, ecommerce, all)",
+  },
+  confidence: {
+    type: "number",
+    description: "Confidence 1-5 (1=anecdotal, 5=widely validated)",
+  },
+  actionable_steps: {
+    type: "array",
+    items: { type: "string" },
+    description: "Concrete steps a practitioner can take to apply this insight",
+  },
+} as const;
+
 // --- Tool definitions ---
 
 export interface ToolDef {
@@ -94,7 +146,7 @@ export const tools: ToolDef[] = [
       },
       required: ["query"],
     },
-    handler: async (args, supabase) => {
+    handler: async (args, supabase, auth) => {
       const query = args.query as string;
       const topics = (args.topics as string[] | undefined) ?? null;
       const applies_to = (args.applies_to as string[] | undefined) ?? null;
@@ -108,6 +160,7 @@ export const tools: ToolDef[] = [
         match_count: limit,
         filter_topics: topics,
         filter_applies_to: applies_to,
+        viewer_key_id: auth?.key_id ?? null,
       });
 
       if (error) throw new Error(`Search failed: ${error.message}`);
@@ -164,13 +217,15 @@ export const tools: ToolDef[] = [
         },
       },
     },
-    handler: async (args, supabase) => {
+    handler: async (args, supabase, auth) => {
       const topic = (args.topic as string | undefined) ?? null;
       const applies_to = (args.applies_to as string | undefined) ?? null;
 
       const { data, error } = await supabase.rpc("list_insights", {
         filter_topic: topic,
         filter_applies_to_value: applies_to,
+        viewer_key_id: auth?.key_id ?? null,
+        viewer_is_admin: auth?.is_admin ?? false,
       });
 
       if (error) throw new Error(`List failed: ${error.message}`);
@@ -178,7 +233,9 @@ export const tools: ToolDef[] = [
       const formatted = (data as Record<string, unknown>[])
         .map(
           (d) =>
-            `- **[${d.slug}]** ${d.title} | ${d.source_author ?? "Unknown"} (${d.source_type})` +
+            `- **[${d.slug}]** ${d.title}` +
+            (d.owner_key_id ? " 🔒" : "") +
+            ` | ${d.source_author ?? "Unknown"} (${d.source_type})` +
             (d.platform ? ` | ${d.platform}` : "") +
             ` | Topics: ${(d.topics as string[]).join(", ")} | ${d.confidence}/5`
         )
@@ -243,13 +300,13 @@ export const tools: ToolDef[] = [
       },
       required: ["id"],
     },
-    handler: async (args, supabase) => {
+    handler: async (args, supabase, auth) => {
       const id = args.id as string | number;
 
       const query = supabase
         .from("insights")
         .select(
-          "id, slug, title, insight, raw_excerpt, source_type, source_author, source_title, source_date, growth_gems_edition, platform, topics, applies_to, confidence, actionable_steps, created_at"
+          "id, slug, title, insight, raw_excerpt, source_type, source_author, source_title, source_date, growth_gems_edition, platform, topics, applies_to, confidence, actionable_steps, created_at, owner_key_id"
         );
 
       const { data, error } =
@@ -259,6 +316,11 @@ export const tools: ToolDef[] = [
 
       if (error)
         throw new Error(`Error fetching insight ${id}: ${error.message}`);
+
+      // Enforce ownership: private insights only visible to owner or admin
+      if (data.owner_key_id && data.owner_key_id !== auth?.key_id && !auth?.is_admin) {
+        throw new Error(`Insight ${id} not found`);
+      }
 
       const text =
         `# ${data.title}\n\n` +
@@ -537,6 +599,367 @@ export const tools: ToolDef[] = [
           : "";
 
       return [{ type: "text", text: summary + reminder }];
+    },
+  },
+
+  // =================================================================
+  // Community suggestions + private knowledge
+  // =================================================================
+
+  {
+    name: "suggest_insight",
+    description:
+      "Submit a knowledge insight for review by the admin. Extract as much structured data as possible from the source material. " +
+      "The suggestion will be reviewed and, if approved, added to the shared knowledge base with full search indexing. " +
+      "Use this when the user shares an article, post, or discussion that contains valuable mobile growth knowledge.",
+    inputSchema: {
+      type: "object",
+      properties: insightInputProperties,
+      required: ["title", "insight", "source_type"],
+    },
+    handler: async (args, supabase, auth) => {
+      if (!auth?.key_id) throw new Error("Authentication required");
+
+      const row = {
+        title: args.title as string,
+        insight: args.insight as string,
+        raw_excerpt: (args.raw_excerpt as string | undefined) ?? null,
+        source_type: args.source_type as string,
+        source_author: (args.source_author as string | undefined) ?? null,
+        source_title: (args.source_title as string | undefined) ?? null,
+        source_date: (args.source_date as string | undefined) ?? null,
+        platform: (args.platform as string | undefined) ?? null,
+        topics: (args.topics as string[] | undefined) ?? [],
+        applies_to: (args.applies_to as string[] | undefined) ?? [],
+        confidence: Math.max(1, Math.min((args.confidence as number | undefined) ?? 3, 5)),
+        actionable_steps: (args.actionable_steps as string[] | undefined) ?? null,
+        submitted_by: auth.key_id,
+        status: "pending",
+      };
+
+      const { data, error } = await supabase
+        .from("suggested_insights")
+        .insert(row)
+        .select("id")
+        .single();
+
+      if (error) throw new Error(`Failed to submit suggestion: ${error.message}`);
+
+      return [
+        {
+          type: "text",
+          text:
+            `Suggestion #${data.id} submitted for review. ` +
+            `Title: "${row.title}". It will be reviewed by the admin and, if approved, added to the shared knowledge base.`,
+        },
+      ];
+    },
+  },
+
+  {
+    name: "save_private_insight",
+    description:
+      "Save a knowledge insight that is private to your API key. Private insights are immediately searchable but only visible to you. " +
+      "Use this for client-specific knowledge, internal benchmarks, or account-specific learnings that should not be shared with other users. " +
+      "Extract as much structured data as possible from the source material.",
+    inputSchema: {
+      type: "object",
+      properties: insightInputProperties,
+      required: ["title", "insight", "source_type"],
+    },
+    handler: async (args, supabase, auth) => {
+      if (!auth?.key_id) throw new Error("Authentication required");
+
+      // Generate a slug from title + key_id to avoid collisions
+      const baseSlug = (args.title as string)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 60);
+      const slug = `priv-${auth.key_id}-${baseSlug}`;
+
+      const row = {
+        slug,
+        title: args.title as string,
+        insight: args.insight as string,
+        raw_excerpt: (args.raw_excerpt as string | undefined) ?? null,
+        source_type: args.source_type as string,
+        source_author: (args.source_author as string | undefined) ?? null,
+        source_title: (args.source_title as string | undefined) ?? null,
+        source_date: (args.source_date as string | undefined) ?? null,
+        platform: (args.platform as string | undefined) ?? null,
+        topics: (args.topics as string[] | undefined) ?? [],
+        applies_to: (args.applies_to as string[] | undefined) ?? [],
+        confidence: Math.max(1, Math.min((args.confidence as number | undefined) ?? 3, 5)),
+        actionable_steps: (args.actionable_steps as string[] | undefined) ?? null,
+        owner_key_id: auth.key_id,
+      };
+
+      // Generate embedding immediately so it's searchable right away
+      const embeddingText = `# ${row.title}\n\n${row.insight}`;
+      const embedding = await embedQuery(embeddingText);
+
+      const { data, error } = await supabase
+        .from("insights")
+        .upsert({ ...row, embedding: JSON.stringify(embedding) }, { onConflict: "slug" })
+        .select("id, slug")
+        .single();
+
+      if (error) throw new Error(`Failed to save private insight: ${error.message}`);
+
+      return [
+        {
+          type: "text",
+          text:
+            `Private insight saved (${data.slug}). ` +
+            `It is immediately searchable but only visible to your API key.`,
+        },
+      ];
+    },
+  },
+
+  {
+    name: "review_suggestions",
+    adminOnly: true,
+    description:
+      "List pending community-submitted insight suggestions awaiting review. Shows who submitted each suggestion and when.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        status: {
+          type: "string",
+          enum: ["pending", "approved", "rejected"],
+          description: "Filter by status (default: pending)",
+        },
+        limit: {
+          type: "number",
+          description: "Max results (default 20)",
+        },
+      },
+    },
+    handler: async (args, supabase) => {
+      const status = (args.status as string | undefined) ?? "pending";
+      const limit = Math.min((args.limit as number | undefined) ?? 20, 100);
+
+      const { data, error } = await supabase
+        .from("suggested_insights")
+        .select(
+          "id, title, insight, source_type, source_author, platform, topics, applies_to, confidence, actionable_steps, submitted_by, status, reviewer_notes, created_at"
+        )
+        .eq("status", status)
+        .order("created_at", { ascending: true })
+        .limit(limit);
+
+      if (error) throw new Error(`Failed to fetch suggestions: ${error.message}`);
+
+      if (!data || data.length === 0) {
+        return [{ type: "text", text: `No ${status} suggestions found.` }];
+      }
+
+      // Look up submitter names
+      const keyIds = [...new Set(data.map((d: Record<string, unknown>) => d.submitted_by))];
+      const { data: keys } = await supabase
+        .from("api_keys")
+        .select("id, team_name")
+        .in("id", keyIds);
+      const nameMap: Record<number, string> = {};
+      for (const k of (keys ?? []) as { id: number; team_name: string }[]) {
+        nameMap[k.id] = k.team_name;
+      }
+
+      const formatted = (data as Record<string, unknown>[])
+        .map(
+          (d) =>
+            `## Suggestion #${d.id}: ${d.title}\n` +
+            `**Submitted by:** ${nameMap[d.submitted_by as number] ?? `key#${d.submitted_by}`} | **Date:** ${d.created_at}\n` +
+            `**Source:** ${d.source_author ?? "Unknown"} (${d.source_type})` +
+            (d.platform ? ` | **Platform:** ${d.platform}` : "") +
+            "\n" +
+            `**Topics:** ${(d.topics as string[]).join(", ") || "none"} | **Confidence:** ${d.confidence}/5\n\n` +
+            `${d.insight}\n` +
+            (d.actionable_steps
+              ? `\n**Actionable Steps:**\n${(d.actionable_steps as string[]).map((s) => `- ${s}`).join("\n")}`
+              : "") +
+            (d.reviewer_notes ? `\n\n**Reviewer notes:** ${d.reviewer_notes}` : "")
+        )
+        .join("\n\n---\n\n");
+
+      return [
+        {
+          type: "text",
+          text: `${data.length} ${status} suggestion(s):\n\n${formatted}`,
+        },
+      ];
+    },
+  },
+
+  {
+    name: "approve_suggestion",
+    adminOnly: true,
+    description:
+      "Approve a community suggestion and add it to the shared knowledge base. " +
+      "Generates an embedding and creates a proper insight entry. " +
+      "You can optionally override fields before approval.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        suggestion_id: {
+          type: "number",
+          description: "The suggestion ID to approve",
+        },
+        slug: {
+          type: "string",
+          description:
+            "Override slug for the insight (default: auto-generated from title)",
+        },
+        reviewer_notes: {
+          type: "string",
+          description: "Optional notes about the approval",
+        },
+        // Allow overriding any field before approval
+        title: { type: "string", description: "Override title" },
+        insight: { type: "string", description: "Override insight text" },
+        topics: { type: "array", items: { type: "string" }, description: "Override topics" },
+        applies_to: { type: "array", items: { type: "string" }, description: "Override applies_to" },
+        confidence: { type: "number", description: "Override confidence" },
+        platform: { type: "string", description: "Override platform" },
+      },
+      required: ["suggestion_id"],
+    },
+    handler: async (args, supabase) => {
+      const suggestionId = args.suggestion_id as number;
+
+      // Fetch the suggestion
+      const { data: suggestion, error: fetchError } = await supabase
+        .from("suggested_insights")
+        .select("*")
+        .eq("id", suggestionId)
+        .eq("status", "pending")
+        .single();
+
+      if (fetchError || !suggestion) {
+        throw new Error(
+          `Suggestion #${suggestionId} not found or not pending`
+        );
+      }
+
+      // Apply overrides
+      const title = (args.title as string | undefined) ?? suggestion.title;
+      const insightText = (args.insight as string | undefined) ?? suggestion.insight;
+      const topics = (args.topics as string[] | undefined) ?? suggestion.topics;
+      const appliesTo = (args.applies_to as string[] | undefined) ?? suggestion.applies_to;
+      const confidence = (args.confidence as number | undefined) ?? suggestion.confidence;
+      const platform = (args.platform as string | undefined) ?? suggestion.platform;
+
+      // Generate slug
+      const slug =
+        (args.slug as string | undefined) ??
+        `cs-${title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+          .slice(0, 60)}`;
+
+      // Generate embedding
+      const embeddingText = `# ${title}\n\n${insightText}`;
+      const embedding = await embedQuery(embeddingText);
+
+      // Insert into insights
+      const { data: newInsight, error: insertError } = await supabase
+        .from("insights")
+        .upsert(
+          {
+            slug,
+            title,
+            insight: insightText,
+            raw_excerpt: suggestion.raw_excerpt,
+            source_type: suggestion.source_type,
+            source_author: suggestion.source_author,
+            source_title: suggestion.source_title,
+            source_date: suggestion.source_date,
+            platform,
+            topics,
+            applies_to: appliesTo,
+            confidence,
+            actionable_steps: suggestion.actionable_steps,
+            embedding: JSON.stringify(embedding),
+            owner_key_id: null, // shared insight
+          },
+          { onConflict: "slug" }
+        )
+        .select("id, slug")
+        .single();
+
+      if (insertError) {
+        throw new Error(`Failed to create insight: ${insertError.message}`);
+      }
+
+      // Mark suggestion as approved
+      await supabase
+        .from("suggested_insights")
+        .update({
+          status: "approved",
+          reviewer_notes: (args.reviewer_notes as string | undefined) ?? null,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", suggestionId);
+
+      return [
+        {
+          type: "text",
+          text:
+            `Suggestion #${suggestionId} approved and added to the knowledge base as "${newInsight.slug}" (id: ${newInsight.id}). ` +
+            `Embedding generated and indexed.`,
+        },
+      ];
+    },
+  },
+
+  {
+    name: "reject_suggestion",
+    adminOnly: true,
+    description:
+      "Reject a community suggestion with optional feedback notes.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        suggestion_id: {
+          type: "number",
+          description: "The suggestion ID to reject",
+        },
+        reviewer_notes: {
+          type: "string",
+          description: "Reason for rejection (visible to admin only)",
+        },
+      },
+      required: ["suggestion_id"],
+    },
+    handler: async (args, supabase) => {
+      const suggestionId = args.suggestion_id as number;
+      const notes = (args.reviewer_notes as string | undefined) ?? null;
+
+      const { data, error } = await supabase
+        .from("suggested_insights")
+        .update({
+          status: "rejected",
+          reviewer_notes: notes,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", suggestionId)
+        .eq("status", "pending")
+        .select("id, title");
+
+      if (error) throw new Error(`Failed to reject: ${error.message}`);
+      if (!data || data.length === 0) {
+        throw new Error(`Suggestion #${suggestionId} not found or not pending`);
+      }
+
+      return [
+        {
+          type: "text",
+          text: `Suggestion #${suggestionId} ("${data[0].title}") rejected.${notes ? ` Notes: ${notes}` : ""}`,
+        },
+      ];
     },
   },
 ];

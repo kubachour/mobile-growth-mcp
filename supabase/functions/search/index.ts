@@ -79,6 +79,7 @@ Deno.serve(async (req: Request) => {
       match_count: Math.min(limit ?? 10, 30),
       filter_topics: topics ?? null,
       filter_applies_to: applies_to ?? null,
+      viewer_key_id: auth.key_id ?? null,
     });
 
     if (error) {

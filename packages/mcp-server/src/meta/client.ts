@@ -115,10 +115,13 @@ export async function metaApiGet<T>(
 }
 
 // Helper: build filtering param for active-only
+// Uses ad.effective_status (not bare effective_status) because the Insights
+// endpoint rejects bare effective_status — it's only valid on object endpoints.
+// ad.effective_status works at all insight levels (account, campaign, adset, ad).
 export function activeFilter(): string {
   return JSON.stringify([
     {
-      field: "effective_status",
+      field: "ad.effective_status",
       operator: "IN",
       value: ["ACTIVE"],
     },

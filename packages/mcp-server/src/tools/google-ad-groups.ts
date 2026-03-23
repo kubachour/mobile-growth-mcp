@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { googleAdsQuery } from "../google/client.js";
+import { resolveCampaignId } from "../google/format.js";
 import type { GoogleAdsRow } from "../google/types.js";
 
 export function registerGetGoogleAdsAdGroups(server: McpServer): void {
@@ -37,7 +38,8 @@ export function registerGetGoogleAdsAdGroups(server: McpServer): void {
           `\n  AND ad_group.status IN (${statusList})`;
 
         if (campaign_id) {
-          whereClause += `\n  AND campaign.id = ${campaign_id}`;
+          const resolvedCampaignId = await resolveCampaignId(customer_id, campaign_id);
+          whereClause += `\n  AND campaign.id = ${resolvedCampaignId}`;
         }
 
         const query = `
@@ -73,15 +75,15 @@ export function registerGetGoogleAdsAdGroups(server: McpServer): void {
           : "";
         const header = `## Ad Groups${campaignName} (${rows.length} found)\n\n`;
         const tableHeader =
-          "| Ad Group | Status | Type | Campaign |\n" +
-          "|---|---|---|---|\n";
+          "| Ad Group ID | Ad Group | Status | Type | Campaign ID | Campaign |\n" +
+          "|---|---|---|---|---|---|\n";
 
         let tableRows = "";
         for (const row of rows) {
           const ag = row.adGroup;
           const c = row.campaign;
           if (!ag) continue;
-          tableRows += `| ${ag.name} | ${ag.status ?? "—"} | ${ag.type ?? "—"} | ${c?.name ?? "—"} |\n`;
+          tableRows += `| ${ag.id} | ${ag.name} | ${ag.status ?? "—"} | ${ag.type ?? "—"} | ${c?.id ?? "—"} | ${c?.name ?? "—"} |\n`;
         }
 
         return {

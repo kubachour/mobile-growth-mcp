@@ -62,7 +62,7 @@ async function jsonRpcRequest(
       Accept: "application/json, text/event-stream",
     },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {
@@ -88,19 +88,41 @@ export async function callRemoteTool(
   name: string,
   args: Record<string, unknown>
 ): Promise<{ content: { type: string; text: string }[]; isError?: boolean }> {
-  const resp = await jsonRpcRequest(apiKey, "tools/call", {
-    name,
-    arguments: args,
-  });
-  if (resp.error) {
-    return {
-      content: [{ type: "text", text: `Remote error: ${resp.error.message}` }],
-      isError: true,
-    };
+  const maxAttempts = 2;
+  let lastError: Error | undefined;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const resp = await jsonRpcRequest(apiKey, "tools/call", {
+        name,
+        arguments: args,
+      });
+      if (resp.error) {
+        return {
+          content: [{ type: "text", text: `Remote error: ${resp.error.message}` }],
+          isError: true,
+        };
+      }
+      return {
+        content: resp.result?.content ?? [{ type: "text", text: "No content returned" }],
+        isError: resp.result?.isError,
+      };
+    } catch (err) {
+      lastError = err as Error;
+      // Retry on timeout or network errors, not on other errors
+      const isRetryable =
+        lastError.name === "AbortError" ||
+        lastError.name === "TimeoutError" ||
+        lastError.message?.includes("fetch failed");
+      if (!isRetryable || attempt === maxAttempts) break;
+      // Wait before retry (cold start should be warm now)
+      await new Promise((r) => setTimeout(r, 2_000));
+    }
   }
+
   return {
-    content: resp.result?.content ?? [{ type: "text", text: "No content returned" }],
-    isError: resp.result?.isError,
+    content: [{ type: "text", text: `Remote call failed after retry: ${lastError?.message ?? "unknown error"}` }],
+    isError: true,
   };
 }
 

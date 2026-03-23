@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { googleAdsQuery } from "../google/client.js";
-import { datePresetToRange } from "../google/format.js";
+import { datePresetToRange, resolveCampaignId } from "../google/format.js";
 import type { GoogleAdsRow } from "../google/types.js";
 
 interface DayNetwork {
@@ -56,7 +56,10 @@ export function registerGetGoogleAdsNetworkMix(server: McpServer): void {
           "campaign.status = 'ENABLED'",
           `segments.date BETWEEN '${startDate}' AND '${endDate}'`,
         ];
-        if (campaign_id) conditions.push(`campaign.id = ${campaign_id}`);
+        if (campaign_id) {
+          const resolvedCampaignId = await resolveCampaignId(customer_id, campaign_id);
+          conditions.push(`campaign.id = ${resolvedCampaignId}`);
+        }
 
         const query = `
           SELECT

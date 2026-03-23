@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { googleAdsQuery } from "../google/client.js";
+import { resolveCampaignId, resolveAdGroupId } from "../google/format.js";
 import type { GoogleAdsRow, GoogleAdsAsset } from "../google/types.js";
 
 interface AssetEntry {
@@ -64,8 +65,14 @@ export function registerGetGoogleAdsAssets(server: McpServer): void {
         const conditions: string[] = [
           "campaign.status = 'ENABLED'",
         ];
-        if (campaign_id) conditions.push(`campaign.id = ${campaign_id}`);
-        if (ad_group_id) conditions.push(`ad_group.id = ${ad_group_id}`);
+        if (campaign_id) {
+          const resolvedCampaignId = await resolveCampaignId(customer_id, campaign_id);
+          conditions.push(`campaign.id = ${resolvedCampaignId}`);
+        }
+        if (ad_group_id) {
+          const resolvedAdGroupId = await resolveAdGroupId(customer_id, ad_group_id, campaign_id);
+          conditions.push(`ad_group.id = ${resolvedAdGroupId}`);
+        }
         if (asset_type?.length) {
           const typeList = asset_type.map((t) => `'${t}'`).join(", ");
           conditions.push(`asset.type IN (${typeList})`);

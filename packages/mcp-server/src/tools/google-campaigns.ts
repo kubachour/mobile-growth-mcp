@@ -110,8 +110,8 @@ export function registerGetGoogleAdsCampaigns(server: McpServer): void {
 
         const header = `## Google Campaigns (${rows.length} found)\n\n`;
         const tableHeader =
-          "| Campaign | Status | Type | Bid Strategy | Target | Daily Budget | App |\n" +
-          "|---|---|---|---|---|---|---|\n";
+          "| ID | Campaign | Status | Type | Bid Strategy | Target | Daily Budget | App |\n" +
+          "|---|---|---|---|---|---|---|---|\n";
 
         let tableRows = "";
         for (const row of rows) {
@@ -129,7 +129,7 @@ export function registerGetGoogleAdsCampaigns(server: McpServer): void {
           const appDisplay = appId ? `${appId} (${store})` : "—";
 
           tableRows +=
-            `| ${c.name} | ${c.status} | ${channelSubTypeLabel(c.advertisingChannelSubType)} ` +
+            `| ${c.id} | ${c.name} | ${c.status} | ${channelSubTypeLabel(c.advertisingChannelSubType)} ` +
             `| ${c.biddingStrategyType ?? "—"} | ${formatTarget(row)} ` +
             `| ${budgetDisplay} | ${appDisplay} |\n`;
         }

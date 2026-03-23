@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { googleAdsQuery } from "../google/client.js";
+import { resolveCampaignId, resolveAdGroupId } from "../google/format.js";
 import type { GoogleAdsRow } from "../google/types.js";
 
 type FatigueStatus = "FATIGUED" | "WARNING" | "NEEDS_REFRESH" | "LEARNING" | "HEALTHY";
@@ -116,11 +117,15 @@ export function registerGetGoogleAdsAssetFatigue(server: McpServer): void {
         const ageStartDate = new Date(endDate);
         ageStartDate.setDate(ageStartDate.getDate() - 89); // max 90 days back
 
+        const resolvedCampaignId = await resolveCampaignId(customer_id, campaign_id);
         const conditions: string[] = [
-          `campaign.id = ${campaign_id}`,
+          `campaign.id = ${resolvedCampaignId}`,
           `segments.date BETWEEN '${dateFmt(startDate)}' AND '${dateFmt(endDate)}'`,
         ];
-        if (ad_group_id) conditions.push(`ad_group.id = ${ad_group_id}`);
+        if (ad_group_id) {
+          const resolvedAdGroupId = await resolveAdGroupId(customer_id, ad_group_id, resolvedCampaignId);
+          conditions.push(`ad_group.id = ${resolvedAdGroupId}`);
+        }
         if (asset_type?.length) {
           const typeList = asset_type.map((t) => `'${t}'`).join(", ");
           conditions.push(`asset.type IN (${typeList})`);

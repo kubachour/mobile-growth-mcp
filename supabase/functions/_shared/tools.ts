@@ -349,9 +349,10 @@ export const tools: ToolDef[] = [
   {
     name: "submit_feedback",
     description:
-      "Report a gap in the knowledge base or a missing capability. " +
+      "Report a gap in the knowledge base, a missing capability, or a bug in any tool. " +
       "Call this when you searched for something and couldn't find useful results, " +
-      "or when the user needs guidance on a topic not covered by the knowledge base. " +
+      "when the user needs guidance on a topic not covered by the knowledge base, " +
+      "or when a tool returns an unexpected error or incorrect results. " +
       "This helps improve the product. " +
       "IMPORTANT: anonymize the summary — no ad account IDs, access tokens, or personal data.",
     inputSchema: {
@@ -363,10 +364,11 @@ export const tools: ToolDef[] = [
             "missing_knowledge",
             "missing_feature",
             "search_quality",
+            "bug_report",
             "other",
           ],
           description:
-            "Type of gap: missing_knowledge (topic not in KB), missing_feature (tool doesn't exist), search_quality (results were irrelevant), other",
+            "Type of issue: missing_knowledge (topic not in KB), missing_feature (tool doesn't exist), search_quality (results were irrelevant), bug_report (tool error or incorrect behavior), other",
         },
         summary: {
           type: "string",

@@ -29,6 +29,7 @@ const FILE_TO_PROMPT: Record<string, string> = {
   "campaign-comparison": "campaign-comparison",
   "placement-audit": "placement-audit",
   "attribution-analysis": "attribution-analysis",
+  "admin-briefing": "admin-briefing",
 };
 
 const entries: string[] = [];

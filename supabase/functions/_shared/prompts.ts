@@ -21,6 +21,12 @@ const AD_ACCOUNT_ARG: PromptArgDef = {
 
 export const prompts: PromptDef[] = [
   {
+    name: "admin-briefing",
+    description:
+      "Morning briefing for admins — checks pending suggestions, recent bugs, knowledge gaps, and top searches.",
+    arguments: [],
+  },
+  {
     name: "ad-fatigue-report",
     description:
       "Detect creative fatigue — analyzes frequency, CTR decline, and CPA trends to flag exhausted creatives.",

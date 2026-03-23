@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { googleAdsQuery } from "../google/client.js";
-import { formatMicros, formatPct, formatCompact, datePresetToRange } from "../google/format.js";
+import { formatMicros, formatPct, formatCompact, datePresetToRange, resolveCampaignId, resolveAdGroupId } from "../google/format.js";
 import type { GoogleAdsRow } from "../google/types.js";
 
 interface AggRow {
@@ -191,8 +191,14 @@ export function registerGetGoogleAdsInsights(server: McpServer): void {
           "campaign.status = 'ENABLED'",
           `segments.date BETWEEN '${startDate}' AND '${endDate}'`,
         ];
-        if (campaign_id) conditions.push(`campaign.id = ${campaign_id}`);
-        if (ad_group_id) conditions.push(`ad_group.id = ${ad_group_id}`);
+        if (campaign_id) {
+          const resolvedCampaignId = await resolveCampaignId(customer_id, campaign_id);
+          conditions.push(`campaign.id = ${resolvedCampaignId}`);
+        }
+        if (ad_group_id) {
+          const resolvedAdGroupId = await resolveAdGroupId(customer_id, ad_group_id, campaign_id);
+          conditions.push(`ad_group.id = ${resolvedAdGroupId}`);
+        }
 
         const orderBy = `ORDER BY ${sortKeyForEnum(sortField)} DESC`;
 

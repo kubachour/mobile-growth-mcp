@@ -1,5 +1,29 @@
 // Shared formatting utilities for Google Ads tools
 
+import { googleAdsQuery } from "./client.js";
+import type { GoogleAdsRow } from "./types.js";
+
+/** Resolve a campaign name or numeric ID to a numeric ID. Pass-through if already numeric. */
+export async function resolveCampaignId(customerId: string, value: string): Promise<string> {
+  if (/^\d+$/.test(value)) return value;
+  const query = `SELECT campaign.id, campaign.name FROM campaign WHERE campaign.name = '${value.replace(/'/g, "\\'")}' LIMIT 1`;
+  const chunks = await googleAdsQuery(customerId, query);
+  const rows: GoogleAdsRow[] = chunks.flatMap((c) => c.results ?? []);
+  if (rows.length === 0) throw new Error(`Campaign not found by name: "${value}"`);
+  return rows[0].campaign!.id!;
+}
+
+/** Resolve an ad group name or numeric ID to a numeric ID. Requires customer_id and optionally campaign_id for disambiguation. */
+export async function resolveAdGroupId(customerId: string, value: string, campaignId?: string): Promise<string> {
+  if (/^\d+$/.test(value)) return value;
+  let query = `SELECT ad_group.id, ad_group.name FROM ad_group WHERE ad_group.name = '${value.replace(/'/g, "\\'")}' LIMIT 1`;
+  if (campaignId) query = query.replace("LIMIT 1", `AND campaign.id = ${campaignId} LIMIT 1`);
+  const chunks = await googleAdsQuery(customerId, query);
+  const rows: GoogleAdsRow[] = chunks.flatMap((c) => c.results ?? []);
+  if (rows.length === 0) throw new Error(`Ad group not found by name: "${value}"`);
+  return rows[0].adGroup!.id!;
+}
+
 /** Convert micros string to formatted dollar amount */
 export function formatMicros(micros: string | undefined): string {
   if (!micros) return "—";

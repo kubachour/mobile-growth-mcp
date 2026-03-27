@@ -9,6 +9,8 @@ You're connected to the Mobile Growth knowledge base — curated expert insights
 
 **The knowledge base is always on.** Use \`search_insights\` freely — before making recommendations, when diagnosing issues, or exploring strategies. The more specific your query, the better the results.
 
+> **Note:** Connecting Meta or Google Ads is optional. The knowledge base, community suggestions, and private insights all work with just your API key. Add Meta or Google Ads credentials later if you want live campaign data and reports.
+
 Quick examples:
 - "subscription app creative fatigue signals"
 - "Meta CBO vs ABO tradeoffs for subscription apps"
@@ -51,13 +53,13 @@ Report a gap in the knowledge base, a bug in any tool, or a missing capability.
 
 ## Community Knowledge
 
-### suggest_insight
-Submit knowledge for admin review. Extract as much structured data as possible from the source material — full insight schema (title, insight text, source metadata, topics, actionable steps). Once approved, it's added to the shared knowledge base.
+### suggest_insight ⭐ DEFAULT for saving knowledge
+Submit knowledge for admin review. **This is the default tool when a user wants to save an insight** — it contributes to the shared knowledge base that benefits all users. Extract as much structured data as possible from the source material — full insight schema (title, insight text, source metadata, topics, actionable steps). Once approved, it's added to the shared knowledge base.
 - Use this when the user shares an article, post, or discussion with valuable mobile growth knowledge
 - Keep raw_excerpt concise (under 500 chars) for reliability
 
 ### save_private_insight
-Save knowledge that is private to your API key. Immediately searchable but only visible to you. Use for client-specific knowledge, internal benchmarks, or account-specific learnings.
+Save knowledge that is private to your API key. Immediately searchable but only visible to you. **Only use this instead of suggest_insight when** the content contains client-specific data, internal benchmarks, account metrics, or the user explicitly asks for private storage.
 - Same full schema as suggest_insight
 - No admin approval needed — saved instantly
 
@@ -87,8 +89,10 @@ List ads, optionally scoped to an ad set.
 - **fields, effective_status, limit, after** (optional)
 
 ### get_meta_insights
-Pull performance insights with configurable level, breakdowns, date range.
+Pull performance insights with configurable level, breakdowns, date range. Ad-level queries auto-include ad_id, ad_name, adset_id, adset_name.
 - **ad_account_id** (required)
+- **campaign_id** (optional): Scope to a specific campaign
+- **adset_id** (optional): Scope to a specific ad set
 - **level** (optional): account, campaign, adset, ad (default: campaign)
 - **date_preset** (optional): default last_7d
 - **time_range** (optional): {since, until} for custom dates
@@ -218,8 +222,8 @@ When your response draws on knowledge base results, **always attribute visibly**
 ### General:
 - Always \`search_insights\` before making recommendations — ground advice in expert knowledge
 - Use \`get_insight\` to read full context when reports reference insight IDs
-- Use \`suggest_insight\` when a user shares valuable knowledge from articles or discussions
-- Use \`save_private_insight\` for client-specific learnings
+- Use \`suggest_insight\` (default) when a user shares valuable knowledge from articles or discussions
+- Use \`save_private_insight\` only for client-specific data the user explicitly wants private
 - If a tool errors unexpectedly, call \`submit_feedback\` with category \`bug_report\`
 `;
 
@@ -245,10 +249,10 @@ function buildStatusSection(status?: StartupStatus): string {
     lines.push("- **Meta Marketing API**: Token configured");
   } else {
     lines.push(
-      "- **Meta Marketing API**: Token not configured — Meta tools will return errors"
+      "- **Meta Marketing API**: Not connected (optional — KB works without it)"
     );
     lines.push(
-      "  - Fix: provide your token via `--meta-token=...` CLI arg, `META_ACCESS_TOKEN` env var, or `.env` file"
+      "  - To connect: provide your token via `--meta-token=...` CLI arg, `META_ACCESS_TOKEN` env var, or `.env` file"
     );
   }
 
@@ -256,10 +260,10 @@ function buildStatusSection(status?: StartupStatus): string {
     lines.push("- **Google Ads API**: Configured");
   } else {
     lines.push(
-      "- **Google Ads API**: Not configured — Google Ads tools will return errors"
+      "- **Google Ads API**: Not connected (optional — KB works without it)"
     );
     lines.push(
-      "  - Fix: run `npx mobile-growth-mcp auth google` to set up credentials"
+      "  - To connect: run `npx mobile-growth-mcp auth google` to set up credentials"
     );
   }
 

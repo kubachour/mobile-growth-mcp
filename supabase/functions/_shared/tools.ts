@@ -611,9 +611,11 @@ export const tools: ToolDef[] = [
   {
     name: "suggest_insight",
     description:
-      "Submit a knowledge insight for review by the admin. Extract as much structured data as possible from the source material. " +
-      "The suggestion will be reviewed and, if approved, added to the shared knowledge base with full search indexing. " +
-      "Use this when the user shares an article, post, or discussion that contains valuable mobile growth knowledge.",
+      "DEFAULT TOOL for saving knowledge — submit an insight for admin review and inclusion in the shared knowledge base. " +
+      "Use this whenever the user shares an article, post, discussion, or any source with mobile growth knowledge. " +
+      "Extract as much structured data as possible from the source material. " +
+      "Once approved, the insight becomes searchable by all users. " +
+      "IMPORTANT: Prefer this over save_private_insight unless the user explicitly asks for private/personal storage or the content is client-specific data (benchmarks, account IDs, internal metrics).",
     inputSchema: {
       type: "object",
       properties: insightInputProperties,
@@ -661,9 +663,10 @@ export const tools: ToolDef[] = [
   {
     name: "save_private_insight",
     description:
-      "Save a knowledge insight that is private to your API key. Private insights are immediately searchable but only visible to you. " +
-      "Use this for client-specific knowledge, internal benchmarks, or account-specific learnings that should not be shared with other users. " +
-      "Extract as much structured data as possible from the source material.",
+      "Save a PRIVATE insight visible only to your API key. Only use this when the content contains client-specific data, " +
+      "internal benchmarks, account-specific metrics, or learnings the user explicitly wants to keep private. " +
+      "For general industry knowledge from articles, posts, or discussions, use suggest_insight instead (it shares with all users). " +
+      "Private insights are immediately searchable but only by you. Extract as much structured data as possible.",
     inputSchema: {
       type: "object",
       properties: insightInputProperties,

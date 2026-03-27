@@ -59,12 +59,12 @@ console.error(
 console.error(
   metaTokenResult.value
     ? `Meta token: ${metaTokenResult.source}`
-    : "Meta token: not configured — Meta tools will return errors when called"
+    : "Meta token: not configured (optional — KB works without it)"
 );
 console.error(
   googleAdsResult.configured
     ? `Google Ads: configured`
-    : `Google Ads: not configured (missing: ${googleAdsResult.missing.join(", ")}) — run \`npx mobile-growth-mcp auth google\` to set up`
+    : `Google Ads: not configured (optional — KB works without it). Run \`npx mobile-growth-mcp auth google\` to set up`
 );
 
 // ── Create server ──────────────────────────────────────────────────

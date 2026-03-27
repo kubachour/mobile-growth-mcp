@@ -163,3 +163,7 @@ export const AD_DEFAULT_FIELDS =
 
 export const INSIGHT_DEFAULT_FIELDS =
   "campaign_id,campaign_name,spend,impressions,clicks,ctr,cpm,cpc,actions,cost_per_action_type";
+
+// Level-specific fields that get prepended to the default when level is adset or ad
+export const INSIGHT_ADSET_FIELDS = "adset_id,adset_name";
+export const INSIGHT_AD_FIELDS = "adset_id,adset_name,ad_id,ad_name";

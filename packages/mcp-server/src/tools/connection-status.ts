@@ -61,10 +61,11 @@ export function registerConnectionStatus(
         );
       } else {
         lines.push(
-          "## Meta Marketing API: Not Configured",
-          "- Meta tools will return an error when called",
+          "## Meta Marketing API: Not Connected (Optional)",
+          "- KB, suggestions, and private insights work without it",
+          "- Connect Meta to unlock live campaign data and reports",
           "",
-          "### How to fix",
+          "### How to connect",
           "Provide your Meta access token using one of these methods:",
           '1. MCP config: add `"META_ACCESS_TOKEN": "..."` to the `"env"` block in `.mcp.json` (Claude Code/Cursor) or `claude_desktop_config.json` (Claude Desktop)',
           "2. CLI argument: add `--meta-token=...` to the args array",
@@ -84,11 +85,11 @@ export function registerConnectionStatus(
         );
       } else {
         lines.push(
-          "## Google Ads API: Not Configured",
-          "- Google Ads tools will return an error when called",
-          `- Missing: ${status.google.missing.join(", ")}`,
+          "## Google Ads API: Not Connected (Optional)",
+          "- KB, suggestions, and private insights work without it",
+          "- Connect Google Ads to unlock campaign data and network analysis",
           "",
-          "### How to fix",
+          "### How to connect",
           "Option 1 — Interactive setup (recommended):",
           "```",
           "npx mobile-growth-mcp auth google",

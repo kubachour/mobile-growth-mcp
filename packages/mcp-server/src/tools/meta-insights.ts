@@ -4,6 +4,8 @@ import {
   metaApiGet,
   activeFilter,
   INSIGHT_DEFAULT_FIELDS,
+  INSIGHT_ADSET_FIELDS,
+  INSIGHT_AD_FIELDS,
   DEFAULT_DATE_PRESET,
   getActionValue,
   getCostPerAction,
@@ -13,11 +15,19 @@ import type { MetaListResponse, MetaInsightRow } from "../meta/types.js";
 export function registerGetMetaInsights(server: McpServer): void {
   server.tool(
     "get_meta_insights",
-    "Pull performance insights from a Meta ad account with configurable level, breakdowns, and date range. Default: campaign-level, last 7 days, active only. Conversion event is configurable (default: mobile_app_install).",
+    "Pull performance insights from a Meta ad account with configurable level, breakdowns, and date range. Default: campaign-level, last 7 days, active only. Conversion event is configurable (default: mobile_app_install). Use campaign_id or adset_id to scope results.",
     {
       ad_account_id: z
         .string()
         .describe("Meta ad account ID (e.g. act_123456789)"),
+      campaign_id: z
+        .string()
+        .optional()
+        .describe("Scope to a specific campaign ID (e.g. 23851234567890)"),
+      adset_id: z
+        .string()
+        .optional()
+        .describe("Scope to a specific ad set ID (e.g. 23851234567891)"),
       level: z
         .enum(["account", "campaign", "adset", "ad"])
         .optional()
@@ -26,7 +36,7 @@ export function registerGetMetaInsights(server: McpServer): void {
         .string()
         .optional()
         .describe(
-          `Comma-separated fields. Default: ${INSIGHT_DEFAULT_FIELDS}`
+          `Comma-separated fields. Default includes level-appropriate name fields + ${INSIGHT_DEFAULT_FIELDS}`
         ),
       date_preset: z
         .string()
@@ -82,6 +92,8 @@ export function registerGetMetaInsights(server: McpServer): void {
     },
     async ({
       ad_account_id,
+      campaign_id,
+      adset_id,
       level,
       fields,
       date_preset,
@@ -96,9 +108,23 @@ export function registerGetMetaInsights(server: McpServer): void {
     }) => {
       try {
         const convEvent = conversion_event ?? "mobile_app_install";
+        const effectiveLevel = level ?? "campaign";
+
+        // Auto-include level-appropriate name fields when user hasn't specified custom fields
+        let effectiveFields = fields;
+        if (!effectiveFields) {
+          if (effectiveLevel === "ad") {
+            effectiveFields = `${INSIGHT_AD_FIELDS},${INSIGHT_DEFAULT_FIELDS}`;
+          } else if (effectiveLevel === "adset") {
+            effectiveFields = `${INSIGHT_ADSET_FIELDS},${INSIGHT_DEFAULT_FIELDS}`;
+          } else {
+            effectiveFields = INSIGHT_DEFAULT_FIELDS;
+          }
+        }
+
         const params: Record<string, string> = {
-          fields: fields ?? INSIGHT_DEFAULT_FIELDS,
-          level: level ?? "campaign",
+          fields: effectiveFields,
+          level: effectiveLevel,
           limit: String(limit ?? 50),
         };
 
@@ -116,11 +142,31 @@ export function registerGetMetaInsights(server: McpServer): void {
           params.breakdowns = breakdowns;
         }
 
-        if (filtering !== undefined) {
-          params.filtering = filtering === "[]" ? "[]" : filtering;
-        } else {
-          params.filtering = activeFilter();
+        // Build filtering: start with user-provided or default active filter
+        const baseFilters: { field: string; operator: string; value: unknown }[] =
+          filtering !== undefined
+            ? filtering === "[]"
+              ? []
+              : JSON.parse(filtering)
+            : JSON.parse(activeFilter());
+
+        // Add campaign_id / adset_id scoping filters
+        if (campaign_id) {
+          baseFilters.push({
+            field: "campaign.id",
+            operator: "IN",
+            value: [campaign_id],
+          });
         }
+        if (adset_id) {
+          baseFilters.push({
+            field: "adset.id",
+            operator: "IN",
+            value: [adset_id],
+          });
+        }
+
+        params.filtering = JSON.stringify(baseFilters);
 
         if (sort) {
           params.sort = sort;
@@ -150,7 +196,10 @@ export function registerGetMetaInsights(server: McpServer): void {
         }
 
         // Format as table
-        let text = `**${rows.length} rows** | Level: ${level ?? "campaign"} | Event: ${convEvent}\n\n`;
+        let text = `**${rows.length} rows** | Level: ${effectiveLevel} | Event: ${convEvent}`;
+        if (campaign_id) text += ` | Campaign: ${campaign_id}`;
+        if (adset_id) text += ` | Ad Set: ${adset_id}`;
+        text += "\n\n";
 
         for (const row of rows) {
           const spend = parseFloat(row.spend || "0");

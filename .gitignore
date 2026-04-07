@@ -5,3 +5,5 @@ dist/
 .claude/
 supabase/.temp/
 data/insights/
+deno.lock
+temp/

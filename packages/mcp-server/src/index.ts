@@ -17,6 +17,7 @@ import { registerGetGoogleAdsAssets } from "./tools/google-assets.js";
 import { registerGetGoogleAdsInsights } from "./tools/google-insights.js";
 import { registerGetGoogleAdsNetworkMix } from "./tools/google-network-mix.js";
 import { registerGetGoogleAdsAssetFatigue } from "./tools/google-asset-fatigue.js";
+import { registerUploadGoogleImageAssets } from "./tools/google-upload-assets.js";
 import {
   registerConnectionStatus,
   type StartupStatus,
@@ -121,6 +122,7 @@ registerGetGoogleAdsAssets(server);
 registerGetGoogleAdsInsights(server);
 registerGetGoogleAdsNetworkMix(server);
 registerGetGoogleAdsAssetFatigue(server);
+registerUploadGoogleImageAssets(server);
 
 // ── Connection status tool (always present) ────────────────────────
 

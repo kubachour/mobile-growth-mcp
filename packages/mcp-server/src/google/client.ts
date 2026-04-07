@@ -86,6 +86,57 @@ function formatGoogleAdsError(err: GoogleAdsError["error"]): string {
   return `Google Ads API error (${code}): ${err.message}`;
 }
 
+export interface MutateOperation {
+  [entityType: string]: {
+    create?: Record<string, unknown>;
+    update?: Record<string, unknown>;
+    remove?: string;
+    updateMask?: string;
+  };
+}
+
+export interface MutateResponse {
+  mutateOperationResponses: Array<{
+    assetResult?: { resourceName: string };
+    adGroupAssetResult?: { resourceName: string };
+    campaignAssetResult?: { resourceName: string };
+    [key: string]: unknown;
+  }>;
+}
+
+export async function googleAdsMutate(
+  customerId: string,
+  operations: MutateOperation[]
+): Promise<MutateResponse> {
+  const auth = getGoogleAdsAuth();
+  const normalizedId = normalizeCustomerId(customerId);
+  const headers = await auth.getHeaders(normalizedId);
+
+  const url = `${BASE_URL}/customers/${normalizedId}/googleAds:mutate`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ mutateOperations: operations }),
+  });
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    if (isGoogleAdsError(body)) {
+      throw new Error(formatGoogleAdsError(body.error));
+    }
+    throw new Error(
+      `Google Ads API mutate returned ${response.status}: ${JSON.stringify(body)}`
+    );
+  }
+
+  return body as MutateResponse;
+}
+
 export async function googleAdsQuery(
   customerId: string,
   query: string

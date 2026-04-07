@@ -6,15 +6,19 @@ import type { MetaListResponse, MetaAd } from "../meta/types.js";
 export function registerGetMetaAds(server: McpServer): void {
   server.tool(
     "get_meta_ads",
-    "List ads from a Meta ad account, optionally scoped to an ad set. Defaults to active ads with lean field set.",
+    "List ads from a Meta ad account, optionally scoped to a campaign or ad set. Defaults to active ads with lean field set.",
     {
       ad_account_id: z
         .string()
         .describe("Meta ad account ID (e.g. act_123456789)"),
+      campaign_id: z
+        .string()
+        .optional()
+        .describe("Scope to a specific campaign ID (e.g. 23851234567890)"),
       adset_id: z
         .string()
         .optional()
-        .describe("Scope to a specific ad set ID."),
+        .describe("Scope to a specific ad set ID. Takes priority over campaign_id."),
       fields: z
         .string()
         .optional()
@@ -34,7 +38,7 @@ export function registerGetMetaAds(server: McpServer): void {
         .optional()
         .describe("Pagination cursor from previous response"),
     },
-    async ({ ad_account_id, adset_id, fields, effective_status, limit, after }) => {
+    async ({ ad_account_id, campaign_id, adset_id, fields, effective_status, limit, after }) => {
       try {
         const params: Record<string, string> = {
           fields: fields ?? AD_DEFAULT_FIELDS,
@@ -57,9 +61,12 @@ export function registerGetMetaAds(server: McpServer): void {
           params.after = after;
         }
 
+        // Priority: adset_id > campaign_id > account-level
         const parentPath = adset_id
           ? `/${adset_id}/ads`
-          : `/${ad_account_id}/ads`;
+          : campaign_id
+            ? `/${campaign_id}/ads`
+            : `/${ad_account_id}/ads`;
 
         const result = await metaApiGet<MetaListResponse<MetaAd>>({
           path: parentPath,
@@ -73,7 +80,7 @@ export function registerGetMetaAds(server: McpServer): void {
         for (const ad of ads) {
           text +=
             `- **${ad.name}** (${ad.id})\n` +
-            `  Ad Set: ${ad.adset_id} | Status: ${ad.effective_status}` +
+            `  Campaign: ${ad.campaign_id} | Ad Set: ${ad.adset_id} | Status: ${ad.effective_status}` +
             (ad.creative?.call_to_action_type
               ? ` | CTA: ${ad.creative.call_to_action_type}`
               : "") +

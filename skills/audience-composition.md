@@ -4,6 +4,34 @@ Reveal who is actually converting and at what cost, by age and gender. Identifie
 
 ---
 
+## When to Use This
+
+- User asks "who is converting?" or "what demographic is best for us?"
+- CPA varies wildly and the cause isn't obvious at the campaign level
+- User is deciding between App Promotion and Web Sales campaign types
+- User wants to set up Value Rules based on age/gender
+- User says "audience breakdown" or "demographic analysis"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
+- Date range: **Last 7 days**
+- Click **Breakdown** → **By Delivery** → **Age** and then **Gender** (run two separate breakdowns, or use "Age and Gender" if available)
+- Columns: `Age` / `Gender`, `Spend`, `Impressions`, `Reach`, `CPM`, `CTR`, `Result`, `Cost per result`
+- Export both breakdowns as CSV and paste below.
+
+## What It Produces
+
+- Age × gender conversion efficiency heatmap
+- Spend vs conversion share mismatch analysis
+- Specific Value Rule recommendations (which demographic segments to bid up/down)
+- Campaign type recommendation based on target demographic
+
+---
+
 ## Knowledge Base Grounding
 
 - **mb-li-010** (Marcus Burke): "Different creatives attract wildly different age demographics. Trial CVR by age: 18-24=18%, 25-34=26%, 35-44=32%, 45-54=44%, 55-64=48%, 65+=42%. Ads that attract older users are more valuable."

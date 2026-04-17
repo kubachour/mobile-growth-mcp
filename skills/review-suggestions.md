@@ -1,6 +1,28 @@
 # Skill: Review Community Suggestions
 
-Review pending community-submitted insights, check quality and overlap against the existing knowledge base, then approve or reject each one. This skill works **without the MCP server** — it uses the Supabase REST API and scripts directly.
+Review pending community-submitted insights, check quality and overlap against the existing knowledge base, then approve or reject each one. Admin-only. Works without the MCP server — uses the Supabase REST API directly.
+
+---
+
+## When to Use This
+
+- Admin wants to process the insight suggestion queue
+- After `admin-briefing` reports pending suggestions
+- Periodic review (weekly or whenever the queue has > 5 pending items)
+- User says "review suggestions" or "process the queue"
+
+## What It Needs
+
+- `.env` with `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `OPENAI_API_KEY`
+- Admin access (service role key required)
+- No Meta API or Google Ads connection needed
+
+## What It Produces
+
+- Summary table of pending suggestions
+- Quality assessment per suggestion (completeness, accuracy, overlap with existing KB)
+- Approve/reject decision with reviewer notes for each
+- New insight rows in the `insights` table for approved suggestions (with embeddings)
 
 ---
 

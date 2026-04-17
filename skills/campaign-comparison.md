@@ -1,6 +1,32 @@
-# Skill: Campaign Comparison Methodology
+# Skill: Campaign Comparison
 
 Reusable step-by-step framework for comparing any two Meta campaigns to identify why one outperforms the other.
+
+---
+
+## When to Use This
+
+- User points to two campaigns with different CPIs and asks why
+- User wants to understand what makes a winning campaign different
+- Before scaling one campaign and pausing another — validate the reason
+- User says "campaign A is doing better than B, what's different?"
+- Testing a new campaign structure against an existing one
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id` and optionally the two `campaign_id` values. If IDs aren't provided, the skill will list campaigns and ask you to pick two.
+
+**Option B — CSV export** (no API needed):
+- Export from **Meta Ads Manager** → **Campaigns** tab, then drill into each campaign for its ad sets and ads
+- For each campaign export: `Campaign name`, `Objective`, `Bid strategy`, `Budget type`, `Budget`, `Start date`, `Spend`, `Impressions`, `Frequency`, `CPM`, `CTR`, `CPA`, `Conversions`
+- Also export **Ad sets** for each campaign: `Ad set name`, `Targeting type`, `Optimization goal`, `Bid strategy`, `Budget`, `Placements`, `Spend`, `CPA`
+- Paste both campaign exports below, labeled by campaign name.
+
+## What It Produces
+
+- Side-by-side comparison across: settings, targeting, creative count/format, performance metrics
+- Root cause identification for the performance gap
+- Specific hypothesis for what's driving the difference
 
 ---
 

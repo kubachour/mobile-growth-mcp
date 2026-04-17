@@ -7,8 +7,19 @@ Process raw content (podcast transcripts, LinkedIn posts, PDFs, community discus
 ## When to Use This
 
 - You have a new podcast transcript, LinkedIn post, PDF, or community discussion
-- You want to add its knowledge to the shared Supabase knowledge base
-- Run this recipe, then save the output as a JSON file in `data/insights/`
+- You want to extract structured insights before saving to `data/insights/`
+- Use when you only need the extraction step (not the full ingest pipeline — use `ingest-content` for that)
+- User pastes raw content and asks "extract insights from this"
+
+## What It Needs
+
+- Raw content pasted directly (any format: transcript, post, article, PDF text)
+- No API connection, no tools — this is a pure text transformation skill
+
+## What It Produces
+
+- JSON array of structured insight objects ready to save to `data/insights/`
+- Each insight: id, title, insight text, source metadata, topics, applies_to, confidence, actionable_steps
 
 ## Input
 

@@ -4,6 +4,28 @@ Take raw content (transcript, post, article), extract insights, save to disk, up
 
 ---
 
+## When to Use This
+
+- User wants to add a new source (podcast, post, article) to the knowledge base in one step
+- Preferred over `extract-insights` when you want extraction + storage + verification in a single flow
+- Admin use: after a new Growth Gems edition, a podcast transcript, or an expert post
+- User says "add this to the knowledge base" or "ingest this content"
+
+## What It Needs
+
+- Raw content pasted directly (transcript, LinkedIn post, article text, PDF export)
+- Source metadata: author name, source type, source title, approximate date
+- Platform (meta / google / tiktok / cross_platform), if applicable
+- Access to `data/insights/` directory and ability to run `npm run ingest`
+
+## What It Produces
+
+- Structured insight JSON file saved to `data/insights/`
+- Upserted rows in Supabase `insights` table with embeddings
+- Verification that the new insights are searchable
+
+---
+
 ## Required Input
 
 Before starting, collect from the user:

@@ -4,6 +4,33 @@ Categorize every active ad by health status and provide specific next steps per 
 
 ---
 
+## When to Use This
+
+- User asks "which ads are working?" or "what should I pause?"
+- User wants to know which creatives to scale, keep, or replace
+- Before planning a new creative batch
+- CPA is rising and the cause might be at the ad level
+- User says "creative audit" or "ad performance"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Ads** tab
+- Date range: **Last 7 days**
+- Columns: `Ad name`, `Ad set name`, `Campaign name`, `Delivery`, `Spend`, `Impressions`, `Frequency`, `CPM`, `CTR (link)`, `CPC`, `Result` (your conversion event), `Cost per result`
+- Export as CSV and paste below.
+- Also note your target CPA so ads can be benchmarked against it.
+
+## What It Produces
+
+- Ad-level health table with category: Scaling / Promising / Contributing / Fatiguing / Dead weight
+- Specific recommended action per ad
+- Creative diversity assessment (format coverage, minimum 6 concepts check)
+
+---
+
 ## Knowledge Base Grounding
 
 - **ds-pt-001** (Dara Saeed): "Only optimize based on primary metrics (CPA, ROAS). A low CTR or high CPM doesn't mean an ad is failing if the CPA is profitable."

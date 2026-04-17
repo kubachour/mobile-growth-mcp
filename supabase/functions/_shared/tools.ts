@@ -723,6 +723,282 @@ export const tools: ToolDef[] = [
     },
   },
 
+  // =================================================================
+  // Skill suggestions
+  // =================================================================
+
+  {
+    name: "suggest_skill",
+    description:
+      "Propose a new skill (workflow) for the knowledge base. A skill is a step-by-step procedure that tells the LLM what to do, when to do it, and what tools or data to use. " +
+      "Use this when a user describes a repeatable workflow they want automated — e.g. 'every Monday check if any creatives are fatiguing', 'review last year seasonality'. " +
+      "BEFORE calling this tool: draft the full skill .md yourself using the canonical skill format, then pass it as content_md. " +
+      "The canonical format is: ## What It Does, ## When to Use This (bullet triggers), ## What It Needs (data sources + CSV export instructions), ## Procedure (numbered steps with tool calls or CSV column specs), ## Output. " +
+      "Only pass user_description without content_md if the user explicitly wants to submit a rough idea for the admin to develop. " +
+      "Submissions go to admin review before becoming live.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "Proposed slug for the skill (e.g. 'google-weekly-health', 'meta-value-rules-audit'). Use lowercase kebab-case.",
+        },
+        description: {
+          type: "string",
+          description: "One-line summary of what the skill does — this is what the LLM sees when deciding whether to invoke it.",
+        },
+        when_to_use: {
+          type: "array",
+          items: { type: "string" },
+          description: "List of natural-language phrases that should trigger this skill (e.g. 'user asks how did we do this week', 'user wants to find winning creatives'). Be specific.",
+        },
+        data_sources: {
+          type: "array",
+          items: { type: "string" },
+          description: "Data this skill needs. Use any of: 'meta_api', 'google_ads_api', 'tiktok_api', 'csv', 'manual_input', 'none'.",
+        },
+        user_description: {
+          type: "string",
+          description: "Free-text description of the workflow — what it does, why it's useful, rough steps. Required if content_md is not provided.",
+        },
+        content_md: {
+          type: "string",
+          description: "Full skill .md content if you already have a draft. If omitted, the admin will draft it from user_description.",
+        },
+      },
+      required: ["name", "description", "when_to_use", "data_sources"],
+    },
+    handler: async (args, supabase, auth) => {
+      if (!auth?.key_id) throw new Error("Authentication required");
+
+      const userDesc = (args.user_description as string | undefined) ?? null;
+      const contentMd = (args.content_md as string | undefined) ?? null;
+
+      if (!userDesc && !contentMd) {
+        throw new Error("Provide either user_description (free-text) or content_md (full .md draft).");
+      }
+
+      const row = {
+        name: (args.name as string).toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+        description: args.description as string,
+        when_to_use: (args.when_to_use as string[] | undefined) ?? [],
+        data_sources: (args.data_sources as string[] | undefined) ?? [],
+        user_description: userDesc,
+        content_md: contentMd,
+        submitted_by: auth.key_id,
+        status: "pending",
+      };
+
+      const { data, error } = await supabase
+        .from("suggested_skills")
+        .insert(row)
+        .select("id")
+        .single();
+
+      if (error) throw new Error(`Failed to submit skill suggestion: ${error.message}`);
+
+      const hasDraft = !!contentMd;
+      return [
+        {
+          type: "text",
+          text:
+            `Skill suggestion #${data.id} submitted for review.\n` +
+            `Name: "${row.name}"\n` +
+            `Description: ${row.description}\n` +
+            (hasDraft
+              ? "A full .md draft was included — admin will review and deploy."
+              : "No .md draft provided — admin will write the skill from your description."),
+        },
+      ];
+    },
+  },
+
+  {
+    name: "review_skill_suggestions",
+    adminOnly: true,
+    description:
+      "List pending user-submitted skill suggestions awaiting review. Shows name, description, when_to_use, data_sources, and whether a .md draft was provided.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        status: {
+          type: "string",
+          enum: ["pending", "approved", "rejected"],
+          description: "Filter by status (default: pending)",
+        },
+      },
+    },
+    handler: async (args, supabase) => {
+      const status = (args.status as string | undefined) ?? "pending";
+
+      const { data, error } = await supabase
+        .from("suggested_skills")
+        .select("id, name, description, when_to_use, data_sources, user_description, content_md, submitted_by, status, reviewer_notes, created_at")
+        .eq("status", status)
+        .order("created_at", { ascending: true });
+
+      if (error) throw new Error(`Failed to fetch skill suggestions: ${error.message}`);
+      if (!data || data.length === 0) {
+        return [{ type: "text", text: `No ${status} skill suggestions found.` }];
+      }
+
+      const keyIds = [...new Set(data.map((d: Record<string, unknown>) => d.submitted_by))];
+      const { data: keys } = await supabase
+        .from("api_keys")
+        .select("id, team_name")
+        .in("id", keyIds);
+      const nameMap: Record<number, string> = {};
+      for (const k of (keys ?? []) as { id: number; team_name: string }[]) {
+        nameMap[k.id] = k.team_name;
+      }
+
+      const formatted = (data as Record<string, unknown>[])
+        .map(
+          (d) =>
+            `## Skill Suggestion #${d.id}: ${d.name}\n` +
+            `**Submitted by:** ${nameMap[d.submitted_by as number] ?? `key#${d.submitted_by}`} | **Date:** ${d.created_at}\n` +
+            `**Description:** ${d.description}\n` +
+            `**When to use:** ${(d.when_to_use as string[]).map((t) => `"${t}"`).join(", ") || "not specified"}\n` +
+            `**Data sources:** ${(d.data_sources as string[]).join(", ") || "none"}\n` +
+            `**Draft .md:** ${d.content_md ? "Yes (included)" : "No — needs to be written"}\n` +
+            (d.user_description ? `\n**User description:**\n${d.user_description}` : "") +
+            (d.content_md ? `\n\n**Draft .md (first 500 chars):**\n${(d.content_md as string).slice(0, 500)}${(d.content_md as string).length > 500 ? "…" : ""}` : "") +
+            (d.reviewer_notes ? `\n\n**Reviewer notes:** ${d.reviewer_notes}` : "")
+        )
+        .join("\n\n---\n\n");
+
+      return [
+        {
+          type: "text",
+          text:
+            `${data.length} ${status} skill suggestion(s):\n\n${formatted}\n\n` +
+            `To approve: use approve_skill_suggestion. To reject: use reject_skill_suggestion.\n` +
+            `After approval, commit the .md to skills/, run \`npm run build:prompts\`, and deploy the Edge Function.`,
+        },
+      ];
+    },
+  },
+
+  {
+    name: "approve_skill_suggestion",
+    adminOnly: true,
+    description:
+      "Approve a skill suggestion. Records approval and returns the final .md content ready to commit to skills/. " +
+      "After approving, you must: (1) save the .md to skills/<name>.md, (2) run npm run build:prompts, (3) deploy the Edge Function.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        suggestion_id: {
+          type: "number",
+          description: "The skill suggestion ID to approve",
+        },
+        content_md: {
+          type: "string",
+          description: "Final .md content to use (overrides the submitted draft). Required if no draft was submitted.",
+        },
+        reviewer_notes: {
+          type: "string",
+          description: "Optional notes about the approval",
+        },
+      },
+      required: ["suggestion_id"],
+    },
+    handler: async (args, supabase) => {
+      const suggestionId = args.suggestion_id as number;
+
+      const { data: suggestion, error: fetchError } = await supabase
+        .from("suggested_skills")
+        .select("*")
+        .eq("id", suggestionId)
+        .eq("status", "pending")
+        .single();
+
+      if (fetchError || !suggestion) {
+        throw new Error(`Skill suggestion #${suggestionId} not found or not pending`);
+      }
+
+      const finalMd = (args.content_md as string | undefined) ?? suggestion.content_md;
+      if (!finalMd) {
+        throw new Error(
+          `Skill suggestion #${suggestionId} has no .md content. ` +
+          "Provide content_md when approving, or draft the skill first."
+        );
+      }
+
+      const { error } = await supabase
+        .from("suggested_skills")
+        .update({
+          status: "approved",
+          content_md: finalMd,
+          reviewer_notes: (args.reviewer_notes as string | undefined) ?? null,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", suggestionId);
+
+      if (error) throw new Error(`Failed to approve: ${error.message}`);
+
+      return [
+        {
+          type: "text",
+          text:
+            `Skill suggestion #${suggestionId} ("${suggestion.name}") approved.\n\n` +
+            `**Next steps to make it live:**\n` +
+            `1. Save the following content to \`skills/${suggestion.name}.md\`\n` +
+            `2. Run \`npm run build:prompts\`\n` +
+            `3. Deploy: \`supabase functions deploy mcp --no-verify-jwt\`\n\n` +
+            `**File content:**\n\`\`\`markdown\n${finalMd}\n\`\`\``,
+        },
+      ];
+    },
+  },
+
+  {
+    name: "reject_skill_suggestion",
+    adminOnly: true,
+    description: "Reject a skill suggestion with optional feedback notes.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        suggestion_id: {
+          type: "number",
+          description: "The skill suggestion ID to reject",
+        },
+        reviewer_notes: {
+          type: "string",
+          description: "Reason for rejection",
+        },
+      },
+      required: ["suggestion_id"],
+    },
+    handler: async (args, supabase) => {
+      const suggestionId = args.suggestion_id as number;
+      const notes = (args.reviewer_notes as string | undefined) ?? null;
+
+      const { data, error } = await supabase
+        .from("suggested_skills")
+        .update({
+          status: "rejected",
+          reviewer_notes: notes,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", suggestionId)
+        .eq("status", "pending")
+        .select("id, name");
+
+      if (error) throw new Error(`Failed to reject: ${error.message}`);
+      if (!data || data.length === 0) {
+        throw new Error(`Skill suggestion #${suggestionId} not found or not pending`);
+      }
+
+      return [
+        {
+          type: "text",
+          text: `Skill suggestion #${suggestionId} ("${data[0].name}") rejected.${notes ? ` Notes: ${notes}` : ""}`,
+        },
+      ];
+    },
+  },
+
   {
     name: "review_suggestions",
     adminOnly: true,

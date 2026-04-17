@@ -4,6 +4,32 @@ Detect creatives that are wasting budget due to audience exhaustion or declining
 
 ---
 
+## When to Use This
+
+- Frequency is climbing and CPA is rising
+- CTR has been declining over the past week
+- User asks "are my ads getting tired?" or "should I refresh creatives?"
+- Before a creative refresh sprint — to know which ads to replace first
+- User mentions audience saturation or ad burnout
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id`. The `get_meta_ad_fatigue` tool handles this in a single call.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Ads** tab
+- Date range: **Last 14 days**, broken down **by day** (use the "Breakdown" → "Time" → "Day" option before exporting)
+- Columns: `Ad name`, `Ad set name`, `Date`, `Spend`, `Impressions`, `Reach`, `Frequency`, `CTR (link)`, `CPM`, `Result`, `Cost per result`
+- Export as CSV and paste below.
+
+## What It Produces
+
+- Per-ad fatigue status: Healthy / Warning / Fatigued / Saturated
+- Daily trend chart per flagged ad (frequency and CTR movement)
+- Prioritized list of ads to rotate out, with timing recommendation
+
+---
+
 ## Knowledge Base Grounding
 
 - **wk-tw-001** (William Kast): "Frequency 2+ and CPA rising → creative fatigue, need fresh TOF creatives." Also: "CTR dropping and CPA rising → creative fatigue."

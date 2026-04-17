@@ -4,6 +4,32 @@ The "Monday morning check" — week-over-week health comparison with automatic d
 
 ---
 
+## When to Use This
+
+- User asks "how did we do this week?" or "how are campaigns performing?"
+- Monday morning or start-of-week check-in
+- Spend, CPA, or ROAS changed unexpectedly and needs diagnosis
+- User wants a summary before an optimization session
+- User says "quick check" or "weekly recap"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id` (e.g. `act_123456789`).
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** tab
+- Set date range to **This week (Mon–today)**, then export. Repeat for **Last week (Mon–Sun)**.
+- Columns to include: `Campaign name`, `Delivery`, `Budget`, `Spend`, `Reach`, `Impressions`, `Frequency`, `CPM`, `CTR (link)`, `CPC`, `Result` (your conversion event), `Cost per result`
+- Export each week as a separate CSV and paste both below, labeled by week.
+
+## What It Produces
+
+- Week-over-week delta table per campaign (spend Δ%, CPA Δ%, CPM Δ%, CTR Δ%, frequency Δ%)
+- Kast diagnostic label per campaign (fatigue / saturation / LP mismatch / healthy)
+- Prioritized action list
+
+---
+
 ## Knowledge Base Grounding
 
 - **wk-tw-001** (William Kast): The 4 core metric patterns that diagnose every Meta performance issue:

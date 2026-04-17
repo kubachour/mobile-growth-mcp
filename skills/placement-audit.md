@@ -4,19 +4,38 @@ How to identify and quantify placement waste in Meta app install campaigns.
 
 ---
 
-## Knowledge Base Grounding
-
-- **mb-li-006** (Marcus Burke): "App Promotion campaigns are Reels-heavy and skew young. Web campaigns have better placement distribution and scale on Feed."
-- **mb-li-009** (Marcus Burke): "Placement-level Value Rules — bid differently on each placement within the same broad targeting ad set. Don't create separate placement-targeted campaigns."
-
----
-
 ## When to Use This
 
 - Campaign has high CPI and you suspect placement waste
 - Comparing an efficient vs inefficient campaign
 - After enabling Advantage+ placements and wanting to check what Meta chose
 - Before deciding whether to restrict placements or keep them broad
+- User asks "where is Meta spending my money?" or "should I turn off certain placements?"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
+- Date range: **Last 7 days**
+- Click **Breakdown** → **By Delivery** → **Platform** (then repeat with **Placement**)
+- Columns: `Platform`, `Placement`, `Spend`, `Impressions`, `CPM`, `CTR (link)`, `Result`, `Cost per result`
+- Export as CSV and paste below.
+
+## What It Produces
+
+- Spend and CPA breakdown by placement (Reels, Feed, Stories, Audience Network, etc.)
+- Waste quantification: how much is going to high-CPA placements
+- Placement restriction recommendations with expected CPA impact
+- Value Rules recommendation for placement-level bid modifiers
+
+---
+
+## Knowledge Base Grounding
+
+- **mb-li-006** (Marcus Burke): "App Promotion campaigns are Reels-heavy and skew young. Web campaigns have better placement distribution and scale on Feed."
+- **mb-li-009** (Marcus Burke): "Placement-level Value Rules — bid differently on each placement within the same broad targeting ad set. Don't create separate placement-targeted campaigns."
 
 ---
 

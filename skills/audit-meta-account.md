@@ -1,6 +1,34 @@
 # Skill: Audit a Meta Ad Account
 
-Run a structured audit of a Meta ad account against industry best practices from the knowledge base. Produces findings, baseline metrics, and prioritized recommendations.
+Run a structured audit of a Meta ad account against industry best practices from the knowledge base. Covers structure, creative, audience, bids, signals, and funnel in one pass.
+
+---
+
+## When to Use This
+
+- User wants a full account health check ("audit my account", "review everything")
+- Onboarding a new client or account
+- Performance has been declining and the cause is unclear
+- Before a large budget increase or campaign restructure
+- Quarterly or semi-annual review
+
+## What It Needs
+
+**Option A — Meta API connected** (recommended for a full audit): Provide `ad_account_id`. The audit pulls structure + performance data across all levels.
+
+**Option B — CSV export** (partial audit, structure + performance separately):
+- **Campaigns**: Name, Objective, Status, Bid strategy, Budget, Spend (last 30 days), CPA, ROAS
+- **Ad sets**: Name, Campaign, Status, Optimization goal, Targeting type, Budget, Spend, CPA
+- **Ads**: Name, Ad set, Campaign, Status, Format, Spend, Frequency, CPA, Impressions (last 30 days)
+- Export each level from Meta Ads Manager and paste all three below.
+- Also note: conversion event being optimized, pixel setup (yes/no), any attribution window settings.
+
+## What It Produces
+
+- Findings across 6 dimensions: structure, creative, audience, bid strategy, signal quality, funnel
+- Severity rating per finding (Critical / Recommended / Optional)
+- Baseline metrics snapshot for future comparison
+- Prioritized action plan (30/60/90 day)
 
 ---
 

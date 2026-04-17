@@ -30,6 +30,11 @@ const FILE_TO_PROMPT: Record<string, string> = {
   "placement-audit": "placement-audit",
   "attribution-analysis": "attribution-analysis",
   "admin-briefing": "admin-briefing",
+  "google-campaign-health": "google-campaign-health",
+  "google-asset-performance": "google-asset-performance",
+  "google-network-audit": "google-network-audit",
+  "google-architecture-review": "google-architecture-review",
+  "google-bid-strategy": "google-bid-strategy",
 };
 
 const entries: string[] = [];

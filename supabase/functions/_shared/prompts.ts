@@ -19,6 +19,12 @@ const AD_ACCOUNT_ARG: PromptArgDef = {
   required: true,
 };
 
+const GOOGLE_CUSTOMER_ARG: PromptArgDef = {
+  name: "customer_id",
+  description: "Google Ads customer ID (e.g. 123-456-7890). Optional — skill also works with CSV export if Google Ads is not connected.",
+  required: false,
+};
+
 export const prompts: PromptDef[] = [
   {
     name: "admin-briefing",
@@ -91,5 +97,37 @@ export const prompts: PromptDef[] = [
     description:
       "Validate conversion quality using attribution windows, view-through ratios, and daily consistency checks.",
     arguments: [AD_ACCOUNT_ARG],
+  },
+
+  // Google Ads skills
+  {
+    name: "google-campaign-health",
+    description:
+      "Week-over-week Google App Campaign health check — diagnoses CPI trends, flags campaigns below algorithm thresholds, and identifies stalled or degrading campaigns.",
+    arguments: [GOOGLE_CUSTOMER_ARG],
+  },
+  {
+    name: "google-asset-performance",
+    description:
+      "Categorize every Google App Campaign asset (video, image, text) by health status using actual CPI — not Google's built-in performance label, which measures scalability not value.",
+    arguments: [GOOGLE_CUSTOMER_ARG],
+  },
+  {
+    name: "google-network-audit",
+    description:
+      "Analyze Google App Campaign spend distribution across Search, Display, and YouTube networks — identifies network-level CPI drag, traffic shifts, and placement waste.",
+    arguments: [GOOGLE_CUSTOMER_ARG],
+  },
+  {
+    name: "google-architecture-review",
+    description:
+      "Structure-only audit of Google App Campaigns — checks campaign types, ad group setup, audience exclusions (existing users), and bid strategy prerequisites.",
+    arguments: [GOOGLE_CUSTOMER_ARG],
+  },
+  {
+    name: "google-bid-strategy",
+    description:
+      "Evaluate Google App Campaign bid strategy — checks signal volume thresholds, assesses tROAS readiness, and provides safe bid/budget adjustment sequences.",
+    arguments: [GOOGLE_CUSTOMER_ARG],
   },
 ];

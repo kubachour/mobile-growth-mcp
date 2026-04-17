@@ -63,6 +63,13 @@ Save knowledge that is private to your API key. Immediately searchable but only 
 - Same full schema as suggest_insight
 - No admin approval needed — saved instantly
 
+### suggest_skill
+Propose a new skill (repeatable workflow) for the knowledge base. **Use this when a user describes a workflow they want automated** — recurring audits, analyses, or procedures they run regularly.
+- **Before calling**: draft the full skill .md yourself. Canonical format: "## What It Does", "## When to Use This" (bullet triggers), "## What It Needs" (data sources + exact CSV export instructions), "## Procedure" (numbered steps with tool calls or CSV column specs), "## Output".
+- Pass the draft as content_md. Only use user_description without a draft if the user wants to submit a rough idea for the admin to develop.
+- Provide when_to_use phrases and data_sources (meta_api / google_ads_api / csv / manual_input)
+- Submissions go to admin review before becoming live
+
 ---
 
 ## Meta Marketing API Tools

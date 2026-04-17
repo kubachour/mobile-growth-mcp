@@ -4,19 +4,38 @@ How to validate whether Meta-reported conversion numbers are real or inflated, u
 
 ---
 
-## Knowledge Base Grounding
-
-- **lp-pt-003** (Lauren Petrullo): "Contribution vs attribution — ads feed conversions without getting last-click credit. Killing low-converting ads can collapse the funnel."
-- **jm-pt-001** (related): Attribution modeling considerations for cross-channel measurement.
-
----
-
 ## When to Use This
 
 - Comparing two campaigns with different CPI to rule out attribution as the cause
 - Auditing a single campaign to understand conversion quality
 - Investigating suspiciously high or low install numbers
 - Validating whether view-through conversions are meaningful
+- User asks "are these install numbers real?" or "why do my Meta numbers not match my MMP?"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** tab
+- Date range: **Last 7 days**
+- Click **Columns** → **Customize columns** → add: `Results`, `Cost per result`, `1-day click conversions`, `7-day click conversions`, `1-day view conversions`, `7-day view conversions`
+- Export as CSV and paste below.
+- Also helpful: export your MMP (AppsFlyer / Adjust) install data for the same period for cross-referencing.
+
+## What It Produces
+
+- Attribution window breakdown (click vs view, 1d vs 7d) showing how inflated the numbers may be
+- View-through ratio (view conversions ÷ total conversions) — flags if VTC is propping up numbers
+- Daily consistency check — flags days where conversions spike without matching impression/click movement
+- MMP discrepancy analysis if MMP data is provided
+
+---
+
+## Knowledge Base Grounding
+
+- **lp-pt-003** (Lauren Petrullo): "Contribution vs attribution — ads feed conversions without getting last-click credit. Killing low-converting ads can collapse the funnel."
+- **jm-pt-001** (related): Attribution modeling considerations for cross-channel measurement.
 
 ---
 

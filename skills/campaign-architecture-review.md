@@ -1,6 +1,32 @@
 # Skill: Campaign Architecture Review
 
-Evaluate whether the account structure supports or limits scale. Structure-only analysis — no insights API needed, just campaigns/adsets/ads.
+Evaluate whether the account structure supports or limits scale. Structure-only analysis — no performance metrics needed, just campaign/adset/ad structure.
+
+---
+
+## When to Use This
+
+- User is setting up Meta campaigns for the first time
+- Scaling has stalled and the structure might be the reason
+- User asks "is my account structured correctly?" or "should I consolidate?"
+- Before a big budget increase — to verify the structure can handle it
+- User mentions too many campaigns, ad sets, or campaigns with very few ads
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide `ad_account_id`. Three API calls pull everything needed (no performance data required).
+
+**Option B — Manual description or CSV**:
+- Describe your campaign structure: how many active campaigns, what objectives, how many ad sets per campaign, how many ads per ad set, what bid strategies are in use
+- Or export from **Meta Ads Manager** → **Campaigns**, **Ad Sets**, and **Ads** tabs separately:
+  - Columns needed: `Name`, `Status`, `Objective` (campaigns), `Bid strategy`, `Budget`, `Optimization goal` (ad sets), `Creative format` (ads)
+  - Export each level as CSV and paste below.
+
+## What It Produces
+
+- Structure scorecard across: consolidation, creative counts, campaign types, bid strategies, signal quality
+- Specific issues with KB-grounded reasoning
+- Recommended structural changes before next budget increase
 
 ---
 

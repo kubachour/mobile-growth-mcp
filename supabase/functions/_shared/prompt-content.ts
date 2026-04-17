@@ -8,6 +8,32 @@ Detect creatives that are wasting budget due to audience exhaustion or declining
 
 ---
 
+## When to Use This
+
+- Frequency is climbing and CPA is rising
+- CTR has been declining over the past week
+- User asks "are my ads getting tired?" or "should I refresh creatives?"
+- Before a creative refresh sprint — to know which ads to replace first
+- User mentions audience saturation or ad burnout
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\`. The \`get_meta_ad_fatigue\` tool handles this in a single call.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Ads** tab
+- Date range: **Last 14 days**, broken down **by day** (use the "Breakdown" → "Time" → "Day" option before exporting)
+- Columns: \`Ad name\`, \`Ad set name\`, \`Date\`, \`Spend\`, \`Impressions\`, \`Reach\`, \`Frequency\`, \`CTR (link)\`, \`CPM\`, \`Result\`, \`Cost per result\`
+- Export as CSV and paste below.
+
+## What It Produces
+
+- Per-ad fatigue status: Healthy / Warning / Fatigued / Saturated
+- Daily trend chart per flagged ad (frequency and CTR movement)
+- Prioritized list of ads to rotate out, with timing recommendation
+
+---
+
 ## Knowledge Base Grounding
 
 - **wk-tw-001** (William Kast): "Frequency 2+ and CPA rising → creative fatigue, need fresh TOF creatives." Also: "CTR dropping and CPA rising → creative fatigue."
@@ -98,24 +124,57 @@ get_meta_insights(
 
 You are generating a morning briefing for the Mobile Growth MCP admin. Check all pending items and present a concise summary.
 
+---
+
+## When to Use This
+
+- Admin starts their day and wants a system status overview
+- Before a review session to know what needs attention
+- User says "admin briefing", "morning briefing", or "what needs review?"
+- Periodic check (daily or whenever returning after time away)
+
+## What It Needs
+
+- Admin API key (admin-only tools: \`review_suggestions\`, \`review_skill_suggestions\`, \`suggest_improvement\`)
+- No Meta API or Google Ads connection needed
+
+## What It Produces
+
+- Count and summary of pending insight suggestions
+- Count and summary of pending skill suggestions (with/without .md drafts)
+- Bug reports and tool errors from the last 7 days
+- Knowledge gaps (zero-result searches)
+- Top search queries
+- Prioritized action list
+
 ## Steps
 
-1. **Pending Suggestions**: Call \`review_suggestions\` with status \`pending\`. Report how many are waiting for review. For each, show the title, submitter, and a one-line summary of the insight.
+1. **Pending Insight Suggestions**: Call \`review_suggestions\` with status \`pending\`. Report how many are waiting for review. For each, show the title, submitter, and a one-line summary of the insight.
 
-2. **Recent Activity Summary**: Call \`suggest_improvement\` with \`days: 7\` to get:
+2. **Pending Skill Suggestions**: Call \`review_skill_suggestions\` with status \`pending\`. Report how many are waiting. For each, show: name, description, data_sources, whether a .md draft was included, and the submitter. Flag separately: (a) skills with a full draft ready to deploy, (b) skills that still need a .md written.
+
+3. **Recent Activity Summary**: Call \`suggest_improvement\` with \`days: 7\` to get:
    - Recent feedback submissions (especially \`bug_report\` and \`missing_knowledge\` categories)
    - Zero-result searches (topics users searched for but got no results)
    - Error patterns (tools that are failing)
    - Top search queries (what users are asking about most)
 
-3. **Present the Briefing** in this format:
+4. **Present the Briefing** in this format:
 
 \`\`\`
 ## Admin Briefing — [today's date]
 
-### Pending Suggestions ([count])
+### Pending Insight Suggestions ([count])
 - [title] — submitted by [name] on [date]
   Brief: [one-line summary]
+
+### Pending Skill Suggestions ([count])
+Ready to deploy (has .md draft):
+- [name] — [description] — by [submitter]
+
+Needs .md written:
+- [name] — [description] — by [submitter]
+  Idea: [one-line summary of user_description]
 
 ### Bug Reports ([count])
 - [summary]
@@ -135,23 +194,17 @@ You are generating a morning briefing for the Mobile Growth MCP admin. Check all
 3. [Third action]
 \`\`\`
 
-4. **Prioritize actions**: If there are bug reports, those come first. Then pending suggestions. Then knowledge gaps that align with top searches (high demand + no content = highest ROI for new content).
+5. **Prioritize actions**: Bug reports first. Then skill suggestions with drafts ready (low effort, high value — just commit + deploy). Then pending insight suggestions. Then knowledge gaps that align with top searches.
 
 ## Notes
-- This briefing uses admin-only tools (\`review_suggestions\`, \`suggest_improvement\`). If these return errors, the user may not have admin access.
+- This briefing uses admin-only tools (\`review_suggestions\`, \`review_skill_suggestions\`, \`suggest_improvement\`). If these return errors, the user may not have admin access.
 - Keep the briefing scannable — use bullet points, not paragraphs.
-- If everything is clean (no pending items, no bugs, no gaps), say so briefly and suggest proactive actions like reviewing the most-searched topics.
+- For skill suggestions with a draft: use \`approve_skill_suggestion\` to get the final .md, then commit to \`skills/\`, run \`npm run build:prompts\`, and deploy.
+- If everything is clean, say so briefly and suggest proactive actions like reviewing most-searched topics or writing Google Ads skills.
 `,
   "attribution-analysis": `# Skill: Attribution & Conversion Validation
 
 How to validate whether Meta-reported conversion numbers are real or inflated, using attribution window analysis and daily time-series data.
-
----
-
-## Knowledge Base Grounding
-
-- **lp-pt-003** (Lauren Petrullo): "Contribution vs attribution — ads feed conversions without getting last-click credit. Killing low-converting ads can collapse the funnel."
-- **jm-pt-001** (related): Attribution modeling considerations for cross-channel measurement.
 
 ---
 
@@ -161,6 +214,32 @@ How to validate whether Meta-reported conversion numbers are real or inflated, u
 - Auditing a single campaign to understand conversion quality
 - Investigating suspiciously high or low install numbers
 - Validating whether view-through conversions are meaningful
+- User asks "are these install numbers real?" or "why do my Meta numbers not match my MMP?"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** tab
+- Date range: **Last 7 days**
+- Click **Columns** → **Customize columns** → add: \`Results\`, \`Cost per result\`, \`1-day click conversions\`, \`7-day click conversions\`, \`1-day view conversions\`, \`7-day view conversions\`
+- Export as CSV and paste below.
+- Also helpful: export your MMP (AppsFlyer / Adjust) install data for the same period for cross-referencing.
+
+## What It Produces
+
+- Attribution window breakdown (click vs view, 1d vs 7d) showing how inflated the numbers may be
+- View-through ratio (view conversions ÷ total conversions) — flags if VTC is propping up numbers
+- Daily consistency check — flags days where conversions spike without matching impression/click movement
+- MMP discrepancy analysis if MMP data is provided
+
+---
+
+## Knowledge Base Grounding
+
+- **lp-pt-003** (Lauren Petrullo): "Contribution vs attribution — ads feed conversions without getting last-click credit. Killing low-converting ads can collapse the funnel."
+- **jm-pt-001** (related): Attribution modeling considerations for cross-channel measurement.
 
 ---
 
@@ -317,6 +396,34 @@ Reveal who is actually converting and at what cost, by age and gender. Identifie
 
 ---
 
+## When to Use This
+
+- User asks "who is converting?" or "what demographic is best for us?"
+- CPA varies wildly and the cause isn't obvious at the campaign level
+- User is deciding between App Promotion and Web Sales campaign types
+- User wants to set up Value Rules based on age/gender
+- User says "audience breakdown" or "demographic analysis"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
+- Date range: **Last 7 days**
+- Click **Breakdown** → **By Delivery** → **Age** and then **Gender** (run two separate breakdowns, or use "Age and Gender" if available)
+- Columns: \`Age\` / \`Gender\`, \`Spend\`, \`Impressions\`, \`Reach\`, \`CPM\`, \`CTR\`, \`Result\`, \`Cost per result\`
+- Export both breakdowns as CSV and paste below.
+
+## What It Produces
+
+- Age × gender conversion efficiency heatmap
+- Spend vs conversion share mismatch analysis
+- Specific Value Rule recommendations (which demographic segments to bid up/down)
+- Campaign type recommendation based on target demographic
+
+---
+
 ## Knowledge Base Grounding
 
 - **mb-li-010** (Marcus Burke): "Different creatives attract wildly different age demographics. Trial CVR by age: 18-24=18%, 25-34=26%, 35-44=32%, 45-54=44%, 55-64=48%, 65+=42%. Ads that attract older users are more valuable."
@@ -396,7 +503,35 @@ Create an age × gender matrix showing:
 `,
   "audit-meta-account": `# Skill: Audit a Meta Ad Account
 
-Run a structured audit of a Meta ad account against industry best practices from the knowledge base. Produces findings, baseline metrics, and prioritized recommendations.
+Run a structured audit of a Meta ad account against industry best practices from the knowledge base. Covers structure, creative, audience, bids, signals, and funnel in one pass.
+
+---
+
+## When to Use This
+
+- User wants a full account health check ("audit my account", "review everything")
+- Onboarding a new client or account
+- Performance has been declining and the cause is unclear
+- Before a large budget increase or campaign restructure
+- Quarterly or semi-annual review
+
+## What It Needs
+
+**Option A — Meta API connected** (recommended for a full audit): Provide \`ad_account_id\`. The audit pulls structure + performance data across all levels.
+
+**Option B — CSV export** (partial audit, structure + performance separately):
+- **Campaigns**: Name, Objective, Status, Bid strategy, Budget, Spend (last 30 days), CPA, ROAS
+- **Ad sets**: Name, Campaign, Status, Optimization goal, Targeting type, Budget, Spend, CPA
+- **Ads**: Name, Ad set, Campaign, Status, Format, Spend, Frequency, CPA, Impressions (last 30 days)
+- Export each level from Meta Ads Manager and paste all three below.
+- Also note: conversion event being optimized, pixel setup (yes/no), any attribution window settings.
+
+## What It Produces
+
+- Findings across 6 dimensions: structure, creative, audience, bid strategy, signal quality, funnel
+- Severity rating per finding (Critical / Recommended / Optional)
+- Baseline metrics snapshot for future comparison
+- Prioritized action plan (30/60/90 day)
 
 ---
 
@@ -559,7 +694,33 @@ Produce a structured output with:
 `,
   "architecture-review": `# Skill: Campaign Architecture Review
 
-Evaluate whether the account structure supports or limits scale. Structure-only analysis — no insights API needed, just campaigns/adsets/ads.
+Evaluate whether the account structure supports or limits scale. Structure-only analysis — no performance metrics needed, just campaign/adset/ad structure.
+
+---
+
+## When to Use This
+
+- User is setting up Meta campaigns for the first time
+- Scaling has stalled and the structure might be the reason
+- User asks "is my account structured correctly?" or "should I consolidate?"
+- Before a big budget increase — to verify the structure can handle it
+- User mentions too many campaigns, ad sets, or campaigns with very few ads
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\`. Three API calls pull everything needed (no performance data required).
+
+**Option B — Manual description or CSV**:
+- Describe your campaign structure: how many active campaigns, what objectives, how many ad sets per campaign, how many ads per ad set, what bid strategies are in use
+- Or export from **Meta Ads Manager** → **Campaigns**, **Ad Sets**, and **Ads** tabs separately:
+  - Columns needed: \`Name\`, \`Status\`, \`Objective\` (campaigns), \`Bid strategy\`, \`Budget\`, \`Optimization goal\` (ad sets), \`Creative format\` (ads)
+  - Export each level as CSV and paste below.
+
+## What It Produces
+
+- Structure scorecard across: consolidation, creative counts, campaign types, bid strategies, signal quality
+- Specific issues with KB-grounded reasoning
+- Recommended structural changes before next budget increase
 
 ---
 
@@ -642,9 +803,35 @@ Rate each check:
 - mb-li-002, mb-li-003, mb-li-006, mb-li-011, mb-cd-001, ds-pt-005, br-li-001, br-li-002, lp-pt-001, lp-pt-002
 \`\`\`
 `,
-  "campaign-comparison": `# Skill: Campaign Comparison Methodology
+  "campaign-comparison": `# Skill: Campaign Comparison
 
 Reusable step-by-step framework for comparing any two Meta campaigns to identify why one outperforms the other.
+
+---
+
+## When to Use This
+
+- User points to two campaigns with different CPIs and asks why
+- User wants to understand what makes a winning campaign different
+- Before scaling one campaign and pausing another — validate the reason
+- User says "campaign A is doing better than B, what's different?"
+- Testing a new campaign structure against an existing one
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\` and optionally the two \`campaign_id\` values. If IDs aren't provided, the skill will list campaigns and ask you to pick two.
+
+**Option B — CSV export** (no API needed):
+- Export from **Meta Ads Manager** → **Campaigns** tab, then drill into each campaign for its ad sets and ads
+- For each campaign export: \`Campaign name\`, \`Objective\`, \`Bid strategy\`, \`Budget type\`, \`Budget\`, \`Start date\`, \`Spend\`, \`Impressions\`, \`Frequency\`, \`CPM\`, \`CTR\`, \`CPA\`, \`Conversions\`
+- Also export **Ad sets** for each campaign: \`Ad set name\`, \`Targeting type\`, \`Optimization goal\`, \`Bid strategy\`, \`Budget\`, \`Placements\`, \`Spend\`, \`CPA\`
+- Paste both campaign exports below, labeled by campaign name.
+
+## What It Produces
+
+- Side-by-side comparison across: settings, targeting, creative count/format, performance metrics
+- Root cause identification for the performance gap
+- Specific hypothesis for what's driving the difference
 
 ---
 
@@ -837,6 +1024,33 @@ Categorize every active ad by health status and provide specific next steps per 
 
 ---
 
+## When to Use This
+
+- User asks "which ads are working?" or "what should I pause?"
+- User wants to know which creatives to scale, keep, or replace
+- Before planning a new creative batch
+- CPA is rising and the cause might be at the ad level
+- User says "creative audit" or "ad performance"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Ads** tab
+- Date range: **Last 7 days**
+- Columns: \`Ad name\`, \`Ad set name\`, \`Campaign name\`, \`Delivery\`, \`Spend\`, \`Impressions\`, \`Frequency\`, \`CPM\`, \`CTR (link)\`, \`CPC\`, \`Result\` (your conversion event), \`Cost per result\`
+- Export as CSV and paste below.
+- Also note your target CPA so ads can be benchmarked against it.
+
+## What It Produces
+
+- Ad-level health table with category: Scaling / Promising / Contributing / Fatiguing / Dead weight
+- Specific recommended action per ad
+- Creative diversity assessment (format coverage, minimum 6 concepts check)
+
+---
+
 ## Knowledge Base Grounding
 
 - **ds-pt-001** (Dara Saeed): "Only optimize based on primary metrics (CPA, ROAS). A low CTR or high CPM doesn't mean an ad is failing if the CPA is profitable."
@@ -931,16 +1145,711 @@ Ask the user for their target CPA, or calculate account average CPA from the dat
 - ds-pt-001, ds-pt-004, jl-pt-004, lp-pt-003, vs-nt-001, mb-li-001, oh-li-001, lp-pt-001, lp-pt-002
 \`\`\`
 `,
-  "placement-audit": `# Skill: Placement Efficiency Audit
+  "google-architecture-review": `# Skill: Google App Campaign Architecture Review
 
-How to identify and quantify placement waste in Meta app install campaigns.
+Structure-only audit of Google App Campaigns — checks whether campaign setup, ad group structure, bidding approach, and audience exclusions support efficient scaling.
+
+---
+
+## When to Use This
+
+- User is setting up Google App Campaigns for the first time
+- User's campaigns are running but results are inconsistent or below expectation
+- User wants to sanity-check their account structure before scaling budget
+- After onboarding to Google Ads from another platform
+- User mentions running only one campaign type (CPA only, or tROAS only)
+
+## What It Needs
+
+**Option A — Google Ads connected** (structure only, no performance data needed):
+
+\`\`\`
+get_google_ads_campaigns(customer_id="123-456-7890")
+get_google_ad_groups(customer_id="123-456-7890", campaign_id="...")
+\`\`\`
+
+**Option B — CSV / manual input:** Export from Google Ads UI:
+- **Campaigns report**: Columns: \`Campaign\`, \`Campaign type\`, \`Bidding strategy\`, \`Target CPA / Target ROAS\`, \`Budget\`, \`Status\`, \`Start date\`
+- **Ad groups report**: Columns: \`Campaign\`, \`Ad group\`, \`Status\`, \`Assets count (video/image/text)\`
+- **Audiences**: Go to Audiences → check which audience segments are added as exclusions
+
+Paste both exports, or describe your campaign structure in plain text.
+
+## What It Produces
+
+- Structural assessment across 5 dimensions: campaign types, bid strategies, ad group structure, audience exclusions, and asset coverage
+- Specific gaps with KB-grounded reasoning
+- Prioritized list of structural changes to make before scaling
 
 ---
 
 ## Knowledge Base Grounding
 
-- **mb-li-006** (Marcus Burke): "App Promotion campaigns are Reels-heavy and skew young. Web campaigns have better placement distribution and scale on Feed."
-- **mb-li-009** (Marcus Burke): "Placement-level Value Rules — bid differently on each placement within the same broad targeting ad set. Don't create separate placement-targeted campaigns."
+- **ab-pt-001** (Ashley Black): "Android is a must — Play Store is uniquely high-intent inventory. iOS requires $500+/day minimum, $1,000+/day for subscription apps. Don't run iOS on Google if budget is under that."
+- **ab-pt-009** (Ashley Black): "Google does not auto-exclude existing users — you must manually add your existing user list as an audience exclusion in every campaign. Without this, you're paying for re-installs."
+- **ab-pt-012** (Ashley Black): "Run CPA and tROAS campaigns side by side. tROAS alone struggles to scale — it optimizes for revenue quality but limits volume. CPA drives install volume, tROAS maximizes value from the best users."
+- **ab-pt-007** (Ashley Black): "Algorithms get fatigued. Campaigns running > 90 days with stagnant performance often need a full duplicate (new campaign) to reset the algorithm's optimization state."
+- **gg-gem-1293** (ex-Googler): "Add new ad groups rather than increasing bids to scale — new ad groups open new inventory pockets without disturbing the existing campaign's optimization."
+- **ab-pt-011** (Ashley Black): "tROAS requires Firebase integration, high event volume (10+ revenue events/day), and risk tolerance. Don't set up tROAS without these prerequisites."
+- **ab-pt-019** (Ashley Black): "Google needs 50 installs/day or 10 target events/day to optimize. Below that, the algorithm is guessing. Consolidate campaigns rather than spreading budget too thin."
+
+---
+
+## Procedure
+
+### Step 1: Pull Campaign and Ad Group Structure
+
+**If API connected:**
+
+\`\`\`
+get_google_ads_campaigns(customer_id="123-456-7890")
+
+# For each campaign, pull ad groups
+get_google_ad_groups(
+  customer_id="123-456-7890",
+  campaign_id="[campaign_id]"
+)
+\`\`\`
+
+**If manual:** Use the CSV exports or description the user provided.
+
+### Step 2: Assess Campaign Type Coverage
+
+Check which campaign types are active:
+
+| Campaign Type | What It Does | Check |
+|---------------|--------------|-------|
+| App installs (CPA) | Drives install volume, optimizes for cost per install | Should be the base for all accounts |
+| App engagement | Re-engages existing users | Separate from install campaigns |
+| tROAS (target ROAS) | Optimizes for revenue quality | Requires Firebase + 10+ events/day |
+
+**Flag if:**
+- No Android campaign → missing Play Store (highest-intent inventory) [ab-pt-001]
+- iOS budget < $500/day → algorithm won't have enough signal [ab-pt-001]
+- Only tROAS, no CPA campaign → volume will be constrained [ab-pt-012]
+- Only CPA, no tROAS → may be leaving high-value user revenue on the table [ab-pt-012]
+
+### Step 3: Check Ad Group Structure
+
+Best practice: each ad group = one creative angle or audience segment. This lets Google learn what works without blending signals.
+
+**Flag if:**
+- Single ad group per campaign with all assets mixed → no learnings isolation
+- Ad groups running > 90 days with no new assets added → creative pool is stale [ab-pt-007]
+- Ad groups with < 3 video assets on iOS campaigns → missing YouTube Shorts and in-stream inventory [ab-pt-003]
+- Ad groups with < 5 text asset variants → keyword coverage is thin [ab-pt-004]
+
+### Step 4: Check Audience Exclusions
+
+**Critical check**: Is the existing user base excluded from install campaigns?
+
+Google does NOT do this automatically. Without exclusions, you're buying re-installs — wasted budget and inflated install numbers.
+
+**What to check:**
+- Is a Customer Match list (existing users) excluded from all install campaigns?
+- Is a remarketing list (users who installed but didn't convert) used for engagement campaigns?
+
+**Flag if:** No audience exclusions on any install campaign → almost certain budget waste [ab-pt-009].
+
+### Step 5: Check Bidding Setup
+
+| Signal | Issue |
+|--------|-------|
+| CPA campaign, < 50 installs/day | Budget too spread out; consider consolidating campaigns |
+| tROAS campaign, no Firebase integration | tROAS can't work without Firebase events [ab-pt-011] |
+| tROAS campaign, < 10 revenue events/day | Insufficient signal; tROAS will underperform [ab-pt-011] |
+| Bids changed > 20% recently | Risk of campaign destabilization [ab-pt-006] |
+
+### Step 6: Output
+
+\`\`\`
+## Google Architecture Review — [date]
+
+### Campaign Structure Overview
+- [N] active campaigns: [list types]
+- [N] total ad groups
+- Budget concentration: [top campaign name] accounts for X% of total spend
+
+### Critical Issues (Fix Before Scaling)
+
+🔴 **No audience exclusions on install campaigns**
+Existing users are not excluded — Google is buying re-installs. Add your existing user Customer Match list as an exclusion on all install campaigns immediately. [ab-pt-009]
+
+🔴 **iOS budget below algorithm threshold**
+iOS campaign is running at $X/day — below the $500/day minimum for Google to optimize. Either increase budget or pause iOS until budget allows. [ab-pt-001]
+
+### Structural Gaps
+
+🟡 **No tROAS campaign alongside CPA**
+You're maximizing install volume but not optimizing for your highest-value users. Add a tROAS campaign once you reach 10+ revenue events/day in Firebase. [ab-pt-012]
+
+🟡 **Single ad group per campaign**
+No creative angle isolation. Add a second ad group with a different creative angle to let Google learn what resonates differently. [gg-gem-1293]
+
+### What's Working Well
+- [positives]
+
+### Recommended Actions (Priority Order)
+1. Add audience exclusions (today — zero cost, immediate budget efficiency gain)
+2. ...
+\`\`\`
+`,
+  "google-asset-performance": `# Skill: Google Asset Performance Report
+
+Categorize every active asset (video, image, text) by health status and provide specific next steps — grounded in how Google actually scores and serves assets, not how the UI reports them.
+
+---
+
+## When to Use This
+
+- User asks "which Google creatives are working?"
+- CPI is rising and creative fatigue is suspected
+- User wants to know what to pause, keep, or replace in Google Ads
+- User is planning a new creative batch and wants to understand gaps
+- After running \`google-campaign-health\` and a campaign is flagged as degrading
+
+## What It Needs
+
+**Option A — Google Ads connected:**
+
+\`\`\`
+get_google_assets(customer_id="123-456-7890", campaign_id="...")
+get_google_asset_fatigue(customer_id="123-456-7890", campaign_id="...")
+\`\`\`
+
+**Option B — CSV export:** Export from Google Ads UI:
+- Go to **Ads & Assets** → **Assets** tab
+- Columns: \`Asset\`, \`Asset type\`, \`Campaign\`, \`Ad group\`, \`Performance label\` (Low/Good/Best/Learning), \`Impressions\`, \`Clicks\`, \`Conversions\`, \`Cost\`, \`CPI\`
+- Also export the **Ad groups** report with the same date range for context
+- Date range: last 14 days. Export as CSV and paste below.
+
+## What It Produces
+
+- Asset-level health table with category per asset
+- Creative gap analysis (which formats/placements are underserved)
+- Specific assets to pause, test differently, or replace
+- Next creative batch recommendations grounded in iOS/Android traffic split
+
+---
+
+## Knowledge Base Grounding
+
+- **ab-pt-008** (Ashley Black): "Ignore Google's built-in creative performance label — it measures scalability potential, not value delivered. A 'Low' asset may still be driving installs efficiently."
+- **ab-pt-003** (Ashley Black): "iOS: ~60% video traffic (YouTube-heavy). Android: ~30% video (Play Store absorbs most traffic with text/image). Creative priorities differ by platform."
+- **ab-pt-004** (Ashley Black): "Text assets function like keywords — Google indexes them against search queries. Different keywords have drastically different CPMs. Analyze cost by text asset."
+- **gg-gem-1295** (ex-Googler): "Use IPM (installs per 1000 impressions) to compare assets of the same type — it normalizes for spend differences."
+- **gg-gem-1178** (community): "You need different creative for each of Google's inventory types — what works on YouTube Shorts doesn't work on Play Store browse or AdMob."
+- **ab-pt-015** (Ashley Black): "Don't copy Meta creative strategy to Google — Meta optimizes for scroll-stop, Google optimizes for intent-match. Different hooks, different pacing."
+- **gg-gem-1181** (community): "In Conversion settings you can opt-in for 6-second bumper ads — a separate format that can unlock new inventory."
+
+---
+
+## Procedure
+
+### Step 1: Pull Asset Data
+
+**If API connected:**
+
+\`\`\`
+get_google_assets(
+  customer_id="123-456-7890",
+  campaign_id="[campaign_id]"
+)
+
+get_google_asset_fatigue(
+  customer_id="123-456-7890",
+  campaign_id="[campaign_id]"
+)
+\`\`\`
+
+**If CSV:** Use the assets export the user pasted.
+
+### Step 2: Determine Target CPI
+
+Ask the user for their target CPI, or calculate account average from the data.
+
+### Step 3: Categorize Each Asset
+
+**Critical rule**: Do not use Google's "Performance label" (Low/Good/Best) as the primary signal [ab-pt-008]. Use actual CPI and impression share instead.
+
+| Category | Criteria | Action |
+|----------|----------|--------|
+| **Top performer** | CPI ≤ target, high impressions (>15% of campaign total) | Keep running. Extract what makes it work — hook, format, message angle. |
+| **Efficient but limited** | CPI ≤ target, low impressions (<5%) | Google has deprioritized it — likely similar to a higher-spend asset [oh-li-001 analogy]. Don't force it. Analyze what's different. |
+| **Learning** | < 7 days live or < 500 impressions | Too early to judge. Leave running. |
+| **Fatiguing** | IPM declining over last 7 days, CPI rising | Flag for replacement. Don't pause yet — wait until a replacement is ready [ab-pt-007 analogy]. |
+| **Underperforming** | CPI > 2× target for > 14 days, significant impressions | Candidate for pause. Check if it's covering a unique placement before pausing. |
+| **Low label, efficient** | Google says "Low" but CPI ≤ target | Keep it — Google's label means it won't scale further, not that it's wasting money [ab-pt-008]. |
+
+### Step 4: Format Gap Analysis
+
+Check coverage across asset types, grounded in platform traffic split:
+
+**For iOS campaigns** (60% video traffic):
+- Do you have videos in multiple durations: 6s, 10s, 20s, 30s, 30s+?
+- Do you have portrait/vertical videos for YouTube Shorts?
+- Fewer than 3 video variants = high fatigue risk
+
+**For Android campaigns** (30% video, 70% text/image):
+- Do you have landscape images (1.91:1)?
+- Do you have 5 distinct text headline assets with different keyword angles [ab-pt-004]?
+- Are text assets using specific search terms (pain points, features, long-tail) rather than generic copy?
+
+**Bumper ads**: Are 6-second bumpers enabled? If not, you may be missing inventory [gg-gem-1181].
+
+### Step 5: Text Asset Keyword Analysis
+
+For each text asset with significant impressions:
+- What keyword/intent does it signal?
+- Is the CPM or CPI noticeably different from other text assets?
+- Flag high-CPM text assets (likely expensive keyword territory) vs low-CPM high-performers
+
+### Step 6: Output
+
+\`\`\`
+## Google Asset Performance — [campaign] — [date range]
+
+### Asset Health Summary
+
+| Asset | Type | CPI | vs Target | IPM | Category |
+|-------|------|-----|-----------|-----|----------|
+| [name] | Video 30s | $2.10 | -15% | 4.2 | Top performer |
+| [name] | Text | $4.80 | +92% | 1.1 | Underperforming |
+
+### Creative Gaps
+- iOS: Missing portrait video for YouTube Shorts (high-traffic placement)
+- Android: Only 2 text asset variants — recommend 3 more with different keyword angles
+
+### Assets to Pause
+- [name]: CPI $4.80 (+92% above target) for 18 days. Confirm it's not the only asset covering a key placement before pausing.
+
+### Next Batch Recommendations
+1. [Format]: [rationale grounded in gap analysis]
+2. ...
+
+### Note on Google's Labels
+[X] assets are labeled "Low" by Google but have CPI at or below target — these are working ads that Google has chosen not to scale further. Do not pause them based on the label alone.
+\`\`\`
+`,
+  "google-bid-strategy": `# Skill: Google Bid Strategy Advisor
+
+Evaluate whether the current bid strategy setup is correct, whether the algorithm has sufficient signal to optimize, and how to safely adjust bids when performance needs to change.
+
+---
+
+## When to Use This
+
+- User wants to switch from CPA to tROAS (or vice versa)
+- User's CPI is above target and they want to lower bids
+- User wants to scale and is considering raising bids or budgets
+- User is setting up Google App Campaigns for the first time and asking which bid strategy to use
+- tROAS campaign is underperforming or not spending its budget
+- User asks "should I increase my bids?"
+
+## What It Needs
+
+**Option A — Google Ads connected:**
+
+\`\`\`
+get_google_ads_campaigns(customer_id="123-456-7890")
+get_google_insights(
+  customer_id="123-456-7890",
+  date_range="LAST_30_DAYS",
+  level="CAMPAIGN",
+  metrics=["conversions","cost_micros","cost_per_conversion","all_conversions_value"]
+)
+\`\`\`
+
+**Option B — Manual input / CSV:** Ask the user for:
+- Current bid strategy per campaign (Target CPA / Target ROAS)
+- Current target CPA value or target ROAS value
+- Last 30-day actuals: daily installs average, daily revenue events average (if tROAS), actual CPI or ROAS
+- Firebase integration: yes/no
+- Recent bid changes: when and by how much
+
+## What It Produces
+
+- Assessment of whether each campaign's bid strategy is appropriate for its signal volume
+- Specific bid adjustment recommendations with safe change sizes
+- Go/no-go verdict on switching to tROAS
+- Scaling path if user wants to grow spend
+
+---
+
+## Knowledge Base Grounding
+
+- **ab-pt-006** (Ashley Black): "Never adjust bids or budgets more than 20% in a single day. Larger changes cause campaigns to tank and struggle to recover. This is Google's own guidance — believe it."
+- **ab-pt-019** (Ashley Black): "Google recommends 50 installs/day or 10 target events/day. Aim for double (100 installs/day or 20 events/day). Below threshold = the algorithm is guessing, not learning."
+- **ab-pt-010** (Ashley Black): "tROAS campaigns: start your target 20%+ below your actual ROAS target. Use 7-day conversion windows. Give it 2–3 weeks to exit the learning phase before evaluating."
+- **ab-pt-011** (Ashley Black): "tROAS requires Firebase integration, high event volume (10+ revenue events/day), and risk tolerance. Don't set up tROAS without all three — it will underperform and you'll incorrectly blame the strategy."
+- **ab-pt-012** (Ashley Black): "Run CPA and tROAS campaigns side by side. tROAS alone struggles to scale — it chases quality over volume. CPA provides the volume floor, tROAS extracts value from the best users."
+- **ab-pt-020** (Ashley Black): "tROAS campaigns tend to have higher CPMs but deliver better-quality traffic. The higher CPI is often justified by better retention and monetization — measure downstream, not just install cost."
+- **gg-gem-1218** (community): "When increasing bids, use the hamburger approach — small increase, let it stabilize, small increase again. Don't jump to your target bid in one move."
+- **gg-gem-1293** (ex-Googler): "Scaling via new ad groups is safer than raising bids — new ad groups open new inventory pockets without disturbing existing campaign optimization signals."
+- **gg-gem-1215** (community): "A high ROAS target means a longer ramp-up period. If you set tROAS too aggressively, the campaign will underspend during learning."
+
+---
+
+## Procedure
+
+### Step 1: Gather Current Setup
+
+Collect:
+- Bid strategy per campaign (Target CPA or Target ROAS)
+- Current target values
+- Actual 30-day performance (CPI, daily install volume, daily revenue events if tROAS)
+- Firebase connected: yes/no
+- Any bid changes in the last 14 days
+
+### Step 2: Check Algorithm Signal Sufficiency
+
+For each campaign:
+
+| Volume | Assessment |
+|--------|------------|
+| < 50 installs/day (CPA) | Below threshold — algorithm can't optimize. Must consolidate or increase budget before adjusting bids. |
+| 50–100 installs/day | Functional but fragile. Any bid change will disrupt learning. Be conservative. |
+| > 100 installs/day | Sufficient signal. Standard 20% bid change rule applies. |
+| < 10 revenue events/day (tROAS) | tROAS cannot function. Switch to CPA or add Firebase events [ab-pt-011]. |
+| > 10 revenue events/day (tROAS) | Functional. Evaluate ROAS target vs actual. |
+
+### Step 3: Evaluate CPA Bid Setting
+
+If actual CPI is above target CPA:
+- **First check**: Is it a volume problem (< 50 installs/day)? Fix volume before touching bids.
+- **If volume is fine**: Calculate safe bid reduction. Max 20% down from current [ab-pt-006].
+- **Wait time**: 7–14 days after a change before evaluating impact.
+
+If CPI is at or below target CPA:
+- **Scaling path**: Raise budget first (safer than raising bid). Budget increase ≤ 20%/day.
+- **If budget is not the constraint**: Raise bid in 10-15% increments, let stabilize for 7 days [gg-gem-1218].
+- **Alternative to bid raises**: Add a new ad group to open new inventory [gg-gem-1293].
+
+### Step 4: Evaluate tROAS Readiness (if user is considering switching)
+
+tROAS requires ALL of these:
+- [ ] Firebase integrated and sending events
+- [ ] 10+ revenue events/day average over last 30 days
+- [ ] Willing to accept higher CPI in exchange for better user quality [ab-pt-020]
+- [ ] CPA campaign(s) will continue running alongside tROAS [ab-pt-012]
+
+If all checked: tROAS is appropriate. Set initial target at 20% below actual ROAS [ab-pt-010], use 7-day conversion window, expect 2–3 week learning phase.
+
+If any unchecked: Do not switch to tROAS. Flag which prerequisites are missing.
+
+### Step 5: Check for Recent Destabilizing Changes
+
+If bids or budgets changed > 20% in the last 14 days and performance is volatile:
+- The campaign is likely in a disrupted learning phase
+- **Do not make further changes** — let it stabilize for 7–14 more days
+- Only intervene if spend collapses to near zero (then a small +10% bid nudge is warranted)
+
+### Step 6: Output
+
+\`\`\`
+## Google Bid Strategy Assessment — [date]
+
+### Campaign Snapshot
+
+| Campaign | Strategy | Target | Actual | Daily Vol | Signal |
+|----------|----------|--------|--------|-----------|--------|
+| [name] | Target CPA | $2.50 | $3.10 | 45/day | ⚠️ Below threshold |
+| [name] | Target ROAS | 200% | 180% | 12 events/day | ✅ Functional |
+
+### Assessments
+
+**[Campaign A] — Below algorithm threshold**
+45 installs/day is below Google's 50/day minimum. The algorithm cannot optimize meaningfully at this volume. Increasing the budget to reach 80–100 installs/day will do more than any bid adjustment.
+→ Do not reduce bids — it will worsen volume further.
+→ Consolidate with [Campaign B] or increase daily budget by 20% increments.
+
+**[Campaign B] — tROAS functioning but ROAS target too aggressive**
+Actual ROAS is 180% vs 200% target. The campaign is underspending because the target is too high.
+→ Lower target to 150% (20% below actual) to enter the learning zone, then raise gradually [ab-pt-010, gg-gem-1218].
+
+### tROAS Readiness Check
+[✅/❌ each prerequisite with notes]
+
+### Scaling Path for [Campaign C]
+Current: $X/day, [N] installs/day, CPI at target.
+Recommended sequence:
+1. Raise daily budget by 20% → wait 7 days → evaluate
+2. If CPI holds: raise another 20% → wait 7 days
+3. If CPI holds and budget is no longer the constraint: add a new ad group with a different creative angle [gg-gem-1293]
+4. Only raise bids after budget increases stop generating volume gains
+\`\`\`
+`,
+  "google-campaign-health": `# Skill: Google Campaign Health Check
+
+Week-over-week performance comparison for Google App Campaigns — diagnoses spend, CPI, and install volume trends and flags campaigns that need action.
+
+---
+
+## When to Use This
+
+- User asks "how are my Google campaigns doing?"
+- User wants a Monday / start-of-week check on Google Ads
+- Spend dropped or spiked unexpectedly on Google
+- CPI is rising and the cause is unclear
+- User wants to know if their Google campaigns are hitting algorithm thresholds
+
+## What It Needs
+
+**Option A — Google Ads connected**: \`GOOGLE_ADS_DEVELOPER_TOKEN\`, \`GOOGLE_ADS_CLIENT_ID\`, \`GOOGLE_ADS_CLIENT_SECRET\`, \`GOOGLE_ADS_REFRESH_TOKEN\` configured.
+
+**Option B — CSV export**: No API needed. Export from Google Ads UI:
+- Go to **Campaigns** → set date range to **This week (Mon–today)** and **Last week (Mon–Sun)**
+- Columns to include: \`Campaign\`, \`Campaign type\`, \`Status\`, \`Budget\`, \`Impressions\`, \`Clicks\`, \`Installs\`, \`Cost\`, \`CPI\`, \`Conversions\`, \`Cost/conv.\`
+- Export as CSV. Paste both exports (label which week each is).
+
+## What It Produces
+
+- Week-over-week delta table per campaign (spend Δ%, CPI Δ%, installs Δ%)
+- Status per campaign: Healthy / Scaling / Degrading / Below threshold / Stalled
+- Diagnosis for each flagged campaign
+- Prioritized action list
+
+---
+
+## Knowledge Base Grounding
+
+- **ab-pt-006** (Ashley Black): "Never change bids or budgets more than 20% per day — larger changes cause campaigns to tank and struggle to recover."
+- **ab-pt-019** (Ashley Black): "Google recommends 50 installs/day or 10 actions/day — aim for double. Below threshold = algorithm can't optimize."
+- **gg-gem-1293** (ex-Googler): "A way to scale without changing bids is to add a new ad group — new ad groups perform better than scaling bids on existing ones."
+- **gg-gem-1294** (ex-Googler): "You can't go too small on Google UAC — $100/day is insufficient for the algorithm to work."
+- **ab-pt-007** (Ashley Black): "Duplicate stale campaigns for a fresh start — the algorithm gets fatigued just like creative does."
+
+---
+
+## Procedure
+
+### Step 1: Pull This Week and Last Week Data
+
+**If API connected:**
+
+\`\`\`
+# This week
+get_google_insights(
+  customer_id="123-456-7890",
+  date_range="THIS_WEEK_MON_TODAY",
+  level="CAMPAIGN",
+  metrics=["impressions","clicks","conversions","cost_micros","cost_per_conversion"]
+)
+
+# Last week
+get_google_insights(
+  customer_id="123-456-7890",
+  date_range="LAST_WEEK",
+  level="CAMPAIGN",
+  metrics=["impressions","clicks","conversions","cost_micros","cost_per_conversion"]
+)
+\`\`\`
+
+**If CSV:** Use the two exports the user pasted.
+
+### Step 2: Compute Week-over-Week Deltas
+
+For each campaign, calculate:
+- Spend Δ%
+- Installs / conversions Δ%
+- CPI (cost per install) Δ%
+- Daily install run rate this week vs last week
+
+### Step 3: Apply Threshold Check
+
+Flag any campaign where:
+- Daily installs < 50 (or daily target events < 10) → **Below threshold** — algorithm can't optimize
+- Daily budget < $100 → **Underfunded** — Google needs more signal
+- CPI rose > 20% WoW with no bid change → **Degrading** — investigate creative or network shift
+- Spend dropped > 30% WoW with no budget change → **Stalled** — check campaign status, bids, creative fatigue
+
+### Step 4: Pull Campaign Structure (API only)
+
+\`\`\`
+get_google_ads_campaigns(customer_id="123-456-7890")
+\`\`\`
+
+Check for: campaigns that have been running > 90 days with no creative refresh (fatigue risk per ab-pt-007).
+
+### Step 5: Diagnose and Recommend
+
+For each flagged campaign, apply this logic:
+
+| Signal | Diagnosis | Action |
+|--------|-----------|--------|
+| Below 50 installs/day | Insufficient signal | Increase budget OR consolidate campaigns |
+| CPI up > 20%, impressions flat | Creative fatigue | Run \`google-asset-performance\` skill |
+| CPI up > 20%, impressions down | Network shift | Run \`google-network-audit\` skill |
+| Campaign running > 90 days, CPI rising | Algorithm fatigue | Duplicate campaign for a fresh start [ab-pt-007] |
+| Spend dropped, status = active | Budget exhausted or low bid | Check budget cap; raise bid ≤ 20% [ab-pt-006] |
+
+### Step 6: Output
+
+Present:
+
+\`\`\`
+## Google Campaign Health — [date range]
+
+| Campaign | Spend Δ | CPI Δ | Installs Δ | Status |
+|----------|---------|-------|------------|--------|
+| [name]   | +12%    | -8%   | +22%       | Healthy |
+| [name]   | -5%     | +31%  | -28%       | Degrading |
+
+### Flagged Campaigns
+
+**[Campaign name] — Degrading**
+CPI rose 31% WoW. Impressions are flat, suggesting creative fatigue rather than a network shift.
+→ Run google-asset-performance to identify underperforming assets.
+→ Do not increase bids — fix creative first.
+
+### Threshold Check
+- [Campaign] is below 50 installs/day (currently [N]/day). Algorithm cannot optimize at this volume.
+  → Consider consolidating with another campaign or increasing budget.
+
+### Recommended Actions (Priority Order)
+1. ...
+\`\`\`
+`,
+  "google-network-audit": `# Skill: Google Network Mix Audit
+
+Analyze how Google App Campaign spend is distributed across its 5 networks — and whether that distribution is working for you or against you.
+
+---
+
+## When to Use This
+
+- CPI suddenly spiked and the cause isn't obvious
+- User suspects traffic quality has degraded
+- After enabling a new campaign and wanting to understand where Google is sending spend
+- User is comparing two campaigns with different CPI and wants to rule out network mix as the cause
+- Before deciding whether to add placement exclusions
+
+## What It Needs
+
+**Option A — Google Ads connected:**
+
+\`\`\`
+get_google_network_mix(customer_id="123-456-7890", campaign_id="...")
+get_google_insights(customer_id="123-456-7890", ..., breakdowns=["network"])
+\`\`\`
+
+**Option B — CSV export:** Export from Google Ads UI:
+- Go to the **Campaigns** report → click **Segment** → **Network (with search partners)**
+- Columns: \`Campaign\`, \`Network\`, \`Impressions\`, \`Clicks\`, \`Conversions\`, \`Cost\`, \`CPI\`, \`CTR\`
+- Date range: last 14 days. Export as CSV and paste below.
+- Note: Google's UI shows 4 buckets — Search, Display Network, YouTube, Cross-network. The full 5-network breakdown (including Play Store separately) requires a Google rep.
+
+## What It Produces
+
+- Network spend distribution table with CPI per network
+- Identification of underperforming networks pulling the average up
+- Flags for abnormal traffic shifts
+- Placement exclusion recommendations where warranted
+
+---
+
+## Knowledge Base Grounding
+
+- **ab-pt-005** (Ashley Black): "Google App Campaigns serve across 5 networks but the dashboard only shows 4 buckets. 'Search' includes both google.com AND Play Store search. 'Display Network' includes AdMob, MGDN (mobile browser), AND Play Store browse. 'YouTube' includes Shorts, in-stream, homepage, and bumper ads."
+- **ab-pt-018** (Ashley Black): "Each traffic source has very different quality characteristics. Play Store search = high-intent (users actively searching). AdMob/MGDN = low-intent (interruption ads in other apps). Understanding the mix explains most unexplained CPI swings."
+- **gg-gem-1177** (community): "Dig deep in the Google UI — the app placement report shows which specific apps/sites are serving your ads. Most advertisers never look at this. It's under Insights → Where ads showed."
+- **gg-gem-1292** (ex-Googler): "You can see the 'Devices' breakdown under Insights → Where and When ads are shown → Devices. Sudden shifts between phone/tablet can explain CPI changes."
+- **ab-pt-005** actionable: "Use Network segmentation to monitor traffic shifts. If you see a performance drop, check if traffic shifted to low-quality display/web placements."
+
+---
+
+## Procedure
+
+### Step 1: Pull Network Distribution
+
+**If API connected:**
+
+\`\`\`
+get_google_network_mix(
+  customer_id="123-456-7890",
+  campaign_id="[campaign_id]"
+)
+
+# Also pull with date comparison: this week vs last week
+get_google_insights(
+  customer_id="123-456-7890",
+  campaign_id="[campaign_id]",
+  date_range="LAST_14_DAYS",
+  level="CAMPAIGN",
+  metrics=["impressions","conversions","cost_micros","cost_per_conversion"],
+  segment_by_network=true
+)
+\`\`\`
+
+**If CSV:** Use the network-segmented export the user pasted.
+
+### Step 2: Map Buckets to Real Traffic
+
+Explain what each bucket actually contains to the user:
+
+| UI Bucket | What's Actually Inside |
+|-----------|------------------------|
+| Search | google.com search results + Play Store search (high-intent) |
+| Display Network | AdMob (in-app ads) + MGDN (mobile browser) + Play Store browse |
+| YouTube | In-stream, YouTube Shorts, homepage, bumper ads |
+| Cross-network | Mixed; often a small residual bucket |
+
+### Step 3: Calculate CPI by Network
+
+For each bucket:
+- Spend share (% of total)
+- CPI relative to campaign average
+- Install share (% of total installs)
+
+Flag any bucket where:
+- Spend share > 30% AND CPI > 1.5× campaign average → **High-cost network drag**
+- Spend share increased > 10pp WoW → **Traffic shift** — likely cause of any CPI change
+
+### Step 4: Check Placement Report (API or Manual)
+
+**If API connected:** Look for specific underperforming app/site placements within Display Network.
+
+**If manual:** Advise user to check: Google Ads UI → **Insights** → **Where ads showed** → filter by Display Network → sort by Cost desc → look for non-app placements (web URLs) with high cost and zero installs.
+
+Placement exclusion is warranted when:
+- A specific app/site accounts for > 5% of Display spend with CPI > 3× target
+- Web (non-app) placements are appearing in an app install campaign
+
+### Step 5: Check Device Split
+
+Advise user to check: Google Ads UI → **Insights** → **Devices**. A sudden shift from phone to tablet traffic frequently explains CPI increases — tablets convert at a much lower rate for most apps.
+
+### Step 6: Output
+
+\`\`\`
+## Google Network Mix Audit — [campaign] — [date range]
+
+### Network Distribution
+
+| Network | Spend Share | CPI | vs Avg | Trend |
+|---------|-------------|-----|--------|-------|
+| Search (google.com + Play search) | 42% | $1.80 | -28% | Stable |
+| Display (AdMob + MGDN + Play browse) | 38% | $3.90 | +56% | ↑ +8pp WoW |
+| YouTube | 20% | $2.20 | -12% | Stable |
+
+### Diagnosis
+
+Display Network is pulling the overall CPI up significantly. Its spend share grew 8pp last week — this shift likely explains the overall CPI increase.
+
+Within Display, check your placement report for non-app (web) URLs — these tend to be low-quality for app install campaigns.
+
+### Recommended Actions
+1. Run the placement report (Insights → Where ads showed → Display) and exclude any web URLs with >$X spend and zero installs.
+2. Do not exclude the entire Display Network — Play Store browse is high-intent inventory within that bucket.
+3. Monitor the network split weekly — a 5pp+ shift is worth investigating.
+
+### What You Can't Control
+Google's algorithm automatically shifts spend across networks based on auction signals. You can exclude specific placements but cannot directly cap network-level spend. The levers are: bid adjustments, placement exclusions, and creative quality (better creatives attract better placements).
+\`\`\`
+`,
+  "placement-audit": `# Skill: Placement Efficiency Audit
+
+How to identify and quantify placement waste in Meta app install campaigns.
 
 ---
 
@@ -950,6 +1859,32 @@ How to identify and quantify placement waste in Meta app install campaigns.
 - Comparing an efficient vs inefficient campaign
 - After enabling Advantage+ placements and wanting to check what Meta chose
 - Before deciding whether to restrict placements or keep them broad
+- User asks "where is Meta spending my money?" or "should I turn off certain placements?"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\`.
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
+- Date range: **Last 7 days**
+- Click **Breakdown** → **By Delivery** → **Platform** (then repeat with **Placement**)
+- Columns: \`Platform\`, \`Placement\`, \`Spend\`, \`Impressions\`, \`CPM\`, \`CTR (link)\`, \`Result\`, \`Cost per result\`
+- Export as CSV and paste below.
+
+## What It Produces
+
+- Spend and CPA breakdown by placement (Reels, Feed, Stories, Audience Network, etc.)
+- Waste quantification: how much is going to high-CPA placements
+- Placement restriction recommendations with expected CPA impact
+- Value Rules recommendation for placement-level bid modifiers
+
+---
+
+## Knowledge Base Grounding
+
+- **mb-li-006** (Marcus Burke): "App Promotion campaigns are Reels-heavy and skew young. Web campaigns have better placement distribution and scale on Feed."
+- **mb-li-009** (Marcus Burke): "Placement-level Value Rules — bid differently on each placement within the same broad targeting ad set. Don't create separate placement-targeted campaigns."
 
 ---
 
@@ -1127,6 +2062,32 @@ Check:
   "weekly-performance": `# Skill: Weekly Performance Snapshot
 
 The "Monday morning check" — week-over-week health comparison with automatic diagnosis using Kast's diagnostic framework.
+
+---
+
+## When to Use This
+
+- User asks "how did we do this week?" or "how are campaigns performing?"
+- Monday morning or start-of-week check-in
+- Spend, CPA, or ROAS changed unexpectedly and needs diagnosis
+- User wants a summary before an optimization session
+- User says "quick check" or "weekly recap"
+
+## What It Needs
+
+**Option A — Meta API connected**: Provide \`ad_account_id\` (e.g. \`act_123456789\`).
+
+**Option B — CSV export** (no API needed):
+- Go to **Meta Ads Manager** → **Campaigns** tab
+- Set date range to **This week (Mon–today)**, then export. Repeat for **Last week (Mon–Sun)**.
+- Columns to include: \`Campaign name\`, \`Delivery\`, \`Budget\`, \`Spend\`, \`Reach\`, \`Impressions\`, \`Frequency\`, \`CPM\`, \`CTR (link)\`, \`CPC\`, \`Result\` (your conversion event), \`Cost per result\`
+- Export each week as a separate CSV and paste both below, labeled by week.
+
+## What It Produces
+
+- Week-over-week delta table per campaign (spend Δ%, CPA Δ%, CPM Δ%, CTR Δ%, frequency Δ%)
+- Kast diagnostic label per campaign (fatigue / saturation / LP mismatch / healthy)
+- Prioritized action list
 
 ---
 

@@ -112,6 +112,8 @@ export const TOPICS = [
   "ad_copy",
   "conversion_rate",
   "strategy",
+  "psychology",
+  "compliance",
 ] as const;
 
 export const APPLIES_TO = [

@@ -30,14 +30,22 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
-  // Auth: validate x-api-key
-  const apiKey = req.headers.get("x-api-key");
+  // Auth: accept x-api-key OR Authorization: Bearer <key>.
+  // Bearer support lets clients (e.g. Claude Desktop's custom-connector UI)
+  // that only expose a Bearer-token field connect without custom headers.
+  const apiKey =
+    req.headers.get("x-api-key") ??
+    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim() ??
+    null;
   if (!apiKey) {
     return new Response(
       JSON.stringify({
         jsonrpc: "2.0",
         id: null,
-        error: { code: -32000, message: "Missing x-api-key header" },
+        error: {
+          code: -32000,
+          message: "Missing API key — provide via x-api-key header or Authorization: Bearer <key>",
+        },
       }),
       {
         status: 401,

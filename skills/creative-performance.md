@@ -14,7 +14,7 @@ Categorize every active ad by health status and provide specific next steps per 
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Ads** tab
@@ -49,16 +49,7 @@ Categorize every active ad by health status and provide specific next steps per 
 
 ### Step 1: Pull Ad-Level Insights
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  fields="ad_id,ad_name,adset_id,adset_name,spend,impressions,clicks,ctr,cpm,frequency,actions,cost_per_action_type",
-  date_preset="last_7d",
-  sort="spend_descending",
-  limit=50
-)
-```
+Via Meta's MCP or CSV: top 50 ads by spend over the last 7 days with `ad_id`, `ad_name`, `adset_id`, `adset_name`, `spend`, `impressions`, `clicks`, `ctr`, `cpm`, `frequency`, conversions, and cost per conversion.
 
 ### Step 2: Determine Target CPA
 

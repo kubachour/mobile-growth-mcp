@@ -14,7 +14,7 @@ The "Monday morning check" — week-over-week health comparison with automatic d
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id` (e.g. `act_123456789`).
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` (e.g. `act_123456789`) and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** tab
@@ -47,23 +47,7 @@ The "Monday morning check" — week-over-week health comparison with automatic d
 
 ### Step 1: Pull This Week and Last Week Data
 
-```
-# This week
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="campaign_id,campaign_name,spend,impressions,clicks,ctr,cpm,cpc,reach,frequency,actions,cost_per_action_type",
-  date_preset="this_week_mon_today"
-)
-
-# Last week
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="campaign_id,campaign_name,spend,impressions,clicks,ctr,cpm,cpc,reach,frequency,actions,cost_per_action_type",
-  date_preset="last_week_mon_sun"
-)
-```
+Via Meta's MCP or CSV, gather campaign-level data for two ranges — **this week (Mon–today)** and **last week (Mon–Sun)** — with: `campaign_id`, `campaign_name`, `spend`, `impressions`, `clicks`, `ctr`, `cpm`, `cpc`, `reach`, `frequency`, conversions, and cost per conversion.
 
 ### Step 2: Compute Deltas
 

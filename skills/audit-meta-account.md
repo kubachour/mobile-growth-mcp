@@ -14,7 +14,7 @@ Run a structured audit of a Meta ad account against industry best practices from
 
 ## What It Needs
 
-**Option A — Meta API connected** (recommended for a full audit): Provide `ad_account_id`. The audit pulls structure + performance data across all levels.
+**Option A — Meta Ads MCP connected** (recommended for a full audit): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` and ask the connector for the structure + performance data across all levels (campaigns, ad sets, ads, plus insights with breakdowns).
 
 **Option B — CSV export** (partial audit, structure + performance separately):
 - **Campaigns**: Name, Objective, Status, Bid strategy, Budget, Spend (last 30 days), CPA, ROAS
@@ -51,23 +51,15 @@ Run a structured audit of a Meta ad account against industry best practices from
 
 ## Prerequisites
 
-- Meta Marketing API access token (user provides via META_ACCESS_TOKEN)
-- Access to MCP tools: `get_meta_campaigns`, `get_meta_adsets`, `get_meta_ads`, `get_meta_insights`, `search_insights`, `get_insight`
+- Meta Ads data — via Meta's official Meta Ads MCP (recommended) or CSV exports from Ads Manager
+- Knowledge base access via this MCP's `search_insights` and `get_insight` tools
 - Ad account ID (e.g., `act_123456789`)
 
 ## Procedure
 
 ### Step 1: Gather Account Structure
 
-Use the Meta tools to pull structure:
-
-```
-get_meta_campaigns(ad_account_id="act_123456789")
-get_meta_adsets(ad_account_id="act_123456789")
-get_meta_ads(ad_account_id="act_123456789")
-```
-
-Record:
+Pull the lists of active campaigns, ad sets, and ads (with their settings — objectives, bid strategies, budgets, optimization goals, targeting, placements, creative formats). Record:
 - Total active campaigns, ad sets, and ads
 - Campaign objectives in use
 - Bid strategies in use
@@ -76,13 +68,10 @@ Record:
 
 ### Step 2: Gather Performance Metrics
 
-Pull last 7 days of performance data (rate-limit safe):
-
-```
-get_meta_insights(ad_account_id="act_123456789", level="campaign", date_preset="last_7d")
-get_meta_insights(ad_account_id="act_123456789", level="account", breakdowns="age,gender", date_preset="last_7d")
-get_meta_insights(ad_account_id="act_123456789", level="campaign", breakdowns="publisher_platform,platform_position", date_preset="last_7d")
-```
+Pull the last 7 days of performance data:
+- Campaign-level totals
+- Account-level data with `age` × `gender` breakdown
+- Campaign-level data with `publisher_platform` × `platform_position` breakdown
 
 Record baseline metrics:
 - Total spend, CPA, ROAS

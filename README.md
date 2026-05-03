@@ -2,9 +2,11 @@
 
 [![npm](https://img.shields.io/npm/v/mobile-growth-mcp)](https://www.npmjs.com/package/mobile-growth-mcp)
 
-MCP server for mobile growth & user acquisition. Connect your LLM to a curated knowledge base of ad optimization insights + live Meta Marketing API access. Focused on subscription apps. More networks coming.
+MCP server for mobile growth & user acquisition. Connects your LLM to a curated knowledge base of ad optimization insights and a library of analytical skills (campaign audits, fatigue detection, weekly diagnostics). Focused on subscription apps.
 
-> **Your ad platform tokens (Meta, Google Ads, TikTok) never leave your machine.** The MCP server runs locally on your computer — API calls to ad platforms happen directly from your device. We never see, store, or proxy your ad platform credentials.
+For **Meta Ads data**, use Meta's official [Meta Ads MCP / AI connector](https://www.facebook.com/business/news/meta-ads-ai-connectors). The skills here interpret what it returns. This MCP intentionally does **not** ship Meta API tools — keeping users on the official path.
+
+For **Google Ads**, this MCP includes direct API integration (your tokens stay on your machine).
 
 ## Quick Start
 
@@ -23,8 +25,7 @@ MCP server for mobile growth & user acquisition. Connect your LLM to a curated k
       "command": "npx",
       "args": ["-y", "mobile-growth-mcp"],
       "env": {
-        "API_KEY": "me_YOUR_KEY",
-        "META_ACCESS_TOKEN": "your-meta-access-token"
+        "API_KEY": "me_YOUR_KEY"
       }
     }
   }
@@ -32,8 +33,8 @@ MCP server for mobile growth & user acquisition. Connect your LLM to a curated k
 ```
 
 3. Replace `me_YOUR_KEY` with the API key from your account admin.
-4. Replace `your-meta-access-token` with your Meta Marketing API token (or remove that line if you only need the knowledge base).
-5. Restart Claude Desktop.
+4. Restart Claude Desktop.
+5. To analyze Meta data, also install Meta's official Meta Ads MCP — its connector data flows through your LLM into the skills here.
 
 > **Note**: Use the JSON config file, not the "Add custom connector" UI in Claude Desktop. That UI is for remote servers — this MCP runs locally.
 
@@ -54,7 +55,7 @@ Same JSON format as above.
   "mcpServers": {
     "mobile-growth": {
       "command": "npx",
-      "args": ["-y", "mobile-growth-mcp", "--api-key=me_YOUR_KEY", "--meta-token=YOUR_META_TOKEN"]
+      "args": ["-y", "mobile-growth-mcp", "--api-key=me_YOUR_KEY"]
     }
   }
 }
@@ -62,14 +63,15 @@ Same JSON format as above.
 
 ### No API key?
 
-The server still starts — you get Meta tools and a `connection_status` tool that explains what's missing and how to fix it.
+The server still starts — you get the Google Ads tools (if configured) and a `connection_status` tool that explains what's missing and how to fix it.
 
 ## How It Works
 
-The MCP server runs as a **local process** on your machine, started by your MCP client (Claude Desktop, Cursor, etc.). It connects to two things:
+The MCP server runs as a **local process** on your machine, started by your MCP client (Claude Desktop, Cursor, etc.).
 
 - **Knowledge base** (remote) — curated expert insights hosted on our server, accessed via your API key
-- **Ad platform APIs** (local) — Meta, Google Ads, TikTok calls happen directly from your machine using your tokens
+- **Google Ads API** (local) — calls happen directly from your machine using your tokens
+- **Meta Ads data** — sourced from Meta's official AI connector, not from this MCP
 
 ```
 Your machine                          Our server
@@ -79,10 +81,12 @@ Your machine                          Our server
 |   v                       |  API    |  (insights,      |
 | mobile-growth-mcp --------+--key--->|   search,        |
 |   |                       |         |   embeddings)    |
-|   | Your token            |         +------------------+
-|   | stays here            |
-|   v                       |
-| Meta / Google / TikTok API|
+|   |                       |         +------------------+
+|   v
+| Google Ads API (your tokens stay local)
+|
+| (Meta Ads data: comes via Meta's official AI connector,
+|  not through this MCP)
 +---------------------------+
 ```
 
@@ -92,40 +96,46 @@ Your ad platform tokens are used locally and are never sent to our servers.
 
 **Knowledge base tools** — search, browse, and retrieve expert insights on creative strategy, audience targeting, scaling, bid optimization, and more.
 
-**Meta Marketing API tools** — pull campaigns, ad sets, ads, and performance insights directly from your Meta ad account.
+**Google Ads API tools** — pull campaigns, ad groups, assets, performance insights, and network mix directly from your Google Ads account.
 
-**10 pre-built report prompts** — ad fatigue detection, weekly performance, creative health, placement audits, audience composition, architecture reviews, campaign comparisons, attribution analysis, and full account audits.
+**Analytical skills (MCP prompts)** — KB-grounded methodologies for ad fatigue, weekly performance, creative health, placement audits, audience composition, architecture reviews, campaign comparisons, attribution analysis, and full account audits. The Meta-flavored skills consume data from Meta's official AI connector or pasted CSVs.
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `connection_status` | Check KB and Meta API connection status; shows how to fix issues |
+| `connection_status` | Check KB and Google Ads connection status; shows how to fix issues |
 | `search_insights` | Semantic + keyword hybrid search across curated insights |
 | `list_insights` | Browse all insights with optional filtering |
 | `get_insight` | Full content of a specific insight by slug or ID |
-| `get_meta_campaigns` | List campaigns with objectives, budgets, bid strategies |
-| `get_meta_adsets` | List ad sets with targeting and optimization goals |
-| `get_meta_ads` | List ads with creative info |
-| `get_meta_insights` | Performance data with breakdowns, date ranges, levels |
-| `get_meta_ad_fatigue` | Built-in creative fatigue detection report |
+| `get_google_ads_campaigns` | List Google App Campaigns with status, bid strategy, budgets |
+| `get_google_ad_groups` | List ad groups within Google App Campaigns |
+| `get_google_assets` | List creative assets with slot utilization audit |
+| `get_google_insights` | Performance metrics with network/device breakdowns |
+| `get_google_network_mix` | Detect Search ↔ Display ↔ YouTube traffic shifts |
+| `get_google_asset_fatigue` | Asset-level fatigue detection |
+| `upload_google_image_assets` | Upload image assets to Google Ads |
 
-## Report Prompts
+## Report Prompts (Skills)
 
-Each prompt takes an `ad_account_id` and walks the LLM through a structured analysis:
+Each Meta-flavored prompt takes an `ad_account_id` and walks the LLM through a structured analysis. Data comes from Meta's official AI connector or pasted CSV exports.
 
-| Prompt | Description | API Calls |
-|--------|-------------|-----------|
-| `ad-fatigue-report` | Detect creative fatigue with daily granularity | 1 |
-| `weekly-performance` | Week-over-week health with Kast diagnostic framework | 2 |
-| `creative-performance` | Categorize ads: scaling / promising / fatiguing / dead weight | 1 |
-| `placement-efficiency` | Identify placement waste and quantify savings | 1/campaign |
-| `audience-composition` | Age x gender heatmap with CPA analysis | 1-2 |
-| `architecture-review` | Campaign structure evaluation | 3 |
-| `audit-meta-account` | Comprehensive account audit | 6+ |
-| `campaign-comparison` | Side-by-side campaign comparison | 3+ |
-| `placement-audit` | Detailed placement audit with waste quantification | 1/campaign |
-| `attribution-analysis` | Conversion quality validation | 2+ |
+| Prompt | Description |
+|--------|-------------|
+| `ad-fatigue-report` | Detect creative fatigue with daily granularity |
+| `weekly-performance` | Week-over-week health with Kast diagnostic framework |
+| `creative-performance` | Categorize ads: scaling / promising / fatiguing / dead weight |
+| `audience-composition` | Age × gender heatmap with CPA analysis |
+| `architecture-review` | Campaign structure evaluation |
+| `audit-meta-account` | Comprehensive account audit |
+| `campaign-comparison` | Side-by-side campaign comparison |
+| `placement-audit` | Detailed placement audit with waste quantification |
+| `attribution-analysis` | Conversion quality validation |
+| `google-campaign-health` | Google App Campaign WoW health check |
+| `google-asset-performance` | Google asset categorization by actual CPI |
+| `google-network-audit` | Search/Display/YouTube spend analysis |
+| `google-architecture-review` | Google App Campaign structure audit |
+| `google-bid-strategy` | Google bid strategy + signal volume evaluation |
 
 All reports reference specific knowledge base insight IDs so recommendations are grounded in expert knowledge, not generic advice.
 
@@ -153,7 +163,7 @@ npm run build
 ```bash
 cp .env.example .env
 # Fill in API_KEY (get from admin)
-# For Meta tools: set META_ACCESS_TOKEN
+# For Google Ads tools: run `npx mobile-growth-mcp auth google` to set up
 # For ingestion/admin: also set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 ```
 
@@ -177,12 +187,12 @@ npm publish --access public
 ```
 packages/shared/       — Types, Supabase client
 packages/mcp-server/   — MCP server (published as mobile-growth-mcp)
-  src/meta/            — Meta Marketing API client
-  src/tools/           — All MCP tools (knowledge base + Meta)
+  src/google/          — Google Ads API client
+  src/tools/           — All MCP tools (KB + Google Ads)
   src/resources/       — MCP resources (vocabulary, instructions)
 packages/ingestion/    — CLI to validate & upsert insight JSONs
 data/insights/         — Curated insight JSON files
-skills/                — Skill markdown files (report methodologies)
+skills/                — Skill markdown files (analytical methodologies)
 supabase/migrations/   — SQL migrations
 supabase/functions/    — Edge Functions (embed, search)
 ```

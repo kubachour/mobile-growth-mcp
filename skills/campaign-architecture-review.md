@@ -14,7 +14,7 @@ Evaluate whether the account structure supports or limits scale. Structure-only 
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id`. Three API calls pull everything needed (no performance data required).
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` and ask the connector for the campaign / ad set / ad structure (no performance data required).
 
 **Option B — Manual description or CSV**:
 - Describe your campaign structure: how many active campaigns, what objectives, how many ad sets per campaign, how many ads per ad set, what bid strategies are in use
@@ -49,13 +49,7 @@ Evaluate whether the account structure supports or limits scale. Structure-only 
 
 ### Step 1: Pull Account Structure
 
-3 API calls — structure only, no insights:
-
-```
-get_meta_campaigns(ad_account_id="act_123456789")
-get_meta_adsets(ad_account_id="act_123456789")
-get_meta_ads(ad_account_id="act_123456789")
-```
+Via Meta's MCP or CSV exports, gather: list of campaigns (with objective, bid strategy, budget, status), list of ad sets (with optimization goal, targeting type, budget, placements), and list of ads (with creative format, status). No performance data required.
 
 ### Step 2: Run Architecture Checks
 

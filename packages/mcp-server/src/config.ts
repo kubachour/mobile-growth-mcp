@@ -77,13 +77,6 @@ export function resolveApiKey(): { value: string | undefined; source: string } {
   return resolve("API_KEY", "api-key");
 }
 
-export function resolveMetaToken(): {
-  value: string | undefined;
-  source: string;
-} {
-  return resolve("META_ACCESS_TOKEN", "meta-token");
-}
-
 export interface GoogleAdsConfigResult {
   configured: boolean;
   missing: string[];

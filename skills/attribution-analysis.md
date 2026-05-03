@@ -14,7 +14,7 @@ How to validate whether Meta-reported conversion numbers are real or inflated, u
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** tab
@@ -41,16 +41,7 @@ How to validate whether Meta-reported conversion numbers are real or inflated, u
 
 ## Step 1: Pull Multi-Window Attribution Data
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="actions,cost_per_action_type,action_values",
-  date_preset="last_7d"
-)
-```
-
-Note: For multi-window analysis, you may need direct API calls with `action_attribution_windows=1d_click,7d_click,28d_click,1d_view`.
+Via Meta's MCP or CSV: campaign-level conversions and CPA for the last 7 days, with attribution windows: `1d_click`, `7d_click`, `28d_click`, `1d_view`.
 
 Extract install counts for each window:
 
@@ -104,17 +95,7 @@ When comparing campaigns: if both have similar view-through ratios (~8-12%), att
 
 ## Step 4: Use Daily Time-Series for Consistency Check
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,actions",
-  time_increment="1",
-  date_preset="last_14d"
-)
-```
-
-Check:
+Pull campaign-level daily data for the last 14 days: `spend`, `impressions`, conversions per day. Check:
 - **Daily CPI consistency**: Stable CPI day-over-day = real performance. Wild swings = possible issues.
 - **Install/impression ratio**: Should be relatively stable.
 - **Weekend vs weekday patterns**: Normal to see dips; abnormal to see 5x swings.
@@ -129,17 +110,7 @@ Check:
 
 ## Step 5: Cross-Reference with Creative Performance
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  fields="ad_name,spend,impressions,actions",
-  sort="spend_descending",
-  limit=20
-)
-```
-
-For each top ad, check:
+Pull ad-level data for top 20 ads by spend with `ad_name`, `spend`, `impressions`, conversions. For each top ad, check:
 - Is the 1d_view count suspiciously close to 1d_click? (possible overcounting)
 - Does the 7d_click show meaningful uplift over 1d_click? (delayed intent)
 - Are there ads with very high spend but almost no 1d_click installs and lots of 1d_view? (view-through inflated)

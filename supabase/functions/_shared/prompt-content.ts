@@ -18,7 +18,7 @@ Detect creatives that are wasting budget due to audience exhaustion or declining
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\`. The \`get_meta_ad_fatigue\` tool handles this in a single call.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector to pull the data described in Option B. Provide \`ad_account_id\` and ask the connector for ad-level daily insights over the last 14 days.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Ads** tab
@@ -45,31 +45,11 @@ Detect creatives that are wasting budget due to audience exhaustion or declining
 
 ---
 
-## Quick Method: Built-in Tool
-
-Use \`get_meta_ad_fatigue\` — it runs a single API call and returns a full fatigue analysis with diagnosis and recommendations.
-
-\`\`\`
-get_meta_ad_fatigue(ad_account_id="act_123456789")
-\`\`\`
-
-Optional: scope to a campaign, change thresholds, or set a different conversion event.
-
----
-
-## Manual Method: Step by Step
+## Method: Step by Step
 
 ### Step 1: Pull Daily Ad-Level Data
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  time_increment="1",
-  fields="ad_id,ad_name,spend,impressions,clicks,ctr,cpm,frequency,actions,cost_per_action_type",
-  date_preset="last_7d"
-)
-\`\`\`
+Via Meta's MCP (Option A) or the CSV (Option B), gather ad-level performance for the last 7-14 days, broken down by day, with: \`ad_id\`, \`ad_name\`, \`spend\`, \`impressions\`, \`clicks\`, \`ctr\`, \`cpm\`, \`frequency\`, conversions, and cost per conversion.
 
 ### Step 2: Check Per Ad (daily granularity)
 
@@ -218,7 +198,7 @@ How to validate whether Meta-reported conversion numbers are real or inflated, u
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** tab
@@ -245,16 +225,7 @@ How to validate whether Meta-reported conversion numbers are real or inflated, u
 
 ## Step 1: Pull Multi-Window Attribution Data
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="actions,cost_per_action_type,action_values",
-  date_preset="last_7d"
-)
-\`\`\`
-
-Note: For multi-window analysis, you may need direct API calls with \`action_attribution_windows=1d_click,7d_click,28d_click,1d_view\`.
+Via Meta's MCP or CSV: campaign-level conversions and CPA for the last 7 days, with attribution windows: \`1d_click\`, \`7d_click\`, \`28d_click\`, \`1d_view\`.
 
 Extract install counts for each window:
 
@@ -308,17 +279,7 @@ When comparing campaigns: if both have similar view-through ratios (~8-12%), att
 
 ## Step 4: Use Daily Time-Series for Consistency Check
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,actions",
-  time_increment="1",
-  date_preset="last_14d"
-)
-\`\`\`
-
-Check:
+Pull campaign-level daily data for the last 14 days: \`spend\`, \`impressions\`, conversions per day. Check:
 - **Daily CPI consistency**: Stable CPI day-over-day = real performance. Wild swings = possible issues.
 - **Install/impression ratio**: Should be relatively stable.
 - **Weekend vs weekday patterns**: Normal to see dips; abnormal to see 5x swings.
@@ -333,17 +294,7 @@ Check:
 
 ## Step 5: Cross-Reference with Creative Performance
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  fields="ad_name,spend,impressions,actions",
-  sort="spend_descending",
-  limit=20
-)
-\`\`\`
-
-For each top ad, check:
+Pull ad-level data for top 20 ads by spend with \`ad_name\`, \`spend\`, \`impressions\`, conversions. For each top ad, check:
 - Is the 1d_view count suspiciously close to 1d_click? (possible overcounting)
 - Does the 7d_click show meaningful uplift over 1d_click? (delayed intent)
 - Are there ads with very high spend but almost no 1d_click installs and lots of 1d_view? (view-through inflated)
@@ -406,7 +357,7 @@ Reveal who is actually converting and at what cost, by age and gender. Identifie
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
@@ -438,15 +389,7 @@ Reveal who is actually converting and at what cost, by age and gender. Identifie
 
 ### Step 1: Pull Age × Gender Breakdown
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="account",
-  fields="spend,impressions,clicks,ctr,actions,cost_per_action_type",
-  breakdowns="age,gender",
-  date_preset="last_7d"
-)
-\`\`\`
+Via Meta's MCP or CSV: account-level data for the last 7 days with breakdowns \`age\` and \`gender\`, fields \`spend\`, \`impressions\`, \`clicks\`, \`ctr\`, conversions, and cost per conversion.
 
 ### Step 2: Build Heatmap
 
@@ -517,7 +460,7 @@ Run a structured audit of a Meta ad account against industry best practices from
 
 ## What It Needs
 
-**Option A — Meta API connected** (recommended for a full audit): Provide \`ad_account_id\`. The audit pulls structure + performance data across all levels.
+**Option A — Meta Ads MCP connected** (recommended for a full audit): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and ask the connector for the structure + performance data across all levels (campaigns, ad sets, ads, plus insights with breakdowns).
 
 **Option B — CSV export** (partial audit, structure + performance separately):
 - **Campaigns**: Name, Objective, Status, Bid strategy, Budget, Spend (last 30 days), CPA, ROAS
@@ -554,23 +497,15 @@ Run a structured audit of a Meta ad account against industry best practices from
 
 ## Prerequisites
 
-- Meta Marketing API access token (user provides via META_ACCESS_TOKEN)
-- Access to MCP tools: \`get_meta_campaigns\`, \`get_meta_adsets\`, \`get_meta_ads\`, \`get_meta_insights\`, \`search_insights\`, \`get_insight\`
+- Meta Ads data — via Meta's official Meta Ads MCP (recommended) or CSV exports from Ads Manager
+- Knowledge base access via this MCP's \`search_insights\` and \`get_insight\` tools
 - Ad account ID (e.g., \`act_123456789\`)
 
 ## Procedure
 
 ### Step 1: Gather Account Structure
 
-Use the Meta tools to pull structure:
-
-\`\`\`
-get_meta_campaigns(ad_account_id="act_123456789")
-get_meta_adsets(ad_account_id="act_123456789")
-get_meta_ads(ad_account_id="act_123456789")
-\`\`\`
-
-Record:
+Pull the lists of active campaigns, ad sets, and ads (with their settings — objectives, bid strategies, budgets, optimization goals, targeting, placements, creative formats). Record:
 - Total active campaigns, ad sets, and ads
 - Campaign objectives in use
 - Bid strategies in use
@@ -579,13 +514,10 @@ Record:
 
 ### Step 2: Gather Performance Metrics
 
-Pull last 7 days of performance data (rate-limit safe):
-
-\`\`\`
-get_meta_insights(ad_account_id="act_123456789", level="campaign", date_preset="last_7d")
-get_meta_insights(ad_account_id="act_123456789", level="account", breakdowns="age,gender", date_preset="last_7d")
-get_meta_insights(ad_account_id="act_123456789", level="campaign", breakdowns="publisher_platform,platform_position", date_preset="last_7d")
-\`\`\`
+Pull the last 7 days of performance data:
+- Campaign-level totals
+- Account-level data with \`age\` × \`gender\` breakdown
+- Campaign-level data with \`publisher_platform\` × \`platform_position\` breakdown
 
 Record baseline metrics:
 - Total spend, CPA, ROAS
@@ -708,7 +640,7 @@ Evaluate whether the account structure supports or limits scale. Structure-only 
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\`. Three API calls pull everything needed (no performance data required).
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and ask the connector for the campaign / ad set / ad structure (no performance data required).
 
 **Option B — Manual description or CSV**:
 - Describe your campaign structure: how many active campaigns, what objectives, how many ad sets per campaign, how many ads per ad set, what bid strategies are in use
@@ -743,13 +675,7 @@ Evaluate whether the account structure supports or limits scale. Structure-only 
 
 ### Step 1: Pull Account Structure
 
-3 API calls — structure only, no insights:
-
-\`\`\`
-get_meta_campaigns(ad_account_id="act_123456789")
-get_meta_adsets(ad_account_id="act_123456789")
-get_meta_ads(ad_account_id="act_123456789")
-\`\`\`
+Via Meta's MCP or CSV exports, gather: list of campaigns (with objective, bid strategy, budget, status), list of ad sets (with optimization goal, targeting type, budget, placements), and list of ads (with creative format, status). No performance data required.
 
 ### Step 2: Run Architecture Checks
 
@@ -819,7 +745,7 @@ Reusable step-by-step framework for comparing any two Meta campaigns to identify
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\` and optionally the two \`campaign_id\` values. If IDs aren't provided, the skill will list campaigns and ask you to pick two.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and optionally the two \`campaign_id\` values. If IDs aren't provided, list campaigns via the connector and ask the user to pick two.
 
 **Option B — CSV export** (no API needed):
 - Export from **Meta Ads Manager** → **Campaigns** tab, then drill into each campaign for its ad sets and ads
@@ -846,13 +772,7 @@ Reusable step-by-step framework for comparing any two Meta campaigns to identify
 
 ## Step 1: Pull Campaign Settings Side-by-Side
 
-\`\`\`
-get_meta_campaigns(ad_account_id="act_123456789")
-\`\`\`
-
-Then filter for the two campaigns being compared.
-
-Compare: objective, bid strategy, daily budget, buying type, how long each has been running.
+Via Meta's MCP or CSV: list of campaigns. Filter for the two being compared. Compare: objective, bid strategy, daily budget, buying type, how long each has been running.
 
 **Watch for**: Budget set at campaign level vs ad set level. One campaign may have 2x the budget — that alone can explain saturation effects.
 
@@ -860,12 +780,7 @@ Compare: objective, bid strategy, daily budget, buying type, how long each has b
 
 ## Step 2: Pull Ad Set Targeting & Placement Differences
 
-\`\`\`
-get_meta_adsets(ad_account_id="act_123456789", campaign_id="CAMPAIGN_A_ID")
-get_meta_adsets(ad_account_id="act_123456789", campaign_id="CAMPAIGN_B_ID")
-\`\`\`
-
-Compare:
+Via Meta's MCP or CSV: ad sets for each of the two campaigns. Compare:
 - **Geo-targeting**: Single country vs multi-country
 - **Placements**: Which publisher_platforms and positions are enabled
 - **Audience**: Age range, exclusions, Advantage+ settings
@@ -877,16 +792,7 @@ Compare:
 
 ## Step 3: Pull Aggregate Insights
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="campaign_id,campaign_name,spend,impressions,clicks,cpm,cpc,ctr,reach,frequency,actions,cost_per_action_type",
-  date_preset="last_7d"
-)
-\`\`\`
-
-Build comparison table:
+Via Meta's MCP or CSV: campaign-level last-7-days data with \`campaign_id\`, \`campaign_name\`, \`spend\`, \`impressions\`, \`clicks\`, \`cpm\`, \`cpc\`, \`ctr\`, \`reach\`, \`frequency\`, conversions, cost per conversion. Build comparison table:
 
 | Metric | Campaign A | Campaign B | Ratio |
 |---|---|---|---|
@@ -921,17 +827,7 @@ Calculate conversion rates at each step:
 
 ## Step 5: Break Down by Placement
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,cpm,ctr,actions,cost_per_action_type",
-  breakdowns="publisher_platform,platform_position",
-  date_preset="last_7d"
-)
-\`\`\`
-
-For each placement, calculate CPI. Compare:
+Pull campaign-level last-7-days data with breakdowns \`publisher_platform\` × \`platform_position\`, fields \`spend\`, \`impressions\`, \`cpm\`, \`ctr\`, conversions, cost per conversion. For each placement, calculate CPI. Compare:
 - Which placements exist in one campaign but not the other?
 - What's the CPI range? Tight ($3-$6) = healthy. Wide ($8-$84) = waste.
 - How much spend goes to the worst placements?
@@ -942,32 +838,13 @@ See \`skills/placement-audit.md\` for the full placement audit methodology.
 
 ## Step 6: Break Down by Country (Multi-Geo Campaigns)
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  breakdowns="country",
-  date_preset="last_7d"
-)
-\`\`\`
-
-**Watch for**: One country eating the majority of budget with poor results.
+Pull campaign-level last-7-days data with breakdown \`country\`. **Watch for**: One country eating the majority of budget with poor results.
 
 ---
 
 ## Step 7: Compare Same Creatives Across Campaigns
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  fields="ad_name,adset_name,spend,impressions,actions,cost_per_action_type",
-  sort="spend_descending",
-  limit=50
-)
-\`\`\`
-
-Match ads by creative name across campaigns.
+Pull ad-level data for top 50 ads by spend with \`ad_name\`, \`adset_name\`, \`spend\`, \`impressions\`, conversions, cost per conversion. Match ads by creative name across campaigns.
 
 If the same creatives consistently perform 2-3x worse in one campaign, the problem is **not** creative quality — it's the campaign environment.
 
@@ -1034,7 +911,7 @@ Categorize every active ad by health status and provide specific next steps per 
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Ads** tab
@@ -1069,16 +946,7 @@ Categorize every active ad by health status and provide specific next steps per 
 
 ### Step 1: Pull Ad-Level Insights
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  fields="ad_id,ad_name,adset_id,adset_name,spend,impressions,clicks,ctr,cpm,frequency,actions,cost_per_action_type",
-  date_preset="last_7d",
-  sort="spend_descending",
-  limit=50
-)
-\`\`\`
+Via Meta's MCP or CSV: top 50 ads by spend over the last 7 days with \`ad_id\`, \`ad_name\`, \`adset_id\`, \`adset_name\`, \`spend\`, \`impressions\`, \`clicks\`, \`ctr\`, \`cpm\`, \`frequency\`, conversions, and cost per conversion.
 
 ### Step 2: Determine Target CPA
 
@@ -1863,7 +1731,7 @@ How to identify and quantify placement waste in Meta app install campaigns.
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
@@ -1890,17 +1758,7 @@ How to identify and quantify placement waste in Meta app install campaigns.
 
 ## Step 1: Pull Placement Breakdown
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,cpm,ctr,actions,cost_per_action_type",
-  breakdowns="publisher_platform,platform_position",
-  date_preset="last_7d"
-)
-\`\`\`
-
-Returns one row per \`publisher_platform\` × \`platform_position\` combination.
+Via Meta's MCP or CSV: campaign-level data for the last 7 days, broken down by \`publisher_platform\` × \`platform_position\`, with \`spend\`, \`impressions\`, \`cpm\`, \`ctr\`, conversions, and cost per conversion. One row per placement combination.
 
 ---
 
@@ -2019,17 +1877,7 @@ Set up Placement-level Value Rules to bid lower on wasteful placements and highe
 
 ## Step 7: Monitor After Changes
 
-\`\`\`
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,actions",
-  time_increment="1",
-  date_preset="last_14d"
-)
-\`\`\`
-
-Check:
+Pull campaign-level daily data for the last 14 days: \`spend\`, \`impressions\`, conversions. Check:
 - Did CPI improve within 3-5 days?
 - Did impression volume drop significantly?
 - Did install volume stay stable or improve?
@@ -2075,7 +1923,7 @@ The "Monday morning check" — week-over-week health comparison with automatic d
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide \`ad_account_id\` (e.g. \`act_123456789\`).
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide \`ad_account_id\` (e.g. \`act_123456789\`) and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** tab
@@ -2108,23 +1956,7 @@ The "Monday morning check" — week-over-week health comparison with automatic d
 
 ### Step 1: Pull This Week and Last Week Data
 
-\`\`\`
-# This week
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="campaign_id,campaign_name,spend,impressions,clicks,ctr,cpm,cpc,reach,frequency,actions,cost_per_action_type",
-  date_preset="this_week_mon_today"
-)
-
-# Last week
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="campaign_id,campaign_name,spend,impressions,clicks,ctr,cpm,cpc,reach,frequency,actions,cost_per_action_type",
-  date_preset="last_week_mon_sun"
-)
-\`\`\`
+Via Meta's MCP or CSV, gather campaign-level data for two ranges — **this week (Mon–today)** and **last week (Mon–Sun)** — with: \`campaign_id\`, \`campaign_name\`, \`spend\`, \`impressions\`, \`clicks\`, \`ctr\`, \`cpm\`, \`cpc\`, \`reach\`, \`frequency\`, conversions, and cost per conversion.
 
 ### Step 2: Compute Deltas
 

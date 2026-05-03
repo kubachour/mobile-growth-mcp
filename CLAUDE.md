@@ -2,7 +2,7 @@
 
 ## Overview
 
-A platform where users connect their LLM (Claude, ChatGPT, Gemini) and ad platform API key (Meta, Google Ads, TikTok) to get AI-powered campaign optimization. Backed by curated industry knowledge (shared) and per-account audit data (scoped).
+A platform where users connect their LLM (Claude, ChatGPT, Gemini) to a curated mobile-growth knowledge base + analytical skills. For Meta data, users install Meta's official Meta Ads MCP / AI connector — this MCP intentionally does **not** ship Meta API tools (avoids unofficial-API risk). Google Ads is supported directly via this MCP's local tools. Backed by curated industry knowledge (shared) and per-account audit data (scoped).
 
 Focused on **mobile campaigns**, especially subscription apps.
 
@@ -16,9 +16,9 @@ Three knowledge layers:
 | What Happened | Past audits, baselines | Supabase `account_audits` | SQL, scoped by api_key |
 | What Is | Live campaign data | Not stored | User's ad platform API key |
 
-**MCP server architecture**: The npm package (`mobile-growth-mcp`) runs locally via stdio. KB tools (search, list, get) are proxied through the Supabase Edge Function `/functions/v1/mcp` using JSON-RPC + `x-api-key` header. Meta tools run locally (token never leaves user's machine). Tool definitions are fetched dynamically from the Edge Function on startup — adding a tool server-side makes it available to all users without republishing npm.
+**MCP server architecture**: The npm package (`mobile-growth-mcp`) runs locally via stdio. KB tools (search, list, get) are proxied through the Supabase Edge Function `/functions/v1/mcp` using JSON-RPC + `x-api-key` header. Google Ads tools run locally (token never leaves user's machine). Tool definitions are fetched dynamically from the Edge Function on startup — adding a tool server-side makes it available to all users without republishing npm. **Meta API tools were removed** — Meta data flows in via Meta's official AI connector (separate MCP) or pasted CSV exports.
 
-**Auth**: Per-person API key (`me_` prefix, SHA-256 hashed). Generate with `./scripts/generate-api-key.sh "Name"`. Users only need `API_KEY` env var (+ optional `META_ACCESS_TOKEN`). No `SUPABASE_URL`/`SUPABASE_ANON_KEY` needed for end users.
+**Auth**: Per-person API key (`me_` prefix, SHA-256 hashed). Generate with `./scripts/generate-api-key.sh "Name"`. Users only need `API_KEY` env var (+ optional Google Ads OAuth credentials). No `SUPABASE_URL`/`SUPABASE_ANON_KEY` needed for end users.
 
 ## Tech Stack
 
@@ -40,7 +40,7 @@ Embeddings are generated **during ingestion** by the CLI:
 
 ```
 packages/shared/src/                         — Types, Supabase client (used by ingestion)
-packages/mcp-server/src/                     — MCP stdio server (proxies KB tools + prompts to Edge Function, runs Meta tools locally)
+packages/mcp-server/src/                     — MCP stdio server (proxies KB tools + prompts to Edge Function, runs Google Ads tools locally)
 packages/ingestion/src/                      — CLI to validate, upsert & embed insight JSONs
 skills/                                      — Canonical skill .md files (source of truth for MCP prompts)
 data/insights/                               — Curated insight JSON files (git-tracked)

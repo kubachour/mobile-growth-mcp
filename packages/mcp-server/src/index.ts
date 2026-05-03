@@ -6,11 +6,6 @@ import {
   fetchRemotePrompts,
   registerFetchedPrompts,
 } from "./remote-proxy.js";
-import { registerGetMetaCampaigns } from "./tools/meta-campaigns.js";
-import { registerGetMetaAdSets } from "./tools/meta-adsets.js";
-import { registerGetMetaAds } from "./tools/meta-ads.js";
-import { registerGetMetaInsights } from "./tools/meta-insights.js";
-import { registerGetMetaAdFatigue } from "./tools/meta-ad-fatigue.js";
 import { registerGetGoogleAdsCampaigns } from "./tools/google-campaigns.js";
 import { registerGetGoogleAdsAdGroups } from "./tools/google-ad-groups.js";
 import { registerGetGoogleAdsAssets } from "./tools/google-assets.js";
@@ -24,7 +19,7 @@ import {
 } from "./tools/connection-status.js";
 import { registerVocabularyResource } from "./resources/vocabulary.js";
 import { registerInstructionsResource } from "./resources/instructions.js";
-import { resolveApiKey, resolveMetaToken, resolveGoogleAdsConfig } from "./config.js";
+import { resolveApiKey, resolveGoogleAdsConfig } from "./config.js";
 import { maybeRunAuthCommand } from "./google/auth.js";
 
 // ── Handle auth subcommands (exits process if matched) ─────────────
@@ -34,12 +29,10 @@ await maybeRunAuthCommand();
 // ── Resolve configuration ──────────────────────────────────────────
 
 const apiKeyResult = resolveApiKey();
-const metaTokenResult = resolveMetaToken();
 const googleAdsResult = resolveGoogleAdsConfig();
 
 // Set env vars so downstream code can read them
 if (apiKeyResult.value) process.env.API_KEY = apiKeyResult.value;
-if (metaTokenResult.value) process.env.META_ACCESS_TOKEN = metaTokenResult.value;
 if (googleAdsResult.developerToken)
   process.env.GOOGLE_ADS_DEVELOPER_TOKEN = googleAdsResult.developerToken;
 if (googleAdsResult.clientId)
@@ -58,11 +51,6 @@ console.error(
     : "API key: not configured — KB tools will not be available"
 );
 console.error(
-  metaTokenResult.value
-    ? `Meta token: ${metaTokenResult.source}`
-    : "Meta token: not configured (optional — KB works without it)"
-);
-console.error(
   googleAdsResult.configured
     ? `Google Ads: configured`
     : `Google Ads: not configured (optional — KB works without it). Run \`npx mobile-growth-mcp auth google\` to set up`
@@ -79,7 +67,6 @@ const server = new McpServer({
 
 const status: StartupStatus = {
   kb: { connected: false, toolCount: 0, promptCount: 0 },
-  meta: { tokenConfigured: !!metaTokenResult.value },
   google: {
     configured: googleAdsResult.configured,
     missing: googleAdsResult.missing,
@@ -105,14 +92,6 @@ if (apiKey) {
 } else {
   status.kb.error = "API_KEY not configured";
 }
-
-// ── Meta Marketing API tools (run locally) ─────────────────────────
-
-registerGetMetaCampaigns(server);
-registerGetMetaAdSets(server);
-registerGetMetaAds(server);
-registerGetMetaInsights(server);
-registerGetMetaAdFatigue(server);
 
 // ── Google Ads tools (run locally) ───────────────────────────────
 

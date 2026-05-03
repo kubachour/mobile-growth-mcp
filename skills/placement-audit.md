@@ -14,7 +14,7 @@ How to identify and quantify placement waste in Meta app install campaigns.
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
@@ -41,17 +41,7 @@ How to identify and quantify placement waste in Meta app install campaigns.
 
 ## Step 1: Pull Placement Breakdown
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,cpm,ctr,actions,cost_per_action_type",
-  breakdowns="publisher_platform,platform_position",
-  date_preset="last_7d"
-)
-```
-
-Returns one row per `publisher_platform` × `platform_position` combination.
+Via Meta's MCP or CSV: campaign-level data for the last 7 days, broken down by `publisher_platform` × `platform_position`, with `spend`, `impressions`, `cpm`, `ctr`, conversions, and cost per conversion. One row per placement combination.
 
 ---
 
@@ -170,17 +160,7 @@ Set up Placement-level Value Rules to bid lower on wasteful placements and highe
 
 ## Step 7: Monitor After Changes
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="campaign",
-  fields="spend,impressions,actions",
-  time_increment="1",
-  date_preset="last_14d"
-)
-```
-
-Check:
+Pull campaign-level daily data for the last 14 days: `spend`, `impressions`, conversions. Check:
 - Did CPI improve within 3-5 days?
 - Did impression volume drop significantly?
 - Did install volume stay stable or improve?

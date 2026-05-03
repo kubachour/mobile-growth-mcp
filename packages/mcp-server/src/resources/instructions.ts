@@ -1,15 +1,17 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { StartupStatus } from "../tools/connection-status.js";
 
-const INSTRUCTIONS = `# Mobile Growth MCP — Knowledge Base + Ad Platform Tools
+const INSTRUCTIONS = `# Mobile Growth MCP — Knowledge Base + Analysis Skills
 
 ## Welcome
 
-You're connected to the Mobile Growth knowledge base — curated expert insights on mobile advertising, campaign optimization, and subscription app growth — plus direct Meta and Google Ads API integration.
+You're connected to the Mobile Growth knowledge base — curated expert insights on mobile advertising, campaign optimization, and subscription app growth — plus Google Ads API integration and a library of analytical skills.
 
 **The knowledge base is always on.** Use \`search_insights\` freely — before making recommendations, when diagnosing issues, or exploring strategies. The more specific your query, the better the results.
 
-> **Note:** Connecting Meta or Google Ads is optional. The knowledge base, community suggestions, and private insights all work with just your API key. Add Meta or Google Ads credentials later if you want live campaign data and reports.
+> **For Meta Ads data**, use Meta's official Meta Ads MCP / AI connector. This MCP intentionally does **not** ship Meta API tools — instead, the analytical skills here (ad-fatigue-report, weekly-performance, audit-meta-account, etc.) interpret data fetched from Meta's official connector or pasted from CSV exports.
+>
+> Connecting Google Ads is optional. The knowledge base, community suggestions, and private insights all work with just your API key.
 
 Quick examples:
 - "subscription app creative fatigue signals"
@@ -20,7 +22,7 @@ Quick examples:
 If you can't find what you need, call \`submit_feedback\` to report the gap — it helps us improve the knowledge base.
 
 ## What This Is
-A curated knowledge base of mobile advertising insights + direct Meta Marketing API and Google Ads API integration. Query expert knowledge, pull live campaign data, and run pre-built reports — all from your LLM.
+A curated knowledge base of mobile advertising insights + Google Ads API integration + analytical skills (Meta + Google) that interpret data from the platforms' own MCPs/CSV exports.
 
 ---
 
@@ -72,50 +74,11 @@ Propose a new skill (repeatable workflow) for the knowledge base. **Use this whe
 
 ---
 
-## Meta Marketing API Tools
+## Meta Ads Data — Use Meta's Official AI Connector
 
-**Requires META_ACCESS_TOKEN env var** — without it, these tools return a clear error. Knowledge base tools work with just API_KEY.
+This MCP **does not ship Meta API tools**. Use Meta's official Meta Ads MCP / AI connector to fetch campaign data, performance metrics, audiences, and catalog operations. Then run the analytical skills below to interpret what comes back.
 
-**Rate limit safety**: All tools default to last_7d, active-only, minimal fields. No auto-pagination. Throttle header monitored — warns at >75% utilization.
-
-### get_meta_campaigns
-List campaigns from a Meta ad account. Defaults to active campaigns.
-- **ad_account_id** (required): e.g. "act_123456789"
-- **fields, effective_status, limit, after** (optional)
-
-### get_meta_adsets
-List ad sets, optionally scoped to a campaign.
-- **ad_account_id** (required)
-- **campaign_id** (optional): Scope to specific campaign
-- **fields, effective_status, limit, after** (optional)
-
-### get_meta_ads
-List ads, optionally scoped to an ad set.
-- **ad_account_id** (required)
-- **adset_id** (optional): Scope to specific ad set
-- **fields, effective_status, limit, after** (optional)
-
-### get_meta_insights
-Pull performance insights with configurable level, breakdowns, date range. Ad-level queries auto-include ad_id, ad_name, adset_id, adset_name.
-- **ad_account_id** (required)
-- **campaign_id** (optional): Scope to a specific campaign
-- **adset_id** (optional): Scope to a specific ad set
-- **level** (optional): account, campaign, adset, ad (default: campaign)
-- **date_preset** (optional): default last_7d
-- **time_range** (optional): {since, until} for custom dates
-- **time_increment** (optional): "1" for daily, "7" for weekly
-- **breakdowns** (optional): e.g. "age,gender" or "publisher_platform,platform_position"
-- **conversion_event** (optional): default "mobile_app_install"
-- **fields, filtering, sort, limit, after** (optional)
-
-### get_meta_ad_fatigue
-Built-in report: detect creative fatigue via frequency, CTR decline, CPA trends.
-- **ad_account_id** (required)
-- **campaign_id** (optional): Scope to specific campaign
-- **conversion_event** (optional): default "mobile_app_install"
-- **frequency_warning** (optional): default 3
-- **frequency_critical** (optional): default 5
-- **ctr_decline_threshold** (optional): default 30%
+This separation keeps users out of unofficial-API risk while preserving the analytical value (KB-grounded methodology) that this MCP provides.
 
 ---
 
@@ -182,19 +145,19 @@ Detect creative asset fatigue by analyzing per-asset impression trends, CTR decl
 
 ## Reports (MCP Prompts)
 
-Pre-built analysis workflows for Meta accounts. Select a prompt and provide your ad_account_id to run:
+Pre-built analytical workflows. Each skill expects either Meta MCP–sourced data (use Meta's official AI connector) or CSV exports from Ads Manager. Select a prompt and provide your \`ad_account_id\` to run:
 
-| Prompt | What it does | API calls |
-|--------|-------------|-----------|
-| ad-fatigue-report | Detect creative fatigue with daily granularity | 1 |
-| weekly-performance | Week-over-week health comparison with diagnosis | 2 |
-| creative-performance | Categorize ads by health status | 1 |
-| audience-composition | Age x gender heatmap with CPA analysis | 1-2 |
-| architecture-review | Campaign structure evaluation | 3 (no insights) |
-| audit-meta-account | Comprehensive account audit | 6+ |
-| campaign-comparison | Side-by-side campaign comparison | 3+ |
-| placement-audit | Detailed placement audit with examples | 1 per campaign |
-| attribution-analysis | Conversion quality validation | 2+ |
+| Prompt | What it does |
+|--------|-------------|
+| ad-fatigue-report | Detect creative fatigue with daily granularity |
+| weekly-performance | Week-over-week health comparison with diagnosis |
+| creative-performance | Categorize ads by health status |
+| audience-composition | Age × gender heatmap with CPA analysis |
+| architecture-review | Campaign structure evaluation |
+| audit-meta-account | Comprehensive account audit |
+| campaign-comparison | Side-by-side campaign comparison |
+| placement-audit | Detailed placement audit with examples |
+| attribution-analysis | Conversion quality validation |
 
 ---
 
@@ -222,9 +185,9 @@ When your response draws on knowledge base results, **always attribute visibly**
 5. Use \`get_google_asset_fatigue\` on specific campaigns to detect creative decay
 
 ### For Meta analysis:
-1. Start with \`get_meta_campaigns\` to see account structure
-2. Use reports (MCP prompts) for comprehensive analysis
-3. For custom analysis, use \`get_meta_insights\` with breakdowns
+1. Use Meta's official Meta Ads MCP / AI connector to fetch the data
+2. Run a report (MCP prompt) here to interpret it against the knowledge base
+3. For custom analysis, ask the user to paste a CSV export and use the skill's Option B path
 
 ### General:
 - Always \`search_insights\` before making recommendations — ground advice in expert knowledge
@@ -252,16 +215,9 @@ function buildStatusSection(status?: StartupStatus): string {
     );
   }
 
-  if (status.meta.tokenConfigured) {
-    lines.push("- **Meta Marketing API**: Token configured");
-  } else {
-    lines.push(
-      "- **Meta Marketing API**: Not connected (optional — KB works without it)"
-    );
-    lines.push(
-      "  - To connect: provide your token via `--meta-token=...` CLI arg, `META_ACCESS_TOKEN` env var, or `.env` file"
-    );
-  }
+  lines.push(
+    "- **Meta Ads Data**: Use Meta's official Meta Ads MCP / AI connector — this MCP no longer ships Meta API tools"
+  );
 
   if (status.google.configured) {
     lines.push("- **Google Ads API**: Configured");

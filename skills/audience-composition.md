@@ -14,7 +14,7 @@ Reveal who is actually converting and at what cost, by age and gender. Identifie
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id`.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector. Provide `ad_account_id` and ask the connector for the data described in Option B.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Campaigns** or **Ads** tab
@@ -46,15 +46,7 @@ Reveal who is actually converting and at what cost, by age and gender. Identifie
 
 ### Step 1: Pull Age × Gender Breakdown
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="account",
-  fields="spend,impressions,clicks,ctr,actions,cost_per_action_type",
-  breakdowns="age,gender",
-  date_preset="last_7d"
-)
-```
+Via Meta's MCP or CSV: account-level data for the last 7 days with breakdowns `age` and `gender`, fields `spend`, `impressions`, `clicks`, `ctr`, conversions, and cost per conversion.
 
 ### Step 2: Build Heatmap
 

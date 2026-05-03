@@ -14,7 +14,7 @@ Detect creatives that are wasting budget due to audience exhaustion or declining
 
 ## What It Needs
 
-**Option A — Meta API connected**: Provide `ad_account_id`. The `get_meta_ad_fatigue` tool handles this in a single call.
+**Option A — Meta Ads MCP connected** (recommended): Use Meta's official Meta Ads AI connector to pull the data described in Option B. Provide `ad_account_id` and ask the connector for ad-level daily insights over the last 14 days.
 
 **Option B — CSV export** (no API needed):
 - Go to **Meta Ads Manager** → **Ads** tab
@@ -41,31 +41,11 @@ Detect creatives that are wasting budget due to audience exhaustion or declining
 
 ---
 
-## Quick Method: Built-in Tool
-
-Use `get_meta_ad_fatigue` — it runs a single API call and returns a full fatigue analysis with diagnosis and recommendations.
-
-```
-get_meta_ad_fatigue(ad_account_id="act_123456789")
-```
-
-Optional: scope to a campaign, change thresholds, or set a different conversion event.
-
----
-
-## Manual Method: Step by Step
+## Method: Step by Step
 
 ### Step 1: Pull Daily Ad-Level Data
 
-```
-get_meta_insights(
-  ad_account_id="act_123456789",
-  level="ad",
-  time_increment="1",
-  fields="ad_id,ad_name,spend,impressions,clicks,ctr,cpm,frequency,actions,cost_per_action_type",
-  date_preset="last_7d"
-)
-```
+Via Meta's MCP (Option A) or the CSV (Option B), gather ad-level performance for the last 7-14 days, broken down by day, with: `ad_id`, `ad_name`, `spend`, `impressions`, `clicks`, `ctr`, `cpm`, `frequency`, conversions, and cost per conversion.
 
 ### Step 2: Check Per Ad (daily granularity)
 

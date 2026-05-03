@@ -1,6 +1,8 @@
 # Mobile Growth MCP — Agent Instructions
 
-You have access to a Mobile Growth MCP server with tools for querying an expert knowledge base and pulling live Meta Marketing API data. Use these tools to help users optimize their mobile advertising campaigns, particularly subscription app user acquisition on Meta.
+You have access to a Mobile Growth MCP server with tools for querying an expert knowledge base and pulling Google Ads data, plus analytical skills for Meta and Google. Meta Ads data should be sourced via Meta's **official** Meta Ads MCP / AI connector — this MCP no longer ships Meta API tools.
+
+Use these tools to help users optimize their mobile advertising campaigns, particularly subscription app user acquisition.
 
 ## MCP Tools
 
@@ -9,97 +11,60 @@ You have access to a Mobile Growth MCP server with tools for querying an expert 
 - **list_insights**(topic?, applies_to?) — Browse all insights with optional filtering
 - **get_insight**(id) — Full content of a specific insight by slug (e.g. "mb-li-001") or numeric ID
 
-### Meta Marketing API Tools (require META_ACCESS_TOKEN)
-- **get_meta_campaigns**(ad_account_id, fields?, effective_status?, limit?, after?) — List campaigns. Defaults: active only, lean fields.
-- **get_meta_adsets**(ad_account_id, campaign_id?, fields?, effective_status?, limit?, after?) — List ad sets, optionally scoped to a campaign.
-- **get_meta_ads**(ad_account_id, adset_id?, fields?, effective_status?, limit?, after?) — List ads, optionally scoped to an ad set.
-- **get_meta_insights**(ad_account_id, level?, fields?, date_preset?, time_range?, time_increment?, breakdowns?, filtering?, conversion_event?, sort?, limit?, after?) — Performance data with configurable breakdowns, levels, and date ranges. Default: campaign-level, last_7d, active only.
-- **get_meta_ad_fatigue**(ad_account_id, campaign_id?, conversion_event?, frequency_warning?, frequency_critical?, ctr_decline_threshold?) — Built-in creative fatigue detection report.
+### Meta Ads Data
+This MCP **does not** expose Meta API tools. Use Meta's official Meta Ads MCP / AI connector for: campaign listings, ad set / ad data, performance insights, audience breakdowns, placement breakdowns. Then run the analytical skills (MCP prompts) here against the data Meta returns. Users can also paste CSV exports from Ads Manager — every Meta-flavored skill supports both.
+
+### Google Ads Tools
+- **get_google_ads_campaigns** / **get_google_ad_groups** / **get_google_assets** — Structure
+- **get_google_insights** — Performance with network/device breakdowns
+- **get_google_network_mix** — Search/Display/YouTube traffic shifts
+- **get_google_asset_fatigue** — Asset-level fatigue
+- **upload_google_image_assets** — Upload images to Google Ads
 
 ### MCP Prompts (Reports)
-Pre-built analysis workflows. Each takes `ad_account_id` as input:
+Pre-built analytical workflows. Each Meta-flavored prompt takes `ad_account_id`. Data comes from Meta's official MCP or pasted CSV.
 
-| Prompt | Purpose | API Calls |
-|--------|---------|-----------|
-| ad-fatigue-report | Detect creative fatigue | 1 |
-| weekly-performance | Week-over-week health comparison | 2 |
-| creative-performance | Categorize ads by health status | 1 |
-| audience-composition | Age × gender CPA analysis | 1-2 |
-| architecture-review | Campaign structure evaluation | 3 |
-| audit-meta-account | Comprehensive account audit | 6+ |
-| campaign-comparison | Side-by-side comparison | 3+ |
-| placement-audit | Placement waste quantification | 1/campaign |
-| attribution-analysis | Conversion quality validation | 2+ |
-
-## Critical Constraints
-
-### Rate Limit Safety
-- All Meta tools default to `last_7d`, `effective_status=["ACTIVE"]`, minimal field sets
-- No auto-pagination — tools return the first page + a cursor for explicit next-page requests
-- The `X-FB-Ads-Insights-Throttle` header is monitored; warnings appear at >75% utilization
-- Error 190 = expired token, errors 4/17/80000+ = rate limits — surface clear messages to the user
-
-### Conversion Event
-Default: `mobile_app_install`. Configurable per call via `conversion_event` parameter. Always confirm the user's primary conversion event before running reports.
-
-### Without META_ACCESS_TOKEN
-Meta tools return a clear error. Knowledge base tools (`search_insights`, `list_insights`, `get_insight`) still work independently.
+| Prompt | Purpose |
+|--------|---------|
+| ad-fatigue-report | Detect creative fatigue |
+| weekly-performance | Week-over-week health comparison |
+| creative-performance | Categorize ads by health status |
+| audience-composition | Age × gender CPA analysis |
+| architecture-review | Campaign structure evaluation |
+| audit-meta-account | Comprehensive account audit |
+| campaign-comparison | Side-by-side comparison |
+| placement-audit | Placement waste quantification |
+| attribution-analysis | Conversion quality validation |
+| google-campaign-health | Google App Campaign WoW health |
+| google-asset-performance | Google asset categorization by CPI |
+| google-network-audit | Google network mix analysis |
+| google-architecture-review | Google App Campaign structure audit |
+| google-bid-strategy | Google bid strategy + signals |
 
 ## Reports — How to Run
 
-### Ad Fatigue Report
-Call `get_meta_ad_fatigue(ad_account_id)`. Analyzes frequency, CTR decline, CPA trends per ad over 7 days at daily granularity.
+Each skill describes its own data needs (Option A — via Meta MCP / Google Ads tools / Option B — via CSV) and includes the analytical framework. Read the relevant `skills/*.md` for the exact procedure.
 
-Diagnosis framework [wk-tw-001]:
-- High frequency + rising CPA → audience saturation
-- Declining CTR + rising CPA → creative fatigue
+Highlights of the diagnostic frameworks used:
 
-Recommendations: genuinely new creatives (25% different [lp-pt-001]), new hooks [oh-li-005], don't re-test degraded creatives for 3-6 months [vs-nt-002].
-
-### Weekly Performance Snapshot
-Two calls: `get_meta_insights(date_preset="this_week_mon_today")` and `get_meta_insights(date_preset="last_week_mon_sun")`.
-
-Compute deltas, apply Kast's 4 diagnostic patterns [wk-tw-001]:
+### Kast Diagnostic Framework [wk-tw-001]
 1. Frequency↑ + CPA↑ → creative fatigue
 2. CPM↑ + CPA↑ → audience saturation
 3. CPA↑ + CVR↓ → ad-to-LP mismatch
 4. CTR↓ + CPA↑ → creative fatigue
 
-End with: "Analyze first, optimize second" [ds-pt-008].
-
-### Creative Performance Report
-`get_meta_insights(level="ad", sort="spend_descending", limit=50)`.
-
-Categorize each ad:
+### Creative Categorization
 - **Scaling**: High spend, CPA ≤ target → let it run [mb-li-001]
 - **Promising**: Low spend, CPA ≤ target → don't force spend [ds-pt-004]
 - **Contributing**: Low conversions but ad set healthy → halo role [jl-pt-004, lp-pt-003]
 - **Fatiguing**: Frequency >3, CTR declining → prepare replacement [oh-li-001]
 - **Dead weight**: High spend, CPA >2x target → pause only if ad set also bad [jl-pt-004]
 
-### Placement Efficiency Report
-`get_meta_insights(breakdowns="publisher_platform,platform_position")`.
+### Known Meta Waste Placements (for app installs)
+`facebook/instream_video`, `facebook/facebook_reels_overlay`, `threads/threads_feed`, `audience_network/classic`. Flag CPI >3x average. Consider Placement Value Rules [mb-li-009] as alternative to restriction.
 
-Known waste placements for app installs: `facebook/instream_video`, `facebook/facebook_reels_overlay`, `threads/threads_feed`, `audience_network/classic`. Flag CPI >3x average. Consider Placement Value Rules [mb-li-009] as alternative to restriction.
-
-### Audience Composition Report
-`get_meta_insights(level="account", breakdowns="age,gender")`.
-
-Key insight [mb-li-010]: 35+ users convert 2-3x better for subscription apps. App Promotion campaigns skew young [mb-li-006]. Recommend Value Rules for age-based bid modifiers [mb-li-008].
-
-### Campaign Architecture Review
-Three calls: `get_meta_campaigns`, `get_meta_adsets`, `get_meta_ads` (structure only, no insights).
-
-Checks: over-consolidation [mb-li-002], creative count [lp-pt-002, ds-pt-005], campaign type diversity [mb-li-006], optimization events [mb-li-003], EAC opportunity [mb-cd-001], zombie campaign [br-li-002].
-
-### Full Account Audit
-Most comprehensive. 6+ API calls covering structure + performance + breakdowns. See `skills/audit-meta-account.md` for full procedure. References all relevant knowledge base insights.
-
-### Campaign Comparison
-Compare two campaigns: pull settings, ad sets, insights. Apply Kast diagnostic framework [wk-tw-001]. Check creative similarity [oh-li-001] and attribution contribution [lp-pt-003].
-
-### Attribution Analysis
-Validate conversion quality using daily time-series (`time_increment="1"`). Check view-through ratios, delayed attribution uplift, and daily CPI consistency. Remember: contribution vs attribution [lp-pt-003].
+### Audience Insight [mb-li-010]
+35+ users convert 2-3x better for subscription apps. App Promotion campaigns skew young [mb-li-006]. Recommend Value Rules for age-based bid modifiers [mb-li-008].
 
 ## Key Knowledge Base Insight IDs
 
@@ -150,8 +115,8 @@ See `skills/ingest-content.md` for the complete pipeline.
 ## Project Structure
 
 ```
-packages/mcp-server/src/meta/                — Meta API client + types
-packages/mcp-server/src/tools/               — All MCP tools (knowledge base + Meta)
+packages/mcp-server/src/google/              — Google Ads API client + types
+packages/mcp-server/src/tools/               — All MCP tools (KB + Google Ads)
 packages/mcp-server/src/remote-proxy.ts      — Proxies KB tools + prompts from Edge Function
 packages/shared/src/                         — Types, Supabase client
 skills/                                      — Canonical skill .md files (source of truth for prompts)

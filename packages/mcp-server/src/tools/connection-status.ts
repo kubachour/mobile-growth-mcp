@@ -7,9 +7,6 @@ export interface StartupStatus {
     promptCount: number;
     error?: string;
   };
-  meta: {
-    tokenConfigured: boolean;
-  };
   google: {
     configured: boolean;
     missing: string[];
@@ -25,7 +22,7 @@ export function registerConnectionStatus(
 ): void {
   server.tool(
     "connection_status",
-    "Check the connection status of the knowledge base and Meta API. Call this if tools seem missing or you get unexpected errors.",
+    "Check the connection status of the knowledge base and Google Ads API. Call this if tools seem missing or you get unexpected errors.",
     {},
     async () => {
       const lines: string[] = ["# Connection Status", ""];
@@ -53,27 +50,12 @@ export function registerConnectionStatus(
 
       lines.push("");
 
-      // Meta status
-      if (status.meta.tokenConfigured) {
-        lines.push(
-          "## Meta Marketing API: Configured",
-          "- Meta tools are available and ready to use"
-        );
-      } else {
-        lines.push(
-          "## Meta Marketing API: Not Connected (Optional)",
-          "- KB, suggestions, and private insights work without it",
-          "- Connect Meta to unlock live campaign data and reports",
-          "",
-          "### How to connect",
-          "Provide your Meta access token using one of these methods:",
-          '1. MCP config: add `"META_ACCESS_TOKEN": "..."` to the `"env"` block in `.mcp.json` (Claude Code/Cursor) or `claude_desktop_config.json` (Claude Desktop)',
-          "2. CLI argument: add `--meta-token=...` to the args array",
-          "3. `.env` file: add `META_ACCESS_TOKEN=...` to a `.env` file in your working directory",
-          "",
-          "Then restart your MCP client."
-        );
-      }
+      // Meta data note
+      lines.push(
+        "## Meta Ads Data: Use Meta's Official AI Connector",
+        "- This MCP no longer ships Meta API tools (avoids unofficial-API risk).",
+        "- For Meta data, install Meta's official Meta Ads MCP / AI connector and let the analytical skills here interpret what it returns."
+      );
 
       lines.push("");
 

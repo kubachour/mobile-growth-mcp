@@ -47,30 +47,53 @@ async function jsonRpcRequest(
   method: string,
   params?: Record<string, unknown>
 ): Promise<JsonRpcResponse> {
+  const id = nextRequestId++;
   const body: Record<string, unknown> = {
     jsonrpc: "2.0",
     method,
-    id: nextRequestId++,
+    id,
   };
   if (params) body.params = params;
 
-  const res = await fetch(EDGE_FUNCTION_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      Accept: "application/json, text/event-stream",
-    },
-    body: JSON.stringify(body),
-    signal: AbortSignal.timeout(30_000),
-  });
+  const toolName = (params?.name as string | undefined) ?? "";
+  const label = toolName ? `${method}:${toolName}` : method;
+  const t0 = Date.now();
+  console.error(`[proxy] → #${id} ${label} start`);
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Edge Function error (${res.status}): ${text}`);
+  try {
+    const res = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        Accept: "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15_000),
+    });
+
+    const headersMs = Date.now() - t0;
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(
+        `[proxy] ✗ #${id} ${label} http ${res.status} after ${headersMs}ms`
+      );
+      throw new Error(`Edge Function error (${res.status}): ${text}`);
+    }
+
+    const json = (await res.json()) as JsonRpcResponse;
+    console.error(
+      `[proxy] ← #${id} ${label} ok in ${Date.now() - t0}ms (headers ${headersMs}ms)`
+    );
+    return json;
+  } catch (err) {
+    const e = err as Error;
+    console.error(
+      `[proxy] ✗ #${id} ${label} ${e.name}: ${e.message} after ${Date.now() - t0}ms`
+    );
+    throw err;
   }
-
-  return (await res.json()) as JsonRpcResponse;
 }
 
 export async function fetchRemoteTools(

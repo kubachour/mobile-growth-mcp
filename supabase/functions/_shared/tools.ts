@@ -23,6 +23,7 @@ async function embedQuery(query: string): Promise<number[]> {
           model: "text-embedding-3-small",
           input: query,
         }),
+        signal: AbortSignal.timeout(10_000),
       });
 
       if (!res.ok) {
@@ -152,8 +153,11 @@ export const tools: ToolDef[] = [
       const applies_to = (args.applies_to as string[] | undefined) ?? null;
       const limit = Math.min((args.limit as number | undefined) ?? 10, 30);
 
+      const tEmbed0 = Date.now();
       const embedding = await embedQuery(query);
+      const embedMs = Date.now() - tEmbed0;
 
+      const tRpc0 = Date.now();
       const { data, error } = await supabase.rpc("hybrid_search_insights", {
         query_text: query,
         query_embedding: JSON.stringify(embedding),
@@ -162,6 +166,10 @@ export const tools: ToolDef[] = [
         filter_applies_to: applies_to,
         viewer_key_id: auth?.key_id ?? null,
       });
+      const rpcMs = Date.now() - tRpc0;
+      console.log(
+        `[search_insights] embed=${embedMs}ms rpc=${rpcMs}ms total=${embedMs + rpcMs}ms q="${query.slice(0, 60)}"`
+      );
 
       if (error) throw new Error(`Search failed: ${error.message}`);
 

@@ -59,6 +59,7 @@ Deno.serve(async (req: Request) => {
         model: "text-embedding-3-small",
         input: query,
       }),
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!embeddingRes.ok) {

@@ -66,7 +66,7 @@ async function jsonRpcRequest(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": apiKey,
-        Accept: "application/json",
+        Accept: "application/json, text/event-stream",
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15_000),
@@ -82,9 +82,23 @@ async function jsonRpcRequest(
       throw new Error(`Edge Function error (${res.status}): ${text}`);
     }
 
-    const json = (await res.json()) as JsonRpcResponse;
+    const contentType = res.headers.get("content-type") ?? "";
+    let json: JsonRpcResponse;
+    if (contentType.includes("text/event-stream")) {
+      // MCP Streamable HTTP: server responded with a single SSE event
+      // containing the JSON-RPC response. Read the stream, parse the
+      // first `data:` line.
+      const text = await res.text();
+      const match = text.match(/^data:\s*(.+)$/m);
+      if (!match) {
+        throw new Error(`SSE response had no data line: ${text.slice(0, 200)}`);
+      }
+      json = JSON.parse(match[1]) as JsonRpcResponse;
+    } else {
+      json = (await res.json()) as JsonRpcResponse;
+    }
     console.error(
-      `[proxy] ← #${id} ${label} ok in ${Date.now() - t0}ms (headers ${headersMs}ms)`
+      `[proxy] ← #${id} ${label} ok in ${Date.now() - t0}ms (headers ${headersMs}ms, ct=${contentType.split(";")[0] || "?"})`
     );
     return json;
   } catch (err) {

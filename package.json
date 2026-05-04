@@ -10,7 +10,8 @@
     "build": "npm run build --workspaces",
     "ingest": "npm run ingest --workspace=packages/ingestion",
     "delete": "npm run delete --workspace=packages/ingestion",
-    "build:prompts": "npx tsx scripts/build-prompt-content.ts"
+    "build:prompts": "npx tsx scripts/build-prompt-content.ts",
+    "smoke-test": "node scripts/smoke-test.mjs"
   },
   "devDependencies": {
     "supabase": "^2.76.16"

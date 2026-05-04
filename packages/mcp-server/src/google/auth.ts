@@ -145,11 +145,14 @@ function saveToEnv(vars: Record<string, string>): void {
   }
 }
 
+const OAUTH_CALLBACK_TIMEOUT_MS = 5 * 60 * 1000;
+
 async function waitForOAuthCallback(
   clientId: string,
   clientSecret: string
 ): Promise<{ refreshToken: string }> {
   return new Promise((resolve, reject) => {
+    let timer: NodeJS.Timeout | undefined;
     const server = createServer(
       async (req: IncomingMessage, res: ServerResponse) => {
         const url = new URL(req.url ?? "/", `http://localhost:${OAUTH_PORT}`);
@@ -229,10 +232,23 @@ async function waitForOAuthCallback(
     );
 
     server.listen(OAUTH_PORT, () => {
-      // Server ready
+      timer = setTimeout(() => {
+        server.close();
+        reject(
+          new Error(
+            `OAuth authorization timed out after ${OAUTH_CALLBACK_TIMEOUT_MS / 1000}s. ` +
+              "Re-run the auth command and complete the consent screen in the browser."
+          )
+        );
+      }, OAUTH_CALLBACK_TIMEOUT_MS);
+    });
+
+    server.on("close", () => {
+      if (timer) clearTimeout(timer);
     });
 
     server.on("error", (err) => {
+      if (timer) clearTimeout(timer);
       if ((err as NodeJS.ErrnoException).code === "EADDRINUSE") {
         reject(
           new Error(

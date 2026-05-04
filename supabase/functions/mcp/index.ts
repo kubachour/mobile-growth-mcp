@@ -15,6 +15,7 @@ import { tools } from "../_shared/tools.ts";
 import { prompts } from "../_shared/prompts.ts";
 import { promptContent } from "../_shared/prompt-content.ts";
 import { sanitizeToolInput } from "../_shared/sanitize.ts";
+import { requireEnv } from "../_shared/env.ts";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -54,9 +55,10 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = createClient(
+    requireEnv("SUPABASE_URL"),
+    requireEnv("SUPABASE_SERVICE_ROLE_KEY")
+  );
 
   const auth = await validateApiKey(apiKey, supabase);
   if (!auth.valid) {

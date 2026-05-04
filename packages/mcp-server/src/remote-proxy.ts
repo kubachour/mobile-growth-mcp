@@ -110,10 +110,40 @@ async function jsonRpcRequest(
   }
 }
 
+/**
+ * Wraps `jsonRpcRequest` with retry on transient transport failures
+ * (AbortError / TimeoutError / network errors). Used by every remote
+ * call so a single Edge Function cold start never produces a hard fail.
+ */
+async function jsonRpcRequestWithRetry(
+  apiKey: string,
+  method: string,
+  params?: Record<string, unknown>,
+  maxAttempts = 2
+): Promise<JsonRpcResponse> {
+  let lastError: Error | undefined;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await jsonRpcRequest(apiKey, method, params);
+    } catch (err) {
+      lastError = err as Error;
+      const isRetryable =
+        lastError.name === "AbortError" ||
+        lastError.name === "TimeoutError" ||
+        lastError.message?.includes("fetch failed");
+      if (!isRetryable || attempt === maxAttempts) break;
+      await new Promise((r) => setTimeout(r, 2_000));
+    }
+  }
+
+  throw lastError ?? new Error(`${method} failed after ${maxAttempts} attempts`);
+}
+
 export async function fetchRemoteTools(
   apiKey: string
 ): Promise<RemoteTool[]> {
-  const resp = await jsonRpcRequest(apiKey, "tools/list");
+  const resp = await jsonRpcRequestWithRetry(apiKey, "tools/list");
   if (resp.error) {
     throw new Error(`tools/list error: ${resp.error.message}`);
   }
@@ -125,42 +155,28 @@ export async function callRemoteTool(
   name: string,
   args: Record<string, unknown>
 ): Promise<{ content: { type: string; text: string }[]; isError?: boolean }> {
-  const maxAttempts = 2;
-  let lastError: Error | undefined;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const resp = await jsonRpcRequest(apiKey, "tools/call", {
-        name,
-        arguments: args,
-      });
-      if (resp.error) {
-        return {
-          content: [{ type: "text", text: `Remote error: ${resp.error.message}` }],
-          isError: true,
-        };
-      }
+  try {
+    const resp = await jsonRpcRequestWithRetry(apiKey, "tools/call", {
+      name,
+      arguments: args,
+    });
+    if (resp.error) {
       return {
-        content: resp.result?.content ?? [{ type: "text", text: "No content returned" }],
-        isError: resp.result?.isError,
+        content: [{ type: "text", text: `Remote error: ${resp.error.message}` }],
+        isError: true,
       };
-    } catch (err) {
-      lastError = err as Error;
-      // Retry on timeout or network errors, not on other errors
-      const isRetryable =
-        lastError.name === "AbortError" ||
-        lastError.name === "TimeoutError" ||
-        lastError.message?.includes("fetch failed");
-      if (!isRetryable || attempt === maxAttempts) break;
-      // Wait before retry (cold start should be warm now)
-      await new Promise((r) => setTimeout(r, 2_000));
     }
+    return {
+      content: resp.result?.content ?? [{ type: "text", text: "No content returned" }],
+      isError: resp.result?.isError,
+    };
+  } catch (err) {
+    const lastError = err as Error;
+    return {
+      content: [{ type: "text", text: `Remote call failed after retry: ${lastError.message ?? "unknown error"}` }],
+      isError: true,
+    };
   }
-
-  return {
-    content: [{ type: "text", text: `Remote call failed after retry: ${lastError?.message ?? "unknown error"}` }],
-    isError: true,
-  };
 }
 
 /**
@@ -233,27 +249,10 @@ export function registerFetchedTools(
   }
 }
 
-export async function registerRemoteTools(
-  server: McpServer,
-  apiKey: string
-): Promise<void> {
-  let tools: RemoteTool[];
-  try {
-    tools = await fetchRemoteTools(apiKey);
-  } catch (err) {
-    console.error(
-      `Failed to fetch remote tools: ${(err as Error).message}. KB tools will not be available.`
-    );
-    return;
-  }
-
-  registerFetchedTools(server, apiKey, tools);
-}
-
 export async function fetchRemotePrompts(
   apiKey: string
 ): Promise<RemotePrompt[]> {
-  const resp = await jsonRpcRequest(apiKey, "prompts/list");
+  const resp = await jsonRpcRequestWithRetry(apiKey, "prompts/list");
   if (resp.error) {
     throw new Error(`prompts/list error: ${resp.error.message}`);
   }
@@ -265,7 +264,7 @@ async function getRemotePrompt(
   name: string,
   args: Record<string, string>
 ): Promise<RemotePromptMessage[]> {
-  const resp = await jsonRpcRequest(apiKey, "prompts/get", {
+  const resp = await jsonRpcRequestWithRetry(apiKey, "prompts/get", {
     name,
     arguments: args,
   });
@@ -317,19 +316,3 @@ export function registerFetchedPrompts(
   }
 }
 
-export async function registerRemotePrompts(
-  server: McpServer,
-  apiKey: string
-): Promise<void> {
-  let remotePrompts: RemotePrompt[];
-  try {
-    remotePrompts = await fetchRemotePrompts(apiKey);
-  } catch (err) {
-    console.error(
-      `Failed to fetch remote prompts: ${(err as Error).message}. Prompts will not be available.`
-    );
-    return;
-  }
-
-  registerFetchedPrompts(server, apiKey, remotePrompts);
-}

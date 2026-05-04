@@ -8,6 +8,8 @@ import {
   type MutateOperation,
 } from "../google/client.js";
 
+const FETCH_TIMEOUT_MS = 30_000;
+
 /**
  * Fetch a URL and return its contents as a base64 string.
  * Works for both http(s) URLs and data: URIs.
@@ -18,7 +20,9 @@ async function fetchAsBase64(url: string): Promise<string> {
     if (commaIdx === -1) throw new Error("Invalid data URI");
     return url.slice(commaIdx + 1);
   }
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
   return buf.toString("base64");
@@ -108,48 +112,79 @@ export function registerUploadGoogleImageAssets(server: McpServer): void {
           return { content: [{ type: "text" as const, text }] };
         }
 
-        // --- Step 1: Create Asset resources ---
-        const assetOps: MutateOperation[] = [];
-        const assetNames: string[] = [];
-
-        for (const img of images) {
-          const name =
-            img.name ?? basename(img.source).replace(/\?.*$/, "") ?? "unnamed";
-          assetNames.push(name);
-
-          const isUrl =
-            img.source.startsWith("http://") ||
-            img.source.startsWith("https://") ||
-            img.source.startsWith("data:");
-          const data = isUrl
-            ? await fetchAsBase64(img.source)
-            : await readFileAsBase64(img.source);
-
-          assetOps.push({
-            assetOperation: {
-              create: {
-                name,
-                type: "IMAGE",
-                imageAsset: { data },
-              },
-            },
-          });
-        }
-
-        const assetResult = await googleAdsMutate(normalizedId, assetOps);
-        const createdResourceNames = assetResult.mutateOperationResponses.map(
-          (r) => r.assetResult?.resourceName ?? ""
+        // --- Step 1: Fetch image bytes in parallel (with per-fetch timeout) ---
+        const assetNames: string[] = images.map(
+          (img) =>
+            img.name ?? basename(img.source).replace(/\?.*$/, "") ?? "unnamed"
         );
 
-        const successCount = createdResourceNames.filter(Boolean).length;
+        const fetchResults = await Promise.allSettled(
+          images.map((img) => {
+            const isUrl =
+              img.source.startsWith("http://") ||
+              img.source.startsWith("https://") ||
+              img.source.startsWith("data:");
+            return isUrl
+              ? fetchAsBase64(img.source)
+              : readFileAsBase64(img.source);
+          })
+        );
+
+        const assetOps: MutateOperation[] = [];
+        // Maps the index in `assetOps` back to the original `images` index,
+        // so we can correlate Google's mutateOperationResponses[i] back to
+        // the user-supplied image regardless of which fetches failed.
+        const opOriginIndex: number[] = [];
+        const fetchFailures: { index: number; error: string }[] = [];
+
+        fetchResults.forEach((r, i) => {
+          if (r.status === "fulfilled") {
+            assetOps.push({
+              assetOperation: {
+                create: {
+                  name: assetNames[i],
+                  type: "IMAGE",
+                  imageAsset: { data: r.value },
+                },
+              },
+            });
+            opOriginIndex.push(i);
+          } else {
+            fetchFailures.push({
+              index: i,
+              error: r.reason instanceof Error ? r.reason.message : String(r.reason),
+            });
+          }
+        });
+
+        const createdResourceNames: string[] = new Array(images.length).fill("");
+        let successCount = 0;
+        if (assetOps.length > 0) {
+          const assetResult = await googleAdsMutate(normalizedId, assetOps);
+          const responses = assetResult.mutateOperationResponses;
+          if (responses.length !== assetOps.length) {
+            throw new Error(
+              `Google Ads response length mismatch: sent ${assetOps.length} ops, got ${responses.length} responses`
+            );
+          }
+          responses.forEach((r, i) => {
+            const originalIdx = opOriginIndex[i];
+            const rn = r.assetResult?.resourceName ?? "";
+            createdResourceNames[originalIdx] = rn;
+            if (rn) successCount++;
+          });
+        }
 
         let text = `**Uploaded ${successCount}/${images.length} image assets**\n\n`;
         for (let i = 0; i < images.length; i++) {
           const rn = createdResourceNames[i];
+          const failure = fetchFailures.find((f) => f.index === i);
           if (rn) {
             text += `✓ ${assetNames[i]} → ${rn}\n`;
+          } else if (failure) {
+            text += `✗ ${assetNames[i]} — fetch failed: ${failure.error}\n`;
           } else {
-            text += `✗ ${assetNames[i]} — failed\n`;
+            text += `✗ ${assetNames[i]} — upload failed\n`;
           }
         }
 

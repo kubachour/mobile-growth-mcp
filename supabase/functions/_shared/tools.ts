@@ -1,51 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.0";
 import type { AuthResult } from "./auth.ts";
-
-// --- Embedding helper (with retry for transient errors) ---
-
-async function embedQuery(query: string): Promise<number[]> {
-  const openaiKey = Deno.env.get("OPENAI_API_KEY")!;
-  const maxRetries = 2;
-  let lastError: Error | undefined;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    if (attempt > 0) {
-      await new Promise((r) => setTimeout(r, 500 * attempt));
-    }
-    try {
-      const res = await fetch("https://api.openai.com/v1/embeddings", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openaiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "text-embedding-3-small",
-          input: query,
-        }),
-        signal: AbortSignal.timeout(10_000),
-      });
-
-      if (!res.ok) {
-        const err = await res.text();
-        const status = res.status;
-        // Don't retry client errors (4xx)
-        if (status < 500)
-          throw new Error(`Embedding failed (${status}): ${err}`);
-        lastError = new Error(`Embedding failed (${status}): ${err}`);
-        continue;
-      }
-
-      const data = await res.json();
-      return data.data[0].embedding;
-    } catch (err) {
-      lastError = err as Error;
-      // Don't retry 4xx errors that were re-thrown above
-      if ((err as Error).message?.startsWith("Embedding failed (4")) throw err;
-    }
-  }
-  throw lastError!;
-}
+import { embedQuery } from "./embedding.ts";
 
 // --- Shared insight input schema (for suggest + save_private) ---
 

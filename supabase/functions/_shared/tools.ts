@@ -395,6 +395,7 @@ export const tools: ToolDef[] = [
         .from("feedback")
         .select("category, summary, search_queries_tried, created_at")
         .gte("created_at", cutoff)
+        .not("summary", "ilike", "%[SMOKE-TEST]%")
         .order("created_at", { ascending: false })
         .limit(50);
 
@@ -806,6 +807,8 @@ export const tools: ToolDef[] = [
         .from("suggested_skills")
         .select("id, name, description, when_to_use, data_sources, user_description, content_md, submitted_by, status, reviewer_notes, created_at")
         .eq("status", status)
+        .not("name", "ilike", "%[SMOKE-TEST]%")
+        .not("description", "ilike", "%[SMOKE-TEST]%")
         .order("created_at", { ascending: true });
 
       if (error) throw new Error(`Failed to fetch skill suggestions: ${error.message}`);
@@ -999,6 +1002,8 @@ export const tools: ToolDef[] = [
           "id, title, insight, source_type, source_author, platform, topics, applies_to, confidence, actionable_steps, submitted_by, status, reviewer_notes, created_at"
         )
         .eq("status", status)
+        .not("title", "ilike", "%[SMOKE-TEST]%")
+        .not("insight", "ilike", "%[SMOKE-TEST]%")
         .order("created_at", { ascending: true })
         .limit(limit);
 

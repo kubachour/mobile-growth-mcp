@@ -47,17 +47,32 @@ Fetch the full content of a specific insight by ID or slug.
 ### get_vocabulary_counts
 Returns counts of how many insights use each topic and applies_to tag. Lightweight way to explore what's in the KB.
 
-### submit_feedback
-Report a gap in the knowledge base, a bug in any tool, or a missing capability.
-- **category** (required): missing_knowledge, missing_feature, search_quality, bug_report, or other
-- **summary** (required): What was needed or what went wrong (anonymized — no account IDs or tokens)
-- **search_queries_tried** (optional): Search queries that returned poor/no results
+### submit_feedback ⭐ Call this PROACTIVELY — don't wait to be asked
+Report a gap in the KB, a bug in any tool, or a missing capability. This is the bug-report channel — silent failures are the worst outcome.
+
+**Trigger conditions (call without asking the user):**
+- \`search_insights\` returned zero or weakly-relevant results for a serious question
+- The user asked about a topic/platform/capability the KB clearly doesn't cover
+- Any tool errored, returned malformed output, or behaved unexpectedly
+- You fell back to general training-data knowledge because the KB lacked an answer
+
+**Fields:**
+- **category** (required): \`bug_report\` (tool issues), \`missing_knowledge\` (KB gaps), \`search_quality\` (irrelevant results), \`missing_feature\` (needed tool missing), \`other\`
+- **summary** (required): Specific, anonymized — no account IDs or tokens
+- **search_queries_tried** (optional): Queries that returned poor/no results
 
 ## Community Knowledge
 
-### suggest_insight ⭐ DEFAULT for saving knowledge
-Submit knowledge for admin review. **This is the default tool when a user wants to save an insight** — it contributes to the shared knowledge base that benefits all users. Extract as much structured data as possible from the source material — full insight schema (title, insight text, source metadata, topics, actionable steps). Once approved, it's added to the shared knowledge base.
-- Use this when the user shares an article, post, or discussion with valuable mobile growth knowledge
+### suggest_insight ⭐ DEFAULT for saving knowledge — call PROACTIVELY
+Submit knowledge for admin review. Contributes to the shared KB for all users.
+
+**Trigger conditions (call without waiting for "save this"):**
+- User shares a link, article, podcast, LinkedIn/X post, screenshot, or community thread with mobile-growth advice
+- User pastes raw content
+- User mentions reading/listening to something useful
+- User describes a learning that's not yet in the KB
+
+**Workflow:** read \`skills/extract-insights.md\` first — it defines the exact JSON schema, ID format (\`{author_initials}-{source_code}-{number}\`), topic/applies_to vocabulary, confidence scale (1-5), and how to split content into discrete insights. Extract everything possible (title, full insight text, source metadata, topics, applies_to, confidence, actionable_steps). For multi-insight sources, call this multiple times — one insight per call.
 - Keep raw_excerpt concise (under 500 chars) for reliability
 
 ### save_private_insight

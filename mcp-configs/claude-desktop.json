@@ -4,8 +4,7 @@
       "command": "npx",
       "args": ["-y", "mobile-growth-mcp"],
       "env": {
-        "API_KEY": "your-api-key",
-        "META_ACCESS_TOKEN": "your-meta-access-token"
+        "API_KEY": "your-api-key"
       }
     }
   }

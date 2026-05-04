@@ -313,10 +313,13 @@ export const tools: ToolDef[] = [
     name: "submit_feedback",
     description:
       "Report a gap in the knowledge base, a missing capability, or a bug in any tool. " +
-      "Call this when you searched for something and couldn't find useful results, " +
-      "when the user needs guidance on a topic not covered by the knowledge base, " +
-      "or when a tool returns an unexpected error or incorrect results. " +
-      "This helps improve the product. " +
+      "**Call this PROACTIVELY without asking the user** whenever any of these happen: " +
+      "(a) `search_insights` returns 0 results or only weakly-relevant results for a serious user question; " +
+      "(b) the user asks about a topic, platform, or capability the KB clearly doesn't cover; " +
+      "(c) any tool errors, returns malformed output, or behaves unexpectedly; " +
+      "(d) you had to fall back to general training-data knowledge because the KB lacked an answer. " +
+      "Don't wait for the user to ask — this is the bug-report and KB-gap channel, and silent failures are the worst outcome. " +
+      "Use category `bug_report` for tool issues, `missing_knowledge` for KB gaps, `search_quality` when results existed but were irrelevant, `missing_feature` when a needed tool doesn't exist. " +
       "IMPORTANT: anonymize the summary — no ad account IDs, access tokens, or personal data.",
     inputSchema: {
       type: "object",
@@ -575,10 +578,15 @@ export const tools: ToolDef[] = [
     name: "suggest_insight",
     description:
       "DEFAULT TOOL for saving knowledge — submit an insight for admin review and inclusion in the shared knowledge base. " +
-      "Use this whenever the user shares an article, post, discussion, or any source with mobile growth knowledge. " +
-      "Extract as much structured data as possible from the source material. " +
+      "**Call this PROACTIVELY** — surface it (or just call it after extracting) whenever the user: " +
+      "shares a link, article, podcast clip, LinkedIn/X post, or screenshot with mobile-growth advice; " +
+      "pastes raw content; mentions reading/listening to something useful; or describes a learning that's not yet in the KB. " +
+      "Don't wait for them to say 'save this' — proactively offer or just extract and submit. " +
+      "**Use the `extract-insights` skill first** (skills/extract-insights.md) — it defines the exact schema, ID format (`{author_initials}-{source_code}-{number}`), topic vocabulary, confidence scale (1-5), and how to split content into discrete insights. " +
+      "Extract as much structured data as possible (title, full insight text, source metadata, topics, applies_to, confidence, actionable_steps). " +
+      "Each call submits ONE insight — for multi-insight sources, call this multiple times. " +
       "Once approved, the insight becomes searchable by all users. " +
-      "IMPORTANT: Prefer this over save_private_insight unless the user explicitly asks for private/personal storage or the content is client-specific data (benchmarks, account IDs, internal metrics).",
+      "IMPORTANT: Prefer this over `save_private_insight` unless the user explicitly asks for private storage or the content is client-specific data (benchmarks, account IDs, internal metrics).",
     inputSchema: {
       type: "object",
       properties: insightInputProperties,

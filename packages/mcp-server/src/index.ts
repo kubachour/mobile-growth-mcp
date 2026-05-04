@@ -15,6 +15,7 @@ import { registerGetGoogleAdsAssetFatigue } from "./tools/google-asset-fatigue.j
 import { registerUploadGoogleImageAssets } from "./tools/google-upload-assets.js";
 import {
   registerConnectionStatus,
+  SERVER_VERSION,
   type StartupStatus,
 } from "./tools/connection-status.js";
 import { registerVocabularyResource } from "./resources/vocabulary.js";
@@ -44,6 +45,8 @@ if (googleAdsResult.refreshToken)
 if (googleAdsResult.loginCustomerId)
   process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID = googleAdsResult.loginCustomerId;
 
+console.error(`mobile-growth-mcp@${SERVER_VERSION} starting`);
+
 const apiKey = apiKeyResult.value;
 console.error(
   apiKey
@@ -60,7 +63,7 @@ console.error(
 
 const server = new McpServer({
   name: "mobile-growth-mcp",
-  version: "2.0.0",
+  version: SERVER_VERSION,
 });
 
 // ── Track startup status ───────────────────────────────────────────

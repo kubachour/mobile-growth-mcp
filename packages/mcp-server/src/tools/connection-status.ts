@@ -1,5 +1,11 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+declare const __PKG_VERSION__: string;
+// Fallback for non-bundled execution (e.g. ts-node / dev) where the
+// tsup `define` substitution doesn't run.
+export const SERVER_VERSION =
+  typeof __PKG_VERSION__ !== "undefined" ? __PKG_VERSION__ : "dev";
+
 export interface StartupStatus {
   kb: {
     connected: boolean;
@@ -25,7 +31,12 @@ export function registerConnectionStatus(
     "Check the connection status of the knowledge base and Google Ads API. Call this if tools seem missing or you get unexpected errors.",
     {},
     async () => {
-      const lines: string[] = ["# Connection Status", ""];
+      const lines: string[] = [
+        "# Connection Status",
+        "",
+        `**Server version:** mobile-growth-mcp@${SERVER_VERSION}`,
+        "",
+      ];
 
       // KB status
       if (status.kb.connected) {

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Pre-push hook: run the smoke test against the deployed Edge Function
+# before letting commits leave this machine. Aborts the push on failure.
+#
+# Skip on demand:
+#   git push --no-verify     (one-off skip)
+#   SKIP_SMOKE_TEST=1 git push   (env-var skip; useful for docs-only pushes)
+
+set -e
+
+if [ "${SKIP_SMOKE_TEST:-}" = "1" ]; then
+  echo "pre-push: SKIP_SMOKE_TEST=1 — skipping smoke test"
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+echo "pre-push: running npm run smoke-test (override with SKIP_SMOKE_TEST=1 or --no-verify)"
+
+if ! npm run smoke-test --silent; then
+  echo ""
+  echo "✗ pre-push: smoke test failed — push aborted."
+  echo "  Investigate, fix, re-run: npm run smoke-test"
+  echo "  Or skip once: git push --no-verify"
+  exit 1
+fi
+
+echo "pre-push: smoke test passed — pushing."

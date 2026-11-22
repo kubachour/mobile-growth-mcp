@@ -1,215 +1,103 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { StartupStatus } from "../tools/connection-status.js";
 
-const INSTRUCTIONS = `# Mobile Growth MCP — Knowledge Base + Analysis Skills
+const INSTRUCTIONS = `# Mobile Growth MCP — Knowledge Base for Mobile Growth
 
 ## Welcome
 
-You're connected to the Mobile Growth knowledge base — curated expert insights on mobile advertising, campaign optimization, and subscription app growth — plus Google Ads API integration and a library of analytical skills.
+You're connected to the Mobile Growth knowledge base: curated, practitioner-tested insights on mobile user acquisition, monetization and subscription app growth. Its two jobs:
 
-**The knowledge base is always on.** Use \`search_insights\` freely — before making recommendations, when diagnosing issues, or exploring strategies. The more specific your query, the better the results.
+1. **Answer from expert knowledge.** Use \`search_insights\` before giving advice or searching the web.
+2. **Capture new knowledge.** When the user shares a link, post, podcast, screenshot or thread, extract the insights and save them with \`suggest_insight\` — one call per source.
 
-> **For Meta Ads data**, use Meta's official Meta Ads MCP / AI connector. This MCP intentionally does **not** ship Meta API tools — instead, the analytical skills here (ad-fatigue-report, weekly-performance, audit-meta-account, etc.) interpret data fetched from Meta's official connector or pasted from CSV exports.
->
-> Connecting Google Ads is optional. The knowledge base, community suggestions, and private insights all work with just your API key.
+Ad platform data comes from the platforms' own MCPs:
+- **Google Ads:** the official Google Ads MCP (\`googleads/google-ads-mcp\`, read-only GAQL \`search\`). The Google skills here tell you which queries to run. This MCP adds the write side: uploading images and YouTube videos and adding them to App campaign ads.
+- **Meta:** Meta's official Meta Ads MCP / AI connector. This MCP ships no Meta tools.
 
-Quick examples:
-- "subscription app creative fatigue signals"
-- "Meta CBO vs ABO tradeoffs for subscription apps"
-- "Google UAC network shift detection"
-- "iOS attribution strategies post-ATT"
-
-If you can't find what you need, call \`submit_feedback\` to report the gap — it helps us improve the knowledge base.
-
-## What This Is
-A curated knowledge base of mobile advertising insights + Google Ads API integration + analytical skills (Meta + Google) that interpret data from the platforms' own MCPs/CSV exports.
+If you can't find what you need, call \`submit_feedback\` to report the gap.
 
 ---
 
 ## Knowledge Base Tools
 
 ### search_insights
-Semantic + keyword hybrid search across the knowledge base. **Use this first** for any question about mobile advertising before searching the web.
-- **query** (required): Natural language search query
-- **topics** (optional): Filter by topic tags, e.g. ["creative_strategy", "scaling"]
-- **applies_to** (optional): Filter by applicability, e.g. ["subscription_apps", "ios"]
-- **limit** (optional): Max results, 1-30, default 10
-
-### list_insights
-Browse all insights with optional filtering. Returns titles and metadata. Private insights are marked with a lock icon.
-- **topic** (optional): Filter by a single topic tag
-- **applies_to** (optional): Filter by a single applies_to value
+Semantic + keyword hybrid search. **Use this first** for any mobile growth question.
+- **query** (required), **topics** / **applies_to** (optional filters), **limit** (1-30, default 10)
 
 ### get_insight
-Fetch the full content of a specific insight by ID or slug.
-- **id** (required): Numeric ID or string slug (e.g. "mb-li-001")
+Full content of one insight by numeric ID or slug (e.g. "ab-pt-010").
 
 ### get_vocabulary_counts
-Returns counts of how many insights use each topic and applies_to tag. Lightweight way to explore what's in the KB.
+How many insights use each topic and applies_to tag.
 
-### submit_feedback ⭐ Call this PROACTIVELY — don't wait to be asked
-Report a gap in the KB, a bug in any tool, or a missing capability. This is the bug-report channel — silent failures are the worst outcome.
+### submit_feedback ⭐ call PROACTIVELY
+Report a KB gap, a tool bug or a missing capability. Call without asking when search returns nothing useful, a tool errors, or you fell back to general knowledge.
+- **category**: \`bug_report\`, \`missing_knowledge\`, \`search_quality\`, \`missing_feature\`, \`other\`
+- **summary**: specific and anonymized (no account IDs or tokens)
 
-**Trigger conditions (call without asking the user):**
-- \`search_insights\` returned zero or weakly-relevant results for a serious question
-- The user asked about a topic/platform/capability the KB clearly doesn't cover
-- Any tool errored, returned malformed output, or behaved unexpectedly
-- You fell back to general training-data knowledge because the KB lacked an answer
+---
 
-**Fields:**
-- **category** (required): \`bug_report\` (tool issues), \`missing_knowledge\` (KB gaps), \`search_quality\` (irrelevant results), \`missing_feature\` (needed tool missing), \`other\`
-- **summary** (required): Specific, anonymized — no account IDs or tokens
-- **search_queries_tried** (optional): Queries that returned poor/no results
+## Saving Knowledge
 
-## Community Knowledge
+### suggest_insight ⭐ DEFAULT for saving — call PROACTIVELY
+**Trigger (don't wait for "save this"):** the user shares a link, article, podcast, LinkedIn/X post, screenshot or thread with mobile-growth advice, pastes raw content, or describes a learning not yet in the KB.
 
-### suggest_insight ⭐ DEFAULT for saving knowledge — call PROACTIVELY
-Submit knowledge for admin review. Contributes to the shared KB for all users.
+**How:** follow the \`extract-insights\` prompt. Split the source into distinct insights, check each against \`search_insights\`, then save them all in ONE call:
+- Shared source fields once at the top level: \`source_type\`, \`source_author\`, \`source_title\`, \`source_date\`, \`platform\`
+- \`insights\`: up to 20 items, each with \`title\` + \`insight\` (+ \`topics\`, \`applies_to\`, \`confidence\` 1-5, \`actionable_steps\`, \`raw_excerpt\` under 500 chars)
+- A single insight can also be passed directly as \`title\` + \`insight\`
 
-**Trigger conditions (call without waiting for "save this"):**
-- User shares a link, article, podcast, LinkedIn/X post, screenshot, or community thread with mobile-growth advice
-- User pastes raw content
-- User mentions reading/listening to something useful
-- User describes a learning that's not yet in the KB
-
-**Workflow:** read \`skills/extract-insights.md\` first — it defines the exact JSON schema, ID format (\`{author_initials}-{source_code}-{number}\`), topic/applies_to vocabulary, confidence scale (1-5), and how to split content into discrete insights. Extract everything possible (title, full insight text, source metadata, topics, applies_to, confidence, actionable_steps). For multi-insight sources, call this multiple times — one insight per call.
-- Keep raw_excerpt concise (under 500 chars) for reliability
+**What happens:** admin keys publish immediately (embedded and searchable at once); likely duplicates stay in the review queue and are listed in the reply. Other keys go to the admin review queue. Admins can pass \`publish=false\` to queue instead.
 
 ### save_private_insight
-Save knowledge that is private to your API key. Immediately searchable but only visible to you. **Only use this instead of suggest_insight when** the content contains client-specific data, internal benchmarks, account metrics, or the user explicitly asks for private storage.
-- Same full schema as suggest_insight
-- No admin approval needed — saved instantly
+Private to your API key and searchable at once. **Only** for client-specific data (account metrics, internal benchmarks) or when the user asks for private storage.
 
 ### suggest_skill
-Propose a new skill (repeatable workflow) for the knowledge base. **Use this when a user describes a workflow they want automated** — recurring audits, analyses, or procedures they run regularly.
-- **Before calling**: draft the full skill .md yourself. Canonical format: "## What It Does", "## When to Use This" (bullet triggers), "## What It Needs" (data sources + exact CSV export instructions), "## Procedure" (numbered steps with tool calls or CSV column specs), "## Output".
-- Pass the draft as content_md. Only use user_description without a draft if the user wants to submit a rough idea for the admin to develop.
-- Provide when_to_use phrases and data_sources (meta_api / google_ads_api / csv / manual_input)
-- Submissions go to admin review before becoming live
+Propose a repeatable workflow. Draft the full skill .md first ("## What It Does", "## When to Use This", "## What It Needs", "## Procedure", "## Output") and pass it as content_md. Goes to admin review.
+
+### Admin tools (admin keys only)
+\`review_suggestions\`, \`approve_suggestion\`, \`reject_suggestion\`, \`review_skill_suggestions\`, \`approve_skill_suggestion\`, \`reject_skill_suggestion\`, \`list_insights\`, \`delete_insight\`, \`suggest_improvement\`. Approving embeds the insight and reports similar existing ones.
 
 ---
 
-## Meta Ads Data — Use Meta's Official AI Connector
+## Google Ads Upload Tools (run locally)
 
-This MCP **does not ship Meta API tools**. Use Meta's official Meta Ads MCP / AI connector to fetch campaign data, performance metrics, audiences, and catalog operations. Then run the analytical skills below to interpret what comes back.
+Need Google Ads credentials in this MCP: run \`npx mobile-growth-mcp auth google\` once. Reading data does NOT need them — use the official Google Ads MCP for that. **Always run with \`dry_run=true\` first and show the user the plan.**
 
-This separation keeps users out of unofficial-API risk while preserving the analytical value (KB-grounded methodology) that this MCP provides.
+### upload_google_image_assets
+Upload images (URLs or local files, up to 50) as image assets. With \`ad_group_id\`, also adds them to that App campaign ad group's ad (keeps the existing images; max 20 per ad).
 
----
+### upload_google_video_assets
+Google Ads can't take video files: the video must be on YouTube (public or unlisted). Pass YouTube IDs or URLs (up to 50). Existing assets for the same video are reused, not duplicated. With \`ad_group_id\`, also adds them to the ad (max 20 videos).
 
-## Google Ads Tools
-
-**Requires Google Ads credentials** — run \`npx mobile-growth-mcp auth google\` to set up interactively. Credentials are saved to \`.env\` and never leave the user's machine.
-
-All tools accept campaign and ad group IDs as either **numeric IDs** or **campaign/ad group names** — names are auto-resolved to numeric IDs internally.
-
-### get_google_ads_campaigns
-List Google App Campaigns with status, bid strategy, budgets, and app info. Returns **numeric campaign IDs** needed by other tools.
-- **customer_id** (required): Google Ads customer ID (e.g. "123-456-7890")
-- **status** (optional): Filter by status — ENABLED, PAUSED, REMOVED (default: ["ENABLED"])
-- **channel_sub_type** (optional): Filter by campaign type — APP_CAMPAIGN (ACi), APP_CAMPAIGN_FOR_ENGAGEMENT (ACe)
-- **limit** (optional): Max campaigns to return (default 50)
-
-### get_google_ad_groups
-List ad groups within Google App Campaigns. Returns **numeric ad group IDs** and campaign IDs. In UAC, ad groups represent creative themes — observe spend distribution to identify winning messaging angles.
-- **customer_id** (required): Google Ads customer ID
-- **campaign_id** (optional): Scope to a specific campaign (name or numeric ID)
-- **status** (optional): Filter by status (default: ["ENABLED"])
-- **limit** (optional): Max results (default 50)
-
-### get_google_insights
-Pull performance metrics with configurable level, breakdowns, date ranges, and time granularity. Use **network breakdown** to detect traffic shifts between Search, Display/AdMob, and YouTube — the #1 diagnostic lever for Google campaigns.
-- **customer_id** (required): Google Ads customer ID
-- **level** (optional): account, campaign, ad_group, asset (default: campaign)
-- **campaign_id** (optional): Scope to specific campaign (name or numeric ID)
-- **ad_group_id** (optional): Scope to specific ad group
-- **breakdown** (optional): network or device (one at a time — GAQL restriction)
-- **date_range** (optional): {start_date, end_date} in YYYY-MM-DD
-- **date_preset** (optional): LAST_7_DAYS, LAST_14_DAYS, LAST_30_DAYS, THIS_MONTH, LAST_MONTH
-- **time_increment** (optional): daily, weekly, monthly, summary (default: summary)
-- **sort** (optional): cost_desc, conversions_desc, impressions_desc, ctr_desc
-- **limit** (optional): Max results (default 50, max 500)
-
-### get_google_assets
-List creative assets with metadata, performance labels, and slot utilization audit. Checks headlines, descriptions, images, videos against Google's per-slot maximums.
-- **customer_id** (required): Google Ads customer ID
-- **campaign_id** (optional): Scope to a specific campaign (name or numeric ID)
-- **ad_group_id** (optional): Scope to a specific ad group
-- **asset_type** (optional): IMAGE, YOUTUBE_VIDEO, TEXT, MEDIA_BUNDLE
-- **include_slot_audit** (optional): default true
-- **limit** (optional): Max results (default 50)
-
-### get_google_network_mix
-Analyze traffic distribution across Google's ad networks (Search, Display/AdMob, YouTube) over time. Flags significant shifts in spend share — a sudden shift to Display/MGDN typically tanks CPA.
-- **customer_id** (required): Google Ads customer ID
-- **campaign_id** (optional): Scope to one campaign (name or numeric ID)
-- **date_range** (optional): {start_date, end_date} — default last 14 days
-- **shift_threshold_pct** (optional): Flag networks with spend share change > this % (default 10)
-
-### get_google_asset_fatigue
-Detect creative asset fatigue by analyzing per-asset impression trends, CTR decline, and CPA deterioration. Checks asset age against Google's 2-week learning minimum and 2-3 month refresh cadence.
-- **customer_id** (required): Google Ads customer ID
-- **campaign_id** (required): Campaign to analyze (name or numeric ID)
-- **ad_group_id** (optional): Scope to specific ad group
-- **lookback_days** (optional): Days of data to analyze, 7-90 (default 14)
-- **ctr_decline_threshold_pct** (optional): CTR decline % to flag (default 30)
-- **impression_decay_threshold_pct** (optional): Impression drop % to flag (default 50)
-- **asset_type** (optional): IMAGE, YOUTUBE_VIDEO, TEXT
+### add_assets_to_app_ad
+Add existing image/video assets and new headlines (≤30 chars, max 5) or descriptions (≤90 chars, max 5) to an App campaign ad group's ad. Reads the ad first and appends, because Google replaces the whole list on update. Never removes anything.
 
 ---
 
-## Reports (MCP Prompts)
-
-Pre-built analytical workflows. Each skill expects either Meta MCP–sourced data (use Meta's official AI connector) or CSV exports from Ads Manager. Select a prompt and provide your \`ad_account_id\` to run:
+## Skills (MCP Prompts)
 
 | Prompt | What it does |
 |--------|-------------|
-| ad-fatigue-report | Detect creative fatigue with daily granularity |
-| weekly-performance | Week-over-week health comparison with diagnosis |
-| creative-performance | Categorize ads by health status |
-| audience-composition | Age × gender heatmap with CPA analysis |
-| architecture-review | Campaign structure evaluation |
-| audit-meta-account | Comprehensive account audit |
-| campaign-comparison | Side-by-side campaign comparison |
-| placement-audit | Detailed placement audit with examples |
-| attribution-analysis | Conversion quality validation |
+| extract-insights | Turn a source into insights and save them in one call |
+| google-account-audit | Full Google App Campaigns audit against the KB (signal, windows, tROAS, exclusions, audience signals, assets, network, iOS ODM/ICM) |
+| google-campaign-health | Week-over-week health and algorithm thresholds |
+| google-asset-performance | Asset health by CPI, gaps, refresh plan |
+| google-network-audit | Spend and CPI by network, traffic shifts, placements |
+| google-architecture-review | Campaign and ad group structure, exclusions, signals |
+| google-bid-strategy | Bid strategy, conversion window vs tROAS target, safe change sequences |
+| admin-briefing | Admin: pending suggestions, bugs, knowledge gaps |
+
+Each Google skill lists the GAQL queries to run through the Google Ads MCP, with a CSV fallback.
 
 ---
 
-## Resources
-
-### vocabulary://tags
-Lists all topic tags, applies_to tags, and platforms with counts.
-
 ## Presenting Results
 
-When your response draws on knowledge base results, **always attribute visibly** so the user knows the value came from the curated KB, not your general training data:
-
-- **Tell the user** the information comes from the Mobile Growth knowledge base (e.g. "According to the Mobile Growth KB..." or "The knowledge base recommends...")
-- **Cite source author + slug** for key claims (e.g. "...(source: Eric Seufert, \`mb-li-001\`)")
-- **When multiple insights support a recommendation**, mention the count (e.g. "3 insights in the KB agree that...")
-- **Distinguish KB-sourced advice from your own reasoning** — if you're adding your own analysis on top of KB results, make that clear
-
-## Workflow Tips
-
-### For Google Ads analysis:
-1. Start with \`get_google_ads_campaigns\` to see campaigns and get numeric IDs
-2. Use \`get_google_insights\` with network breakdown to check traffic distribution
-3. Use \`get_google_network_mix\` if you suspect network shifts
-4. Use \`get_google_assets\` to audit creative slot utilization
-5. Use \`get_google_asset_fatigue\` on specific campaigns to detect creative decay
-
-### For Meta analysis:
-1. Use Meta's official Meta Ads MCP / AI connector to fetch the data
-2. Run a report (MCP prompt) here to interpret it against the knowledge base
-3. For custom analysis, ask the user to paste a CSV export and use the skill's Option B path
-
-### General:
-- Always \`search_insights\` before making recommendations — ground advice in expert knowledge
-- Use \`get_insight\` to read full context when reports reference insight IDs
-- Use \`suggest_insight\` (default) when a user shares valuable knowledge from articles or discussions
-- Use \`save_private_insight\` only for client-specific data the user explicitly wants private
-- If a tool errors unexpectedly, call \`submit_feedback\` with category \`bug_report\`
+- Say the information comes from the Mobile Growth knowledge base, and cite author + slug for key claims (e.g. "(Ashley Black, \`ab-pt-010\`)").
+- When several insights agree, say how many. When they conflict, say so instead of picking one silently.
+- Keep KB-sourced advice separate from your own reasoning.
+- If a tool errors unexpectedly, call \`submit_feedback\` with category \`bug_report\`.
 `;
 
 function buildStatusSection(status?: StartupStatus): string {
@@ -231,14 +119,14 @@ function buildStatusSection(status?: StartupStatus): string {
   }
 
   lines.push(
-    "- **Meta Ads Data**: Use Meta's official Meta Ads MCP / AI connector — this MCP no longer ships Meta API tools"
+    "- **Reading ad data**: use the official Google Ads MCP and Meta's official connector — this MCP ships no read tools for ad platforms"
   );
 
   if (status.google.configured) {
-    lines.push("- **Google Ads API**: Configured");
+    lines.push("- **Google Ads uploads**: Configured");
   } else {
     lines.push(
-      "- **Google Ads API**: Not connected (optional — KB works without it)"
+      "- **Google Ads uploads**: Not connected (optional — only needed to upload images/videos)"
     );
     lines.push(
       "  - To connect: run `npx mobile-growth-mcp auth google` to set up credentials"
@@ -259,7 +147,7 @@ export function registerInstructionsResource(
     "instructions://getting-started",
     {
       description:
-        "Getting started guide explaining the knowledge base, Meta API tools, reports, and example queries. Read this first.",
+        "Getting started guide: knowledge base search, saving insights, Google Ads upload tools and skills. Read this first.",
       mimeType: "text/plain",
     },
     async () => ({

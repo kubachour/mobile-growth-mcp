@@ -28,7 +28,7 @@ export function registerConnectionStatus(
 ): void {
   server.tool(
     "connection_status",
-    "Check the connection status of the knowledge base and Google Ads API. Call this if tools seem missing or you get unexpected errors.",
+    "Check the connection status of the knowledge base and the Google Ads upload tools. Call this if tools seem missing or you get unexpected errors.",
     {},
     async () => {
       const lines: string[] = [
@@ -63,9 +63,9 @@ export function registerConnectionStatus(
 
       // Meta data note
       lines.push(
-        "## Meta Ads Data: Use Meta's Official AI Connector",
-        "- This MCP no longer ships Meta API tools (avoids unofficial-API risk).",
-        "- For Meta data, install Meta's official Meta Ads MCP / AI connector and let the analytical skills here interpret what it returns."
+        "## Reading Ad Data: Use the Platforms' Official MCPs",
+        "- Google Ads: the official Google Ads MCP (googleads/google-ads-mcp, read-only GAQL). The Google skills here list the queries to run.",
+        "- Meta: Meta's official Meta Ads MCP / AI connector. This MCP ships no Meta tools."
       );
 
       lines.push("");
@@ -73,14 +73,14 @@ export function registerConnectionStatus(
       // Google Ads status
       if (status.google.configured) {
         lines.push(
-          "## Google Ads API: Configured",
-          "- Google Ads tools are available and ready to use"
+          "## Google Ads Uploads: Configured",
+          "- upload_google_image_assets, upload_google_video_assets and add_assets_to_app_ad are ready (use dry_run first)"
         );
       } else {
         lines.push(
-          "## Google Ads API: Not Connected (Optional)",
-          "- KB, suggestions, and private insights work without it",
-          "- Connect Google Ads to unlock campaign data and network analysis",
+          "## Google Ads Uploads: Not Connected (Optional)",
+          "- Only needed to upload images/videos and add them to App campaign ads",
+          "- KB search, saving insights and the Google skills (via the official Google Ads MCP) work without it",
           "",
           "### How to connect",
           "Option 1 — Interactive setup (recommended):",

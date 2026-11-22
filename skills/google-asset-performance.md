@@ -14,12 +14,9 @@ Categorize every active asset (video, image, text) by health status and provide 
 
 ## What It Needs
 
-**Option A — Google Ads connected:**
+**Option A — Google Ads MCP connected** (official `googleads/google-ads-mcp`, read-only): run the GAQL queries below with its `search` tool. Money fields are in micros; App campaigns are `advertising_channel_type = MULTI_CHANNEL`. If a field errors, check the MCP's field-metadata resources and adjust the query.
 
-```
-get_google_assets(customer_id="123-456-7890", campaign_id="...")
-get_google_asset_fatigue(customer_id="123-456-7890", campaign_id="...")
-```
+Queries: `ad_group_ad_asset_view` for the last 14 days, plus a weekly trend for fatigue (see Procedure).
 
 **Option B — CSV export:** Export from Google Ads UI:
 - Go to **Ads & Assets** → **Assets** tab
@@ -52,18 +49,23 @@ get_google_asset_fatigue(customer_id="123-456-7890", campaign_id="...")
 
 ### Step 1: Pull Asset Data
 
-**If API connected:**
+**If the Google Ads MCP is connected:**
 
-```
-get_google_assets(
-  customer_id="123-456-7890",
-  campaign_id="[campaign_id]"
-)
+```sql
+SELECT campaign.name, ad_group.name, asset.id, asset.name, asset.type,
+  ad_group_ad_asset_view.field_type, ad_group_ad_asset_view.performance_label,
+  metrics.impressions, metrics.clicks, metrics.conversions, metrics.cost_micros
+FROM ad_group_ad_asset_view
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND ad_group_ad_asset_view.enabled = TRUE
+  AND segments.date DURING LAST_14_DAYS
 
-get_google_asset_fatigue(
-  customer_id="123-456-7890",
-  campaign_id="[campaign_id]"
-)
+# Fatigue: same view by week over the last ~8 weeks
+SELECT asset.id, asset.name, asset.type, segments.week,
+  metrics.impressions, metrics.clicks, metrics.conversions, metrics.cost_micros
+FROM ad_group_ad_asset_view
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND ad_group_ad_asset_view.enabled = TRUE
+  AND segments.date BETWEEN '[today-56]' AND '[yesterday]'
+# Asset age ≈ first week with impressions (the API has no upload date)
 ```
 
 **If CSV:** Use the assets export the user pasted.
@@ -83,7 +85,8 @@ Ask the user for their target CPI, or calculate account average from the data.
 | **Learning** | < 7 days live or < 500 impressions | Too early to judge. Leave running. |
 | **Fatiguing** | IPM declining over last 7 days, CPI rising | Flag for replacement. Don't pause yet — wait until a replacement is ready [ab-pt-007 analogy]. |
 | **Underperforming** | CPI > 2× target for > 14 days, significant impressions | Candidate for pause. Check if it's covering a unique placement before pausing. |
-| **Low label, efficient** | Google says "Low" but CPI ≤ target | Keep it — Google's label means it won't scale further, not that it's wasting money [ab-pt-008]. |
+| **Low label, efficient** | Google says "Low" but CPI ≤ target | Keep it. The label is relative and measures scalability, not value [ab-pt-008, goog-pdf-019]. |
+| **Low label, expensive** | Google says "Low" AND CPI > target | Replace it at the next refresh, 2–3 assets at a time, never in its first 2 weeks [goog-pdf-018]. |
 
 ### Step 4: Format Gap Analysis
 
@@ -132,5 +135,7 @@ For each text asset with significant impressions:
 2. ...
 
 ### Note on Google's Labels
+
+The KB holds two views: Google's guide says refresh by replacing "Low" assets and keeping "Best"/"Good" [goog-pdf-018, goog-pdf-019]; Ashley Black says the label ignores value [ab-pt-008]. Use both: **check CPI/CPA before removing a "Low" asset.**
 [X] assets are labeled "Low" by Google but have CPI at or below target — these are working ads that Google has chosen not to scale further. Do not pause them based on the label alone.
 ```

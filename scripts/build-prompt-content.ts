@@ -20,16 +20,9 @@ const OUTPUT = join(
 // Map from .md filename (without extension) to prompt name.
 // Only files that correspond to MCP prompts are included.
 const FILE_TO_PROMPT: Record<string, string> = {
-  "ad-fatigue-report": "ad-fatigue-report",
-  "weekly-performance": "weekly-performance",
-  "creative-performance": "creative-performance",
-  "audience-composition": "audience-composition",
-  "campaign-architecture-review": "architecture-review",
-  "audit-meta-account": "audit-meta-account",
-  "campaign-comparison": "campaign-comparison",
-  "placement-audit": "placement-audit",
-  "attribution-analysis": "attribution-analysis",
   "admin-briefing": "admin-briefing",
+  "extract-insights": "extract-insights",
+  "google-account-audit": "google-account-audit",
   "google-campaign-health": "google-campaign-health",
   "google-asset-performance": "google-asset-performance",
   "google-network-audit": "google-network-audit",
@@ -43,7 +36,7 @@ for (const file of readdirSync(SKILLS_DIR).sort()) {
   if (!file.endsWith(".md")) continue;
   const stem = basename(file, ".md");
   const promptName = FILE_TO_PROMPT[stem];
-  if (!promptName) continue; // skip admin-internal files (extract-insights, ingest-content)
+  if (!promptName) continue; // skip admin-internal files (ingest-content, review-suggestions) and skills/archive/
 
   const content = readFileSync(join(SKILLS_DIR, file), "utf-8");
   // Escape backticks and ${} for template literal safety

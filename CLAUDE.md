@@ -2,7 +2,7 @@
 
 ## Overview
 
-A platform where users connect their LLM (Claude, ChatGPT, Gemini) to a curated mobile-growth knowledge base + analytical skills. For Meta data, users install Meta's official Meta Ads MCP / AI connector — this MCP intentionally does **not** ship Meta API tools (avoids unofficial-API risk). Google Ads is supported directly via this MCP's local tools. Backed by curated industry knowledge (shared) and per-account audit data (scoped).
+A platform where users connect their LLM (Claude, ChatGPT, Gemini) to a curated mobile-growth knowledge base: search it, save new learnings into it (batch `suggest_insight`; admin keys auto-publish), and run KB-grounded audit skills. Ad data is read through the platforms' official MCPs (Google Ads MCP for Google, Meta's official connector for Meta). This MCP keeps only the Google **write** tools (image/video upload, add to App ad). Meta skills are archived in `skills/archive/`.
 
 Focused on **mobile campaigns**, especially subscription apps.
 
@@ -16,7 +16,7 @@ Three knowledge layers:
 | What Happened | Past audits, baselines | Supabase `account_audits` | SQL, scoped by api_key |
 | What Is | Live campaign data | Not stored | User's ad platform API key |
 
-**MCP server architecture**: The npm package (`mobile-growth-mcp`) runs locally via stdio. KB tools (search, list, get) are proxied through the Supabase Edge Function `/functions/v1/mcp` using JSON-RPC + `x-api-key` header. Google Ads tools run locally (token never leaves user's machine). Tool definitions are fetched dynamically from the Edge Function on startup — adding a tool server-side makes it available to all users without republishing npm. **Meta API tools were removed** — Meta data flows in via Meta's official AI connector (separate MCP) or pasted CSV exports.
+**MCP server architecture**: The npm package (`mobile-growth-mcp`) runs locally via stdio. KB tools (search, get, suggest, admin review) are proxied through the Supabase Edge Function `/functions/v1/mcp` using JSON-RPC + `x-api-key` header. Google Ads upload tools run locally (token never leaves user's machine); reading Google Ads data is left to the official Google Ads MCP. Tool definitions are fetched dynamically from the Edge Function on startup — adding a tool server-side makes it available to all users without republishing npm. **Meta API tools were removed** — Meta data flows in via Meta's official AI connector (separate MCP) or pasted CSV exports.
 
 **Auth**: Per-person API key (`me_` prefix, SHA-256 hashed). Generate with `./scripts/generate-api-key.sh "Name"`. Users only need `API_KEY` env var (+ optional Google Ads OAuth credentials). No `SUPABASE_URL`/`SUPABASE_ANON_KEY` needed for end users.
 

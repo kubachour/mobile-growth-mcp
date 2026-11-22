@@ -1,70 +1,51 @@
 # Mobile Growth MCP — Agent Instructions
 
-You have access to a Mobile Growth MCP server with tools for querying an expert knowledge base and pulling Google Ads data, plus analytical skills for Meta and Google. Meta Ads data should be sourced via Meta's **official** Meta Ads MCP / AI connector — this MCP no longer ships Meta API tools.
+You have access to a Mobile Growth MCP server: an expert knowledge base for mobile growth (search it, and save new learnings into it), KB-grounded audit skills for Google App Campaigns, and tools to upload images and videos to Google Ads.
 
-Use these tools to help users optimize their mobile advertising campaigns, particularly subscription app user acquisition.
+- **Answer from the KB first:** `search_insights` before advising or searching the web; cite author + slug.
+- **Capture proactively:** when the user shares a link, post, podcast or screenshot, run `extract-insights` and save with ONE `suggest_insight` call (`insights` array).
+- **Read ad data via official MCPs:** Google Ads MCP (GAQL `search`) for Google; Meta's official connector for Meta.
+- **Uploads:** always `dry_run=true` first and show the plan.
 
 ## MCP Tools
 
-### Knowledge Base Tools
-- **search_insights**(query, topics?, applies_to?, limit?) — Semantic + keyword hybrid search across curated industry insights
-- **list_insights**(topic?, applies_to?) — Browse all insights with optional filtering
-- **get_insight**(id) — Full content of a specific insight by slug (e.g. "mb-li-001") or numeric ID
+| Tool | Description |
+|------|-------------|
+| `connection_status` | Check KB and Google Ads upload status; shows how to fix issues |
+| `search_insights` | Semantic + keyword hybrid search across curated insights |
+| `get_insight` | Full content of a specific insight by slug or ID |
+| `get_vocabulary_counts` | Topic and applies_to tag counts |
+| `suggest_insight` | Save insights from a source — batch up to 20 per call; admin keys publish immediately |
+| `save_private_insight` | Save client-specific knowledge visible only to your key |
+| `suggest_skill` / `submit_feedback` | Propose a workflow / report a KB gap or bug |
+| `upload_google_image_assets` | Upload images (URLs or files) as assets; optionally add them to an App campaign ad |
+| `upload_google_video_assets` | Add YouTube videos as assets (deduplicated by video ID); optionally add them to an App campaign ad |
+| `add_assets_to_app_ad` | Append images, videos, headlines or descriptions to an App campaign ad, within Google's caps |
 
-### Meta Ads Data
-This MCP **does not** expose Meta API tools. Use Meta's official Meta Ads MCP / AI connector for: campaign listings, ad set / ad data, performance insights, audience breakdowns, placement breakdowns. Then run the analytical skills (MCP prompts) here against the data Meta returns. Users can also paste CSV exports from Ads Manager — every Meta-flavored skill supports both.
+Admin keys also get `review_suggestions`, `approve_suggestion`, `reject_suggestion`, the skill-suggestion equivalents, `list_insights`, `delete_insight` and `suggest_improvement`.
 
-### Google Ads Tools
-- **get_google_ads_campaigns** / **get_google_ad_groups** / **get_google_assets** — Structure
-- **get_google_insights** — Performance with network/device breakdowns
-- **get_google_network_mix** — Search/Display/YouTube traffic shifts
-- **get_google_asset_fatigue** — Asset-level fatigue
-- **upload_google_image_assets** — Upload images to Google Ads
+**Reading Google Ads data** is done by the official [Google Ads MCP](https://github.com/googleads/google-ads-mcp) (read-only GAQL). The Google skills below list the exact queries to run. **Meta data** comes from Meta's official Meta Ads MCP / AI connector.
 
-### MCP Prompts (Reports)
-Pre-built analytical workflows. Each Meta-flavored prompt takes `ad_account_id`. Data comes from Meta's official MCP or pasted CSV.
+## MCP Prompts
 
-| Prompt | Purpose |
-|--------|---------|
-| ad-fatigue-report | Detect creative fatigue |
-| weekly-performance | Week-over-week health comparison |
-| creative-performance | Categorize ads by health status |
-| audience-composition | Age × gender CPA analysis |
-| architecture-review | Campaign structure evaluation |
-| audit-meta-account | Comprehensive account audit |
-| campaign-comparison | Side-by-side comparison |
-| placement-audit | Placement waste quantification |
-| attribution-analysis | Conversion quality validation |
-| google-campaign-health | Google App Campaign WoW health |
-| google-asset-performance | Google asset categorization by CPI |
-| google-network-audit | Google network mix analysis |
-| google-architecture-review | Google App Campaign structure audit |
-| google-bid-strategy | Google bid strategy + signals |
+| Prompt | Description |
+|--------|-------------|
+| `extract-insights` | Turn a link, post, podcast or screenshot into insights and save them in one call |
+| `google-account-audit` | Full Google App Campaigns audit against the KB: signal, conversion windows, tROAS, exclusions, audience signals, assets, network, iOS ODM/ICM |
+| `google-campaign-health` | Week-over-week health check and algorithm thresholds |
+| `google-asset-performance` | Asset categorization by actual CPI, gaps and refresh plan |
+| `google-network-audit` | Search / Display / YouTube spend and CPI analysis, placements |
+| `google-architecture-review` | Campaign and ad group structure, exclusions and signals |
+| `google-bid-strategy` | Bid strategy, conversion window vs tROAS target, safe change sizes |
+| `admin-briefing` | Admin: pending suggestions, bugs, knowledge gaps |
+
+Every skill cites knowledge base insight IDs, so recommendations are grounded in expert knowledge. Meta skills are archived in `skills/archive/`.
 
 ## Reports — How to Run
 
-Each skill describes its own data needs (Option A — via Meta MCP / Google Ads tools / Option B — via CSV) and includes the analytical framework. Read the relevant `skills/*.md` for the exact procedure.
+Each Google skill lists the GAQL queries to run through the Google Ads MCP (Option A) and a CSV fallback (Option B). Read the relevant `skills/*.md` for the exact procedure. Run `google-account-audit` for a full review; the others go deeper on one area.
 
-Highlights of the diagnostic frameworks used:
-
-### Kast Diagnostic Framework [wk-tw-001]
-1. Frequency↑ + CPA↑ → creative fatigue
-2. CPM↑ + CPA↑ → audience saturation
-3. CPA↑ + CVR↓ → ad-to-LP mismatch
-4. CTR↓ + CPA↑ → creative fatigue
-
-### Creative Categorization
-- **Scaling**: High spend, CPA ≤ target → let it run [mb-li-001]
-- **Promising**: Low spend, CPA ≤ target → don't force spend [ds-pt-004]
-- **Contributing**: Low conversions but ad set healthy → halo role [jl-pt-004, lp-pt-003]
-- **Fatiguing**: Frequency >3, CTR declining → prepare replacement [oh-li-001]
-- **Dead weight**: High spend, CPA >2x target → pause only if ad set also bad [jl-pt-004]
-
-### Known Meta Waste Placements (for app installs)
-`facebook/instream_video`, `facebook/facebook_reels_overlay`, `threads/threads_feed`, `audience_network/classic`. Flag CPI >3x average. Consider Placement Value Rules [mb-li-009] as alternative to restriction.
-
-### Audience Insight [mb-li-010]
-35+ users convert 2-3x better for subscription apps. App Promotion campaigns skew young [mb-li-006]. Recommend Value Rules for age-based bid modifiers [mb-li-008].
+> The table below still includes Meta insight IDs used by the archived Meta skills; they remain searchable in the KB.
 
 ## Key Knowledge Base Insight IDs
 

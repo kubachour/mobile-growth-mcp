@@ -54,6 +54,124 @@ const insightInputProperties = {
   },
 } as const;
 
+// --- Publishing (shared by approve_suggestion and admin auto-publish) ---
+
+// Cosine similarity above which a new insight is treated as a likely duplicate.
+const DUPLICATE_SIMILARITY = 0.92;
+
+function slugFromTitle(title: string): string {
+  return `cs-${title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60)}`;
+}
+
+/** Auto-generated slugs must never overwrite an existing insight: append -2, -3, ... */
+async function uniqueSlug(supabase: SupabaseClient, base: string): Promise<string> {
+  const { data } = await supabase.from("insights").select("slug").like("slug", `${base}%`);
+  const taken = new Set((data ?? []).map((r: { slug: string }) => r.slug));
+  if (!taken.has(base)) return base;
+  for (let n = 2; ; n++) if (!taken.has(`${base}-${n}`)) return `${base}-${n}`;
+}
+
+interface SimilarInsight {
+  slug: string;
+  title: string;
+  similarity: number;
+}
+
+async function findSimilar(
+  supabase: SupabaseClient,
+  embedding: number[],
+  threshold: number,
+): Promise<SimilarInsight[]> {
+  const { data, error } = await supabase.rpc("match_insights", {
+    query_embedding: JSON.stringify(embedding),
+    match_threshold: threshold,
+    match_count: 3,
+  });
+  if (error) return [];
+  return (data ?? []).map((r: SimilarInsight) => ({
+    slug: r.slug,
+    title: r.title,
+    similarity: Math.round(r.similarity * 100) / 100,
+  }));
+}
+
+// deno-lint-ignore no-explicit-any
+type SuggestionRow = Record<string, any>;
+
+interface PublishResult {
+  published: boolean;
+  id?: number;
+  slug?: string;
+  similar: SimilarInsight[];
+}
+
+/**
+ * Embed a suggestion and upsert it into `insights`, then mark the suggestion approved.
+ * With skipIfDuplicate, a near-duplicate stays pending (for unreviewed auto-publish).
+ */
+async function publishSuggestion(
+  supabase: SupabaseClient,
+  suggestion: SuggestionRow,
+  opts: { slug?: string; reviewerNotes?: string | null; skipIfDuplicate?: boolean } = {},
+): Promise<PublishResult> {
+  const embedding = await embedQuery(`# ${suggestion.title}\n\n${suggestion.insight}`);
+  const similar = await findSimilar(supabase, embedding, opts.skipIfDuplicate ? DUPLICATE_SIMILARITY : 0.85);
+
+  if (opts.skipIfDuplicate && similar.length > 0) {
+    await supabase
+      .from("suggested_insights")
+      .update({
+        reviewer_notes: `Not auto-published: possible duplicate of ${similar
+          .map((x) => `${x.slug} (${x.similarity})`)
+          .join(", ")}`,
+      })
+      .eq("id", suggestion.id);
+    return { published: false, similar };
+  }
+
+  const slug = opts.slug ?? (await uniqueSlug(supabase, slugFromTitle(suggestion.title)));
+  const { data: newInsight, error: insertError } = await supabase
+    .from("insights")
+    .upsert(
+      {
+        slug,
+        title: suggestion.title,
+        insight: suggestion.insight,
+        raw_excerpt: suggestion.raw_excerpt,
+        source_type: suggestion.source_type,
+        source_author: suggestion.source_author,
+        source_title: suggestion.source_title,
+        source_date: suggestion.source_date,
+        platform: suggestion.platform,
+        topics: suggestion.topics,
+        applies_to: suggestion.applies_to,
+        confidence: suggestion.confidence,
+        actionable_steps: suggestion.actionable_steps,
+        embedding: JSON.stringify(embedding),
+        owner_key_id: null, // shared insight
+      },
+      { onConflict: "slug" },
+    )
+    .select("id, slug")
+    .single();
+  if (insertError) throw new Error(`Failed to create insight: ${insertError.message}`);
+
+  await supabase
+    .from("suggested_insights")
+    .update({
+      status: "approved",
+      reviewer_notes: opts.reviewerNotes ?? null,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq("id", suggestion.id);
+
+  return { published: true, id: newInsight.id, slug: newInsight.slug, similar };
+}
+
 // --- Tool definitions ---
 
 export interface ToolDef {
@@ -578,57 +696,112 @@ export const tools: ToolDef[] = [
   {
     name: "suggest_insight",
     description:
-      "DEFAULT TOOL for saving knowledge — submit an insight for admin review and inclusion in the shared knowledge base. " +
-      "**Call this PROACTIVELY** — surface it (or just call it after extracting) whenever the user: " +
-      "shares a link, article, podcast clip, LinkedIn/X post, or screenshot with mobile-growth advice; " +
-      "pastes raw content; mentions reading/listening to something useful; or describes a learning that's not yet in the KB. " +
-      "Don't wait for them to say 'save this' — proactively offer or just extract and submit. " +
-      "**Use the `extract-insights` skill first** (skills/extract-insights.md) — it defines the exact schema, ID format (`{author_initials}-{source_code}-{number}`), topic vocabulary, confidence scale (1-5), and how to split content into discrete insights. " +
-      "Extract as much structured data as possible (title, full insight text, source metadata, topics, applies_to, confidence, actionable_steps). " +
-      "Each call submits ONE insight — for multi-insight sources, call this multiple times. " +
-      "Once approved, the insight becomes searchable by all users. " +
-      "IMPORTANT: Prefer this over `save_private_insight` unless the user explicitly asks for private storage or the content is client-specific data (benchmarks, account IDs, internal metrics).",
+      "DEFAULT TOOL for saving knowledge to the shared knowledge base. " +
+      "**Call this PROACTIVELY** whenever the user shares a link, article, podcast, LinkedIn/X post, screenshot or thread with mobile-growth advice, " +
+      "pastes raw content, or describes a learning not yet in the KB — extract and submit, don't wait for 'save this'. " +
+      "Follow the `extract-insights` prompt for the schema (topics, confidence 1-5, how to split a source into discrete insights). " +
+      "**Batch:** pass `insights` (up to 20) plus the shared source fields once (source_type, source_author, source_title, source_date, platform) " +
+      "to save a whole source in ONE call; or pass a single insight via title + insight. " +
+      "Regular keys: submissions go to the admin review queue. **Admin keys: published immediately** (embedded and searchable), " +
+      "except likely duplicates of existing insights, which stay in the queue for review; pass publish=false to queue instead. " +
+      "Prefer this over `save_private_insight` unless the content is client-specific (benchmarks, account IDs, internal metrics) or the user asks for private storage.",
     inputSchema: {
       type: "object",
-      properties: insightInputProperties,
-      required: ["title", "insight", "source_type"],
+      properties: {
+        ...insightInputProperties,
+        insights: {
+          type: "array",
+          maxItems: 20,
+          description:
+            "Batch mode: several insights from the same source. Each item needs title + insight; " +
+            "any other field set on an item overrides the shared top-level value.",
+          items: {
+            type: "object",
+            properties: insightInputProperties,
+            required: ["title", "insight"],
+          },
+        },
+        publish: {
+          type: "boolean",
+          description: "Admin keys only: publish immediately (default true). Set false to send to the review queue.",
+        },
+      },
     },
     handler: async (args, supabase, auth) => {
       if (!auth?.key_id) throw new Error("Authentication required");
 
-      const row = {
-        title: args.title as string,
-        insight: args.insight as string,
-        raw_excerpt: (args.raw_excerpt as string | undefined) ?? null,
-        source_type: args.source_type as string,
-        source_author: (args.source_author as string | undefined) ?? null,
-        source_title: (args.source_title as string | undefined) ?? null,
-        source_date: (args.source_date as string | undefined) ?? null,
-        platform: (args.platform as string | undefined) ?? null,
-        topics: (args.topics as string[] | undefined) ?? [],
-        applies_to: (args.applies_to as string[] | undefined) ?? [],
-        confidence: Math.max(1, Math.min((args.confidence as number | undefined) ?? 3, 5)),
-        actionable_steps: (args.actionable_steps as string[] | undefined) ?? null,
-        submitted_by: auth.key_id,
-        status: "pending",
-      };
+      const shared = args as Record<string, unknown>;
+      const items: Record<string, unknown>[] = Array.isArray(shared.insights) && shared.insights.length > 0
+        ? (shared.insights as Record<string, unknown>[])
+        : [shared];
+      if (items.length > 20) throw new Error("Max 20 insights per call");
+
+      const pick = <T>(item: Record<string, unknown>, key: string): T | undefined =>
+        (item[key] ?? shared[key]) as T | undefined;
+
+      const rows = items.map((item, i) => {
+        const title = item.title as string | undefined;
+        const insight = item.insight as string | undefined;
+        if (!title || !insight) throw new Error(`Insight ${i + 1}: title and insight are required`);
+        return {
+          title,
+          insight,
+          raw_excerpt: pick<string>(item, "raw_excerpt") ?? null,
+          source_type: pick<string>(item, "source_type") ?? "other",
+          source_author: pick<string>(item, "source_author") ?? null,
+          source_title: pick<string>(item, "source_title") ?? null,
+          source_date: pick<string>(item, "source_date") ?? null,
+          platform: pick<string>(item, "platform") ?? null,
+          topics: pick<string[]>(item, "topics") ?? [],
+          applies_to: pick<string[]>(item, "applies_to") ?? [],
+          confidence: Math.max(1, Math.min(pick<number>(item, "confidence") ?? 3, 5)),
+          actionable_steps: pick<string[]>(item, "actionable_steps") ?? null,
+          submitted_by: auth.key_id,
+          status: "pending",
+        };
+      });
 
       const { data, error } = await supabase
         .from("suggested_insights")
-        .insert(row)
-        .select("id")
-        .single();
+        .insert(rows)
+        .select("*");
+      if (error) throw new Error(`Failed to submit: ${error.message}`);
 
-      if (error) throw new Error(`Failed to submit suggestion: ${error.message}`);
+      // Smoke-test rows (scripts/smoke-test.mjs) must never reach the shared KB.
+      const isSmokeTest = rows.some((r) => r.title.includes("[SMOKE-TEST]"));
+      const autoPublish = !!auth.is_admin && shared.publish !== false && !isSmokeTest;
+      if (!autoPublish) {
+        const ids = data.map((r: { id: number }) => `#${r.id}`).join(", ");
+        return [
+          {
+            type: "text",
+            text:
+              `${data.length} insight(s) submitted for review (${ids}). ` +
+              `Once approved by the admin, they become searchable for all users.`,
+          },
+        ];
+      }
 
-      return [
-        {
-          type: "text",
-          text:
-            `Suggestion #${data.id} submitted for review. ` +
-            `Title: "${row.title}". It will be reviewed by the admin and, if approved, added to the shared knowledge base.`,
-        },
-      ];
+      const lines: string[] = [];
+      for (const row of data as SuggestionRow[]) {
+        try {
+          const res = await publishSuggestion(supabase, row, {
+            reviewerNotes: "auto-published (admin submission)",
+            skipIfDuplicate: true,
+          });
+          lines.push(
+            res.published
+              ? `✓ "${row.title}" → ${res.slug}`
+              : `⏸ "${row.title}" kept in queue (#${row.id}): possible duplicate of ${res.similar
+                  .map((x) => `${x.slug} (${x.similarity})`)
+                  .join(", ")}`,
+          );
+        } catch (e) {
+          lines.push(`✗ "${row.title}" (#${row.id}) left pending: ${(e as Error).message}`);
+        }
+      }
+      const ok = lines.filter((l) => l.startsWith("✓")).length;
+      return [{ type: "text", text: `Published ${ok}/${data.length} insight(s):\n${lines.join("\n")}` }];
     },
   },
 
@@ -1101,72 +1274,30 @@ export const tools: ToolDef[] = [
       }
 
       // Apply overrides
-      const title = (args.title as string | undefined) ?? suggestion.title;
-      const insightText = (args.insight as string | undefined) ?? suggestion.insight;
-      const topics = (args.topics as string[] | undefined) ?? suggestion.topics;
-      const appliesTo = (args.applies_to as string[] | undefined) ?? suggestion.applies_to;
-      const confidence = (args.confidence as number | undefined) ?? suggestion.confidence;
-      const platform = (args.platform as string | undefined) ?? suggestion.platform;
+      const merged: SuggestionRow = {
+        ...suggestion,
+        title: (args.title as string | undefined) ?? suggestion.title,
+        insight: (args.insight as string | undefined) ?? suggestion.insight,
+        topics: (args.topics as string[] | undefined) ?? suggestion.topics,
+        applies_to: (args.applies_to as string[] | undefined) ?? suggestion.applies_to,
+        confidence: (args.confidence as number | undefined) ?? suggestion.confidence,
+        platform: (args.platform as string | undefined) ?? suggestion.platform,
+      };
 
-      // Generate slug
-      const slug =
-        (args.slug as string | undefined) ??
-        `cs-${title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "")
-          .slice(0, 60)}`;
+      const res = await publishSuggestion(supabase, merged, {
+        slug: args.slug as string | undefined,
+        reviewerNotes: (args.reviewer_notes as string | undefined) ?? null,
+      });
 
-      // Generate embedding
-      const embeddingText = `# ${title}\n\n${insightText}`;
-      const embedding = await embedQuery(embeddingText);
-
-      // Insert into insights
-      const { data: newInsight, error: insertError } = await supabase
-        .from("insights")
-        .upsert(
-          {
-            slug,
-            title,
-            insight: insightText,
-            raw_excerpt: suggestion.raw_excerpt,
-            source_type: suggestion.source_type,
-            source_author: suggestion.source_author,
-            source_title: suggestion.source_title,
-            source_date: suggestion.source_date,
-            platform,
-            topics,
-            applies_to: appliesTo,
-            confidence,
-            actionable_steps: suggestion.actionable_steps,
-            embedding: JSON.stringify(embedding),
-            owner_key_id: null, // shared insight
-          },
-          { onConflict: "slug" }
-        )
-        .select("id, slug")
-        .single();
-
-      if (insertError) {
-        throw new Error(`Failed to create insight: ${insertError.message}`);
-      }
-
-      // Mark suggestion as approved
-      await supabase
-        .from("suggested_insights")
-        .update({
-          status: "approved",
-          reviewer_notes: (args.reviewer_notes as string | undefined) ?? null,
-          reviewed_at: new Date().toISOString(),
-        })
-        .eq("id", suggestionId);
-
+      const similarNote = res.similar.length
+        ? `\nSimilar existing insights: ${res.similar.map((x) => `${x.slug} (${x.similarity})`).join(", ")}`
+        : "";
       return [
         {
           type: "text",
           text:
-            `Suggestion #${suggestionId} approved and added to the knowledge base as "${newInsight.slug}" (id: ${newInsight.id}). ` +
-            `Embedding generated and indexed.`,
+            `Suggestion #${suggestionId} approved and added to the knowledge base as "${res.slug}" (id: ${res.id}). ` +
+            `Embedding generated and indexed.${similarNote}`,
         },
       ];
     },

@@ -1,8 +1,8 @@
 # mobile-growth-mcp
 
-MCP server for mobile growth & user acquisition. Connects your LLM (Claude, ChatGPT, Gemini, Codex) to a curated knowledge base of best practices for each ad network, plus Google Ads tools and analytical skills.
+MCP server for mobile growth & user acquisition: a curated knowledge base of practitioner-tested insights, with one-call capture of new learnings from links, posts and podcasts, plus KB-grounded audit skills for Google App Campaigns. Focused on subscription apps.
 
-For **Meta Ads data**, use Meta's official Meta Ads MCP / AI connector — this MCP intentionally does **not** ship Meta API tools (keeps users on the official path). Skills here interpret data from Meta's connector or pasted CSV exports.
+Ad data is read through the platforms' **official** MCPs: the [Google Ads MCP](https://github.com/googleads/google-ads-mcp) for Google, Meta's Meta Ads MCP / AI connector for Meta. This MCP adds the Google write side: uploading images and YouTube videos and adding them to App campaign ads.
 
 ## Install
 
@@ -63,48 +63,39 @@ API_KEY=me_your-api-key
 - For **Google Ads** tools, run `npx mobile-growth-mcp auth google` to set up OAuth credentials interactively. Saved to `.env`, never sent to our servers.
 - For **Meta Ads data**, install Meta's official Meta Ads MCP / AI connector alongside this one. The skills here will read from it.
 
-## What you get
-
-**Knowledge base tools** — search, browse, and retrieve expert insights on creative strategy, audience targeting, scaling, bid optimization, and more.
-
-**Google Ads tools** — pull campaigns, ad groups, assets, performance insights, and network mix directly from your Google Ads account. Token stays local.
-
-**Analytical skills (MCP prompts)** — KB-grounded methodologies for ad fatigue, weekly performance, creative health, placement audits, audience composition, architecture reviews, campaign comparisons, attribution analysis, and full account audits. The Meta-flavored skills consume data from Meta's official connector or pasted CSVs.
-
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `connection_status` | Check KB and Google Ads connection status; shows how to fix issues |
+| `connection_status` | Check KB and Google Ads upload status; shows how to fix issues |
 | `search_insights` | Semantic + keyword hybrid search across curated insights |
-| `list_insights` | Browse all insights with optional filtering |
 | `get_insight` | Full content of a specific insight by slug or ID |
-| `get_google_ads_campaigns` | List Google App Campaigns with status, bid strategy, budgets |
-| `get_google_ad_groups` | List ad groups within Google App Campaigns |
-| `get_google_assets` | List creative assets with slot utilization audit |
-| `get_google_insights` | Performance metrics with network/device breakdowns |
-| `get_google_network_mix` | Detect Search ↔ Display ↔ YouTube traffic shifts |
-| `get_google_asset_fatigue` | Asset-level fatigue detection |
-| `upload_google_image_assets` | Upload image assets to Google Ads |
+| `get_vocabulary_counts` | Topic and applies_to tag counts |
+| `suggest_insight` | Save insights from a source — batch up to 20 per call; admin keys publish immediately |
+| `save_private_insight` | Save client-specific knowledge visible only to your key |
+| `suggest_skill` / `submit_feedback` | Propose a workflow / report a KB gap or bug |
+| `upload_google_image_assets` | Upload images (URLs or files) as assets; optionally add them to an App campaign ad |
+| `upload_google_video_assets` | Add YouTube videos as assets (deduplicated by video ID); optionally add them to an App campaign ad |
+| `add_assets_to_app_ad` | Append images, videos, headlines or descriptions to an App campaign ad, within Google's caps |
 
-## Report prompts
+Admin keys also get `review_suggestions`, `approve_suggestion`, `reject_suggestion`, the skill-suggestion equivalents, `list_insights`, `delete_insight` and `suggest_improvement`.
 
-Each Meta-flavored prompt takes an `ad_account_id` and walks the LLM through a structured analysis. Data comes from Meta's official AI connector or pasted CSV exports.
+**Reading Google Ads data** is done by the official [Google Ads MCP](https://github.com/googleads/google-ads-mcp) (read-only GAQL). The Google skills below list the exact queries to run. **Meta data** comes from Meta's official Meta Ads MCP / AI connector.
 
-- **ad-fatigue-report** — frequency, CTR decline, CPA trends
-- **weekly-performance** — week-over-week health with Kast diagnostic framework
-- **creative-performance** — categorize ads as scaling/promising/contributing/fatiguing/dead weight
-- **audience-composition** — age × gender CPA heatmap
-- **architecture-review** — campaign structure evaluation
-- **audit-meta-account** — comprehensive account audit
-- **campaign-comparison** — side-by-side campaign analysis
-- **placement-audit** — placement waste quantification
-- **attribution-analysis** — conversion quality validation
-- **google-campaign-health** — Google App Campaign WoW health
-- **google-asset-performance** — Google asset categorization by actual CPI
-- **google-network-audit** — Search/Display/YouTube spend analysis
-- **google-architecture-review** — Google App Campaign structure audit
-- **google-bid-strategy** — Google bid strategy + signal volume evaluation
+## Skills (MCP Prompts)
+
+| Prompt | Description |
+|--------|-------------|
+| `extract-insights` | Turn a link, post, podcast or screenshot into insights and save them in one call |
+| `google-account-audit` | Full Google App Campaigns audit against the KB: signal, conversion windows, tROAS, exclusions, audience signals, assets, network, iOS ODM/ICM |
+| `google-campaign-health` | Week-over-week health check and algorithm thresholds |
+| `google-asset-performance` | Asset categorization by actual CPI, gaps and refresh plan |
+| `google-network-audit` | Search / Display / YouTube spend and CPI analysis, placements |
+| `google-architecture-review` | Campaign and ad group structure, exclusions and signals |
+| `google-bid-strategy` | Bid strategy, conversion window vs tROAS target, safe change sizes |
+| `admin-briefing` | Admin: pending suggestions, bugs, knowledge gaps |
+
+Every skill cites knowledge base insight IDs, so recommendations are grounded in expert knowledge. Meta skills are archived in `skills/archive/`.
 
 ## License
 

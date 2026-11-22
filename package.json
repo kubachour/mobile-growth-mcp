@@ -12,6 +12,7 @@
     "delete": "npm run delete --workspace=packages/ingestion",
     "build:prompts": "npx tsx scripts/build-prompt-content.ts",
     "smoke-test": "node scripts/smoke-test.mjs",
+    "health-check": "node scripts/health-check.mjs",
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "devDependencies": {

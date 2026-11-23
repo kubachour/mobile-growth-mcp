@@ -14,7 +14,7 @@ Week-over-week performance comparison for Google App Campaigns — diagnoses spe
 
 ## What It Needs
 
-**Option A — Google Ads connected**: `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN` configured.
+**Option A — Google Ads MCP connected** (official `googleads/google-ads-mcp`, read-only): run the GAQL queries below with its `search` tool. Money fields are in micros; App campaigns are `advertising_channel_type = MULTI_CHANNEL`. If a field errors, check the MCP's field-metadata resources and adjust the query.
 
 **Option B — CSV export**: No API needed. Export from Google Ads UI:
 - Go to **Campaigns** → set date range to **This week (Mon–today)** and **Last week (Mon–Sun)**
@@ -44,24 +44,17 @@ Week-over-week performance comparison for Google App Campaigns — diagnoses spe
 
 ### Step 1: Pull This Week and Last Week Data
 
-**If API connected:**
+**If the Google Ads MCP is connected:**
 
-```
+```sql
 # This week
-get_google_insights(
-  customer_id="123-456-7890",
-  date_range="THIS_WEEK_MON_TODAY",
-  level="CAMPAIGN",
-  metrics=["impressions","clicks","conversions","cost_micros","cost_per_conversion"]
-)
+SELECT campaign.id, campaign.name, campaign.status, campaign_budget.amount_micros,
+  metrics.impressions, metrics.clicks, metrics.conversions, metrics.cost_micros,
+  metrics.cost_per_conversion, metrics.biddable_app_install_conversions
+FROM campaign
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND segments.date DURING THIS_WEEK_MON_TODAY
 
-# Last week
-get_google_insights(
-  customer_id="123-456-7890",
-  date_range="LAST_WEEK",
-  level="CAMPAIGN",
-  metrics=["impressions","clicks","conversions","cost_micros","cost_per_conversion"]
-)
+# Last week: same query with DURING LAST_WEEK_MON_SUN
 ```
 
 **If CSV:** Use the two exports the user pasted.
@@ -82,10 +75,18 @@ Flag any campaign where:
 - CPI rose > 20% WoW with no bid change → **Degrading** — investigate creative or network shift
 - Spend dropped > 30% WoW with no budget change → **Stalled** — check campaign status, bids, creative fatigue
 
-### Step 4: Pull Campaign Structure (API only)
+### Step 4: Pull Campaign Structure (Google Ads MCP only)
 
-```
-get_google_ads_campaigns(customer_id="123-456-7890")
+```sql
+# Google Ads MCP → search
+SELECT campaign.id, campaign.name, campaign.status, campaign.start_date,
+  campaign.advertising_channel_sub_type, campaign.bidding_strategy_type,
+  campaign.target_cpa.target_cpa_micros, campaign.target_roas.target_roas,
+  campaign_budget.amount_micros, campaign.app_campaign_setting.app_store,
+  campaign.app_campaign_setting.bidding_strategy_goal_type,
+  campaign.selective_optimization.conversion_actions
+FROM campaign
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND campaign.status != REMOVED
 ```
 
 Check for: campaigns that have been running > 90 days with no creative refresh (fatigue risk per ab-pt-007).

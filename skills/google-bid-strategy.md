@@ -15,16 +15,33 @@ Evaluate whether the current bid strategy setup is correct, whether the algorith
 
 ## What It Needs
 
-**Option A — Google Ads connected:**
+**Option A — Google Ads MCP connected** (official `googleads/google-ads-mcp`, read-only): run the GAQL queries below with its `search` tool. Money fields are in micros; App campaigns are `advertising_channel_type = MULTI_CHANNEL`. If a field errors, check the MCP's field-metadata resources and adjust the query.
 
-```
-get_google_ads_campaigns(customer_id="123-456-7890")
-get_google_insights(
-  customer_id="123-456-7890",
-  date_range="LAST_30_DAYS",
-  level="CAMPAIGN",
-  metrics=["conversions","cost_micros","cost_per_conversion","all_conversions_value"]
-)
+```sql
+SELECT campaign.id, campaign.name, campaign.bidding_strategy_type,
+  campaign.target_cpa.target_cpa_micros, campaign.target_roas.target_roas,
+  campaign_budget.amount_micros, metrics.conversions, metrics.conversions_value,
+  metrics.cost_micros, metrics.cost_per_conversion
+FROM campaign
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND campaign.status = ENABLED AND segments.date DURING LAST_30_DAYS
+
+# Conversion windows of the optimized actions
+SELECT conversion_action.id, conversion_action.name, conversion_action.category,
+  conversion_action.click_through_lookback_window_days,
+  conversion_action.firebase_settings.event_name,
+  conversion_action.value_settings.always_use_default_value
+FROM conversion_action
+WHERE conversion_action.status = ENABLED
+
+# Recent bid / budget changes (change_event needs a LIMIT; max 30 days back)
+SELECT change_event.change_date_time, change_event.change_resource_type,
+  change_event.changed_fields, change_event.old_resource, change_event.new_resource,
+  campaign.name
+FROM change_event
+WHERE change_event.change_date_time DURING LAST_14_DAYS
+  AND change_event.change_resource_type IN (CAMPAIGN, CAMPAIGN_BUDGET)
+ORDER BY change_event.change_date_time DESC
+LIMIT 200
 ```
 
 **Option B — Manual input / CSV:** Ask the user for:
@@ -46,8 +63,8 @@ get_google_insights(
 ## Knowledge Base Grounding
 
 - **ab-pt-006** (Ashley Black): "Never adjust bids or budgets more than 20% in a single day. Larger changes cause campaigns to tank and struggle to recover. This is Google's own guidance — believe it."
-- **ab-pt-019** (Ashley Black): "Google recommends 50 installs/day or 10 target events/day. Aim for double (100 installs/day or 20 events/day). Below threshold = the algorithm is guessing, not learning."
-- **ab-pt-010** (Ashley Black): "tROAS campaigns: start your target 20%+ below your actual ROAS target. Use 7-day conversion windows. Give it 2–3 weeks to exit the learning phase before evaluating."
+- **ab-pt-019** (Ashley Black): "Google recommends 50 installs/day or 10 target events/day. Aim for double (100 installs/day or 30 events/day). Below threshold = the algorithm is guessing, not learning."
+- **ab-pt-010** (Ashley Black): "tROAS campaigns: start your target 20%+ below your actual ROAS target. Use 7-day conversion windows. Expect a 2–6 week learning window before evaluating [ab-pt-011]."
 - **ab-pt-011** (Ashley Black): "tROAS requires Firebase integration, high event volume (10+ revenue events/day), and risk tolerance. Don't set up tROAS without all three — it will underperform and you'll incorrectly blame the strategy."
 - **ab-pt-012** (Ashley Black): "Run CPA and tROAS campaigns side by side. tROAS alone struggles to scale — it chases quality over volume. CPA provides the volume floor, tROAS extracts value from the best users."
 - **ab-pt-020** (Ashley Black): "tROAS campaigns tend to have higher CPMs but deliver better-quality traffic. The higher CPI is often justified by better retention and monetization — measure downstream, not just install cost."
@@ -94,7 +111,10 @@ If CPI is at or below target CPA:
 
 ### Step 4: Evaluate tROAS Readiness (if user is considering switching)
 
+**Window first:** the tROAS target is judged against the campaign's conversion window. A 20% target on the 90-day default means 20% at day 90. Check the window with the query in Step 1, move it to 7 days (14 at most), then back-calculate the target for that window [ab-pt-010].
+
 tROAS requires ALL of these:
+- [ ] Conversion window set to 7 days (14 max) and target back-calculated for it [ab-pt-010]
 - [ ] Firebase integrated and sending events
 - [ ] 10+ revenue events/day average over last 30 days
 - [ ] Willing to accept higher CPI in exchange for better user quality [ab-pt-020]

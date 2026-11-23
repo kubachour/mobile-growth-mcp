@@ -1,6 +1,6 @@
 # Skill: Extract Insights from Raw Content
 
-Process raw content (podcast transcripts, LinkedIn posts, PDFs, community discussions) into structured insight JSON for the Meta Editor knowledge base.
+Process raw content (podcast transcripts, LinkedIn posts, PDFs, community discussions) into structured insights and save them to the Mobile Growth knowledge base in one step.
 
 ---
 
@@ -10,16 +10,19 @@ Process raw content (podcast transcripts, LinkedIn posts, PDFs, community discus
 - You want to extract structured insights before saving to `data/insights/`
 - Use when you only need the extraction step (not the full ingest pipeline — use `ingest-content` for that)
 - User pastes raw content and asks "extract insights from this"
+- User shares a link, post, screenshot or thread with mobile-growth advice — run this without waiting for "save this"
 
 ## What It Needs
 
-- Raw content pasted directly (any format: transcript, post, article, PDF text)
-- No API connection, no tools — this is a pure text transformation skill
+- Raw content pasted directly (any format: transcript, post, article, PDF text), or a link / screenshot you can read
+- **Through the MCP:** `search_insights` (duplicate check) and `suggest_insight` (save)
+- **In the repo (admin):** `.env` with `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` for the curl route below
 
 ## What It Produces
 
-- JSON array of structured insight objects ready to save to `data/insights/`
-- Each insight: id, title, insight text, source metadata, topics, applies_to, confidence, actionable_steps
+- Structured insights (title, insight text, source metadata, topics, applies_to, confidence, actionable_steps), saved with ONE `suggest_insight` call per source
+- A short comparison table against existing insights
+- In the repo: optionally the same JSON array saved to `data/insights/`
 
 ## Input
 
@@ -128,13 +131,39 @@ Output a JSON array of insight objects. Wrap in a code block:
 ]
 ```
 
+## Save Through the MCP (default)
+
+1. Cross-reference first (next section): drop near-duplicates, note reinforcements and contradictions.
+2. Save the whole source in **one** call. Put the shared source fields once at the top level and the insights in `insights` (max 20 per call):
+
+```
+suggest_insight(
+  source_type="podcast",
+  source_author="Ashley Black",
+  source_title="Mobile User Acquisition Show — Google UAC",
+  source_date="2026-09-07",
+  platform="google",
+  insights=[
+    { "title": "...", "insight": "...", "topics": [...], "applies_to": [...], "confidence": 4, "actionable_steps": [...] },
+    { "title": "...", "insight": "..." }
+  ]
+)
+```
+
+- **Admin keys** publish immediately (embedded and searchable at once). Likely duplicates of existing insights (similarity ≥ 0.92) stay in the review queue; the reply lists them. Pass `publish=false` to queue everything instead.
+- **Other keys** go to the admin review queue.
+- Client-specific data (account metrics, internal benchmarks) goes to `save_private_insight` instead.
+- Tell the user what was saved: count, slugs, and anything held back as a possible duplicate.
+
 ## Cross-Reference with Existing Knowledge
 
 After generating the insight JSON, **query the Supabase database** to compare new insights against what's already stored. This step catches duplicates, surfaces contradictions, and upgrades confidence when multiple sources agree.
 
 ### How to query
 
-Use the Supabase REST API directly (credentials in `.env`):
+**Through the MCP (default):** run `search_insights(query="<title of the new insight>", limit=5)` for each new insight, and `get_insight(slug)` when a match needs a closer look.
+
+**In the repo (admin, credentials in `.env`):** use the Supabase REST API directly:
 
 ```bash
 # List all existing insights (slug, title, insight text, metadata)

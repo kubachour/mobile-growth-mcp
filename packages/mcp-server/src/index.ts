@@ -6,13 +6,9 @@ import {
   fetchRemotePrompts,
   registerFetchedPrompts,
 } from "./remote-proxy.js";
-import { registerGetGoogleAdsCampaigns } from "./tools/google-campaigns.js";
-import { registerGetGoogleAdsAdGroups } from "./tools/google-ad-groups.js";
-import { registerGetGoogleAdsAssets } from "./tools/google-assets.js";
-import { registerGetGoogleAdsInsights } from "./tools/google-insights.js";
-import { registerGetGoogleAdsNetworkMix } from "./tools/google-network-mix.js";
-import { registerGetGoogleAdsAssetFatigue } from "./tools/google-asset-fatigue.js";
 import { registerUploadGoogleImageAssets } from "./tools/google-upload-assets.js";
+import { registerUploadGoogleVideoAssets } from "./tools/google-upload-videos.js";
+import { registerAddAssetsToAppAd } from "./tools/google-app-ad-assets.js";
 import {
   registerConnectionStatus,
   SERVER_VERSION,
@@ -96,15 +92,13 @@ if (apiKey) {
   status.kb.error = "API_KEY not configured";
 }
 
-// ── Google Ads tools (run locally) ───────────────────────────────
+// ── Google Ads upload tools (run locally) ────────────────────────
+// Reading Google Ads data is left to the official Google Ads MCP
+// (read-only GAQL). This server only writes: asset uploads + App ad linking.
 
-registerGetGoogleAdsCampaigns(server);
-registerGetGoogleAdsAdGroups(server);
-registerGetGoogleAdsAssets(server);
-registerGetGoogleAdsInsights(server);
-registerGetGoogleAdsNetworkMix(server);
-registerGetGoogleAdsAssetFatigue(server);
 registerUploadGoogleImageAssets(server);
+registerUploadGoogleVideoAssets(server);
+registerAddAssetsToAppAd(server);
 
 // ── Connection status tool (always present) ────────────────────────
 

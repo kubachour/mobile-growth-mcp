@@ -79,3 +79,4 @@ Needs .md written:
 - Keep the briefing scannable — use bullet points, not paragraphs.
 - For skill suggestions with a draft: use `approve_skill_suggestion` to get the final .md, then commit to `skills/`, run `npm run build:prompts`, and deploy.
 - If everything is clean, say so briefly and suggest proactive actions like reviewing most-searched topics or writing Google Ads skills.
+- **Smoke-test rows are auto-filtered.** The retrieval tools (`review_suggestions`, `review_skill_suggestions`, `suggest_improvement`) skip rows tagged `[SMOKE-TEST]` server-side, so the briefing never surfaces them. If counts here look lower than a raw DB query, that's why — no action needed.

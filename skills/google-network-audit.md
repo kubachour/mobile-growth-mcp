@@ -14,12 +14,9 @@ Analyze how Google App Campaign spend is distributed across its 5 networks — a
 
 ## What It Needs
 
-**Option A — Google Ads connected:**
+**Option A — Google Ads MCP connected** (official `googleads/google-ads-mcp`, read-only): run the GAQL queries below with its `search` tool. Money fields are in micros; App campaigns are `advertising_channel_type = MULTI_CHANNEL`. If a field errors, check the MCP's field-metadata resources and adjust the query.
 
-```
-get_google_network_mix(customer_id="123-456-7890", campaign_id="...")
-get_google_insights(customer_id="123-456-7890", ..., breakdowns=["network"])
-```
+Queries: spend by `segments.ad_network_type` per week, plus `group_placement_view` (see Procedure).
 
 **Option B — CSV export:** Export from Google Ads UI:
 - Go to the **Campaigns** report → click **Segment** → **Network (with search partners)**
@@ -50,23 +47,21 @@ get_google_insights(customer_id="123-456-7890", ..., breakdowns=["network"])
 
 ### Step 1: Pull Network Distribution
 
-**If API connected:**
+**If the Google Ads MCP is connected:**
 
-```
-get_google_network_mix(
-  customer_id="123-456-7890",
-  campaign_id="[campaign_id]"
-)
+```sql
+SELECT campaign.name, segments.ad_network_type, segments.week,
+  metrics.impressions, metrics.clicks, metrics.conversions, metrics.cost_micros
+FROM campaign
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND segments.date BETWEEN '[today-28]' AND '[yesterday]'
+# Compare the last 2 weeks with the 2 before to spot share shifts
 
-# Also pull with date comparison: this week vs last week
-get_google_insights(
-  customer_id="123-456-7890",
-  campaign_id="[campaign_id]",
-  date_range="LAST_14_DAYS",
-  level="CAMPAIGN",
-  metrics=["impressions","conversions","cost_micros","cost_per_conversion"],
-  segment_by_network=true
-)
+# Placements (impressions only; no detail inside Google-owned inventory)
+SELECT group_placement_view.placement_type, group_placement_view.display_name,
+  group_placement_view.target_url, metrics.impressions, metrics.cost_micros, metrics.conversions
+FROM group_placement_view
+WHERE campaign.advertising_channel_type = MULTI_CHANNEL AND segments.date DURING LAST_30_DAYS
+ORDER BY metrics.impressions DESC LIMIT 100
 ```
 
 **If CSV:** Use the network-segmented export the user pasted.
@@ -95,7 +90,7 @@ Flag any bucket where:
 
 ### Step 4: Check Placement Report (API or Manual)
 
-**If API connected:** Look for specific underperforming app/site placements within Display Network.
+**If the Google Ads MCP is connected:** Look for specific underperforming app/site placements within Display Network.
 
 **If manual:** Advise user to check: Google Ads UI → **Insights** → **Where ads showed** → filter by Display Network → sort by Cost desc → look for non-app placements (web URLs) with high cost and zero installs.
 

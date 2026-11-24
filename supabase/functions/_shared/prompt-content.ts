@@ -355,6 +355,7 @@ Key insights:
 - **ab-pt-005**, **ab-pt-017**: network buckets and placement blocking
 - **ab-vt-005**: naming convention AppName_Event_Country_OS
 - **da-ot-004**, **pp-ot-001**, **ab-pt-014**, **da-ot-006**: ODM/ICM setup and iOS discrepancies
+- **goog-ot-002**, **goog-ot-005**: ODM 1P vs ODM Event Data; what is off in the EEA/UK/CH
 - **dt-ot-004**: avoid Performance Max for app installs
 
 ## Procedure
@@ -514,7 +515,7 @@ The Google Ads API can't see these. Ask them as one short list; mark unknowns ‚ù
 
 1. Is Firebase linked to Google Ads, with the GA4F SDK at 11.14.0 or higher? [da-ot-004]
 2. Is the MMP connected too, so numbers can be cross-checked?
-3. **iOS only.** ODM/ICM isn't available in Europe; skip for EU-only apps [da-ot-004]. Otherwise:
+3. **iOS only.** In the EEA, UK and Switzerland, ODM Event Data (ODM 2.0) is off, but ODM 1P (hashed email/phone from signed-in users) still works [goog-ot-005]; for EU-heavy apps, check ODM 1P and rely on SKAN. ODM 1 is worth the dev work only if you collect email/phone and serve mostly on YouTube/Search; ODM and ICM change reporting, not performance (KB search "ODM 1 first-party data"). Otherwise:
    - AppsFlyer: "Advanced Data Sharing" ON and "Aggregated Advanced Privacy" OFF. Adjust: "Probabilistic modeling" ON [da-ot-004]
    - AppsFlyer first_open and session_start imported as secondary goals [da-ot-004]
    - Consent Mode \`ad_storage\` granted; MMP SDK initializes after Firebase ODM; MMP SDK not gated behind ATT [da-ot-004, pp-ot-001]

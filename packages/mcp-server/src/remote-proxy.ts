@@ -180,8 +180,40 @@ export async function callRemoteTool(
 }
 
 /**
+ * Converts one JSON Schema property into a Zod type. Recursive: arrays keep
+ * their item type and objects keep their properties, so remote tools can take
+ * structured input (e.g. suggest_insight's `insights: [{title, insight, ...}]`).
+ */
+function jsonSchemaToZod(prop: Record<string, unknown>): z.ZodTypeAny {
+  if (prop.oneOf) {
+    // e.g. oneOf: [{type:"number"},{type:"string"}] → union
+    return z.union([z.number(), z.string()]);
+  }
+  switch (prop.type) {
+    case "string":
+      return Array.isArray(prop.enum) && prop.enum.length > 0
+        ? z.enum(prop.enum as [string, ...string[]])
+        : z.string();
+    case "number":
+    case "integer":
+      return z.number();
+    case "boolean":
+      return z.boolean();
+    case "array": {
+      const items = prop.items as Record<string, unknown> | undefined;
+      return z.array(items ? jsonSchemaToZod(items) : z.any());
+    }
+    case "object":
+      return prop.properties
+        ? z.object(jsonSchemaToZodShape(prop)).passthrough()
+        : z.record(z.any());
+    default:
+      return z.any();
+  }
+}
+
+/**
  * Converts a JSON Schema inputSchema into a Zod shape for McpServer.tool().
- * Handles string, number, boolean, array (of strings), and oneOf [number, string].
  */
 function jsonSchemaToZodShape(
   inputSchema: Record<string, unknown>
@@ -194,31 +226,13 @@ function jsonSchemaToZodShape(
   const shape: Record<string, z.ZodTypeAny> = {};
 
   for (const [key, prop] of Object.entries(properties)) {
-    let field: z.ZodTypeAny;
-
-    if (prop.oneOf) {
-      // e.g. oneOf: [{type:"number"},{type:"string"}] → union
-      field = z.union([z.number(), z.string()]);
-    } else if (prop.type === "string") {
-      field = z.string();
-    } else if (prop.type === "number") {
-      field = z.number();
-    } else if (prop.type === "boolean") {
-      field = z.boolean();
-    } else if (prop.type === "array") {
-      field = z.array(z.string());
-    } else {
-      field = z.any();
-    }
-
+    let field = jsonSchemaToZod(prop);
     if (prop.description) {
       field = field.describe(prop.description as string);
     }
-
     if (!required.has(key)) {
       field = field.optional();
     }
-
     shape[key] = field;
   }
 

@@ -156,10 +156,16 @@ async function main() {
       throw new Error(json.result.content?.[0]?.text?.slice(0, 200) ?? "isError");
     }
     const text = json.result?.content?.[0]?.text ?? "";
-    if (!/Suggestion #\d+/.test(text)) {
+    // 2.5.0+: "N insight(s) submitted for review (#id)". [SMOKE-TEST] rows must
+    // stay in the queue even for admin keys, so a "Published" reply is a failure.
+    if (/Published/.test(text)) {
+      throw new Error(`smoke row was published to the KB: ${text.slice(0, 200)}`);
+    }
+    const id = text.match(/#\d+/)?.[0];
+    if (!/submitted for review/.test(text) || !id) {
       throw new Error(`unexpected response: ${text.slice(0, 200)}`);
     }
-    return `${ms}ms — ${text.match(/Suggestion #\d+/)?.[0] ?? "?"}`;
+    return `${ms}ms — suggestion ${id} (pending)`;
   });
 
   await step("suggest_skill writes a pending row", async () => {
